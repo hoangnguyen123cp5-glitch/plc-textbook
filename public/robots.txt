@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hoangnguyen123cp5-glitch.github.io/plc-textbook/sitemap.xml

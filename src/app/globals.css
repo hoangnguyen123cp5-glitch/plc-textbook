@@ -1,0 +1,274 @@
+/* ── External imports first ── */
+@import "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap";
+@import "katex/dist/katex.min.css";
+@import "tailwindcss";
+
+/* ── Tailwind v4 Theme Tokens ── */
+@theme inline {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "SF Mono", "Fira Code", ui-monospace, monospace;
+}
+
+/* ── Base ── */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: #ffffff;
+  color: #0a0a0a;
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "cv11", "ss01";
+  font-variation-settings: "opsz" 32;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+::selection { background: rgba(0,0,0,0.08); color: #0a0a0a; }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d4d4d4; border-radius: 99px; }
+
+/* ── Grid pattern (very subtle) ── */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ── Nav ── */
+.nav-link {
+  font-size: 14px;
+  font-weight: 450;
+  color: #737373;
+  text-decoration: none;
+  transition: color 0.15s;
+  letter-spacing: -0.005em;
+}
+.nav-link:hover { color: #0a0a0a; }
+
+/* ── Tag / Pill ── */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid #e5e5e5;
+  background: #fafafa;
+  font-size: 12px;
+  font-weight: 500;
+  color: #737373;
+  letter-spacing: 0.01em;
+}
+
+/* ── Buttons ── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #0a0a0a;
+  color: #ffffff;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  transition: opacity 0.15s, transform 0.15s;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+}
+.btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: transparent;
+  color: #525252;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  border: 1px solid #e5e5e5;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn-ghost:hover { color: #0a0a0a; border-color: #a3a3a3; background: #fafafa; }
+
+/* ── Lesson row ── */
+.lesson-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 24px;
+  border-bottom: 1px solid #f5f5f5;
+  transition: background 0.15s;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+.lesson-row:hover { background: #fafafa; }
+.lesson-row:hover .lesson-arrow { transform: translateX(4px); opacity: 1; }
+.lesson-arrow {
+  margin-left: auto;
+  opacity: 0;
+  transition: transform 0.15s, opacity 0.15s;
+  color: #a3a3a3;
+}
+
+/* ── Feature grid ── */
+.feature-cell {
+  padding: 32px 28px;
+  border-right: 1px solid #f5f5f5;
+  border-bottom: 1px solid #f5f5f5;
+  background: #ffffff;
+  transition: background 0.15s;
+}
+.feature-cell:hover { background: #fafafa; }
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.animate-fade-up   { animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+.anim-d1           { animation: fadeUp 0.6s 0.08s cubic-bezier(0.16,1,0.3,1) both; }
+.anim-d2           { animation: fadeUp 0.6s 0.16s cubic-bezier(0.16,1,0.3,1) both; }
+.anim-d3           { animation: fadeUp 0.6s 0.24s cubic-bezier(0.16,1,0.3,1) both; }
+.animate-fade-in   { animation: fadeIn 0.4s ease both; }
+
+/* ── Prose (MDX) ── */
+.prose h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.03em; margin: 0 0 1rem; color: #0a0a0a; }
+.prose h2 { font-size: 1.375rem; font-weight: 600; letter-spacing: -0.02em; margin: 2.5rem 0 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid #f5f5f5; color: #0a0a0a; }
+.prose h3 { font-size: 1.125rem; font-weight: 600; margin: 1.75rem 0 0.5rem; color: #0a0a0a; }
+.prose p  { color: #525252; line-height: 1.8; margin-bottom: 1rem; }
+.prose a  { color: #2563eb; text-underline-offset: 3px; }
+.prose code:not(pre code) {
+  font-family: "SF Mono", "Fira Code", monospace;
+  font-size: 0.82em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #f5f5f5;
+  color: #171717;
+  border: 1px solid #e5e5e5;
+}
+.prose pre {
+  background: #fafafa !important;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+.prose table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+.prose th { padding: 10px 16px; text-align: left; color: #a3a3a3; font-weight: 500; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e5e5e5; }
+.prose td { padding: 12px 16px; color: #525252; border-bottom: 1px solid #f5f5f5; }
+
+.topic-link:hover { background: #f0f0f0 !important; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   LAYOUT BÀI HỌC — sidebar là NGĂN KÉO ở mọi kích thước
+
+   Quyết định thiết kế: không có sidebar cố định, kể cả trên desktop.
+   Lý do: nav bó vào 860px căn giữa, nếu sidebar 260px chiếm chỗ trong dòng
+   chảy thì cột nội dung bị đẩy lệch sang phải và không bao giờ thẳng hàng
+   với nav. Bỏ sidebar khỏi dòng chảy → cột đọc căn giữa đúng trục với nav
+   ở mọi màn hình, và người đọc được toàn bộ bề ngang cho bảng, sơ đồ, code.
+
+   Mục lục khoá học mở bằng nút hamburger — nút này hiện ở MỌI kích thước
+   và luôn có tác dụng thật.
+
+   Toàn bộ breakpoint nằm ở đây, KHÔNG đọc window.innerWidth trong React:
+   đọc innerWidth lúc render gây hydration mismatch (server không có window)
+   và không phản ứng khi xoay máy vì thiếu listener resize.
+════════════════════════════════════════════════════════════════════════ */
+
+.lesson-shell { display: flex; flex: 1; }
+
+/* Ngăn kéo: nằm ngoài dòng chảy ở mọi kích thước */
+.lesson-sidebar {
+  position: fixed;
+  top: var(--nav-h, 60px);
+  left: 0;
+  width: 260px;
+  height: calc(100vh - var(--nav-h, 60px));
+  background: #fafafa;
+  border-right: 1px solid #ebebeb;
+  overflow-y: auto;
+  z-index: 41;
+  transform: translateX(-100%);
+  transition: transform 0.25s ease;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.08);
+}
+.lesson-sidebar[data-open='true'] { transform: translateX(0); }
+
+.lesson-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 40;
+}
+
+.lesson-main {
+  flex: 1;
+  /* Bắt buộc: flex item mặc định min-width:auto nên nội dung rộng (bảng, SVG)
+     sẽ ĐẨY cả trang giãn ra thay vì tự cuộn. Đây là nguyên nhân số một khiến
+     trang bị cuộn ngang toàn cục. */
+  min-width: 0;
+  padding: 40px 48px;
+}
+
+/* Cùng trục với nav: nav bó 860px, cột đọc 720px — cả hai đều margin auto
+   nên tâm trùng nhau. 720px giữ độ dài dòng ~80 ký tự, đúng khuyến nghị
+   typography cho văn bản kỹ thuật dài. */
+.lesson-col { max-width: 720px; margin: 0 auto; }
+
+@media (max-width: 1079px) { .lesson-main { padding: 32px 24px; } }
+@media (max-width: 640px)  { .lesson-main { padding: 24px 16px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .lesson-sidebar { transition: none; }
+}
+
+/* ── Nav: giấu dần các phần phụ khi hẹp ── */
+/* Ngưỡng tính từ bề rộng thật: hamburger 28 + logo ~130 + wordmark ~130 +
+   3 link ~200 + CTA ~108 + 6 khe 24px + padding 48 = ~765px. iPad dọc chỉ có
+   720px khả dụng → phải bỏ wordmark trước 900px, không phải 760px.
+   Logo đã in sẵn "INTERNATIONAL SCHOOL" nên bỏ wordmark không mất thông tin. */
+@media (max-width: 900px) {
+  .site-nav__wordmark, .site-nav__divider { display: none !important; }
+}
+@media (max-width: 620px) {
+  .site-nav__links { display: none !important; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Nội dung quá khổ — cuộn trong khung riêng, KHÔNG để trang cuộn ngang
+════════════════════════════════════════════════════════════════════════ */
+
+/* Bảng trong MDX: display:block cho phép overflow-x hoạt động trên <table>
+   (table mặc định không nhận overflow). Đổi lại mất behaviour co giãn tự
+   động của table layout — chấp nhận được, vì cuộn còn hơn tràn trang. */
+.prose table {
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+.prose pre { max-width: 100%; }
+
+.prose img,
+.prose svg { max-width: 100%; height: auto; }
+
+/* Chặn cuộn ngang toàn cục ở mọi trang */
+html, body { max-width: 100%; }
