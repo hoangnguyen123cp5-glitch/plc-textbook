@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ingest: original textbooks/slides and raw page extracts
+/sources/*
+!/sources/README.md
+/Slide/
+/dev/extracts/
+scripts/ingest/__pycache__/
