@@ -10,13 +10,15 @@ const ScanTimeFormula  = dynamic(() => import('./MathBlock').then(m => m.ScanTim
 const OhmLawFormula    = dynamic(() => import('./MathBlock').then(m => m.OhmLawFormula),    { ssr: false });
 
 const mathMap: Record<string, React.ReactElement> = {
-  '01-programmable-control':      <ScanTimeFormula />,
-  '02-s7-1200-tia-portal':      <OhmLawFormula />,
+  '01-programmable-control':  <ScanTimeFormula />,
+  '02-s7-1200-tia-portal':    <OhmLawFormula />,
   '03-binary-operations':     <ScanTimeFormula />,
-  '09-high-speed-counting':           <><PWMFormula /><HSCFormula /></>,
-  '05-analog-signals':            <NORMXFormula />,
+  '05-analog-signals':        <NORMXFormula />,
+  '09-high-speed-counting':   <><PWMFormula /><HSCFormula /></>,
   '10-closed-loop-pid':       <PIDFormula />,
+  '11-communication':         <OhmLawFormula />,
 };
+
 
 export default function LessonMathBlock({ slug }: { slug: string }) {
   const math = mathMap[slug];
