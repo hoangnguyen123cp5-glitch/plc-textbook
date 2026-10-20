@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 
 // next/dynamic requires options to be inline object literals (not variables)
+const Lesson01InteractiveHub = dynamic(() => import('./Lesson01InteractiveHub'),                          { ssr: false });
 const ScanCycleAnimation   = dynamic(() => import('./LessonAnimationsNew').then(m => m.ScanCycleAnimation),   { ssr: false });
 const S7RackExplorer       = dynamic(() => import('./S7RackExplorer'),                                        { ssr: false });
 const TIAProjectSteps      = dynamic(() => import('./LessonAnimationsNew').then(m => m.TIAProjectSteps),      { ssr: false });
@@ -20,7 +21,7 @@ const DiagnosticPanel      = dynamic(() => import('./LessonAnimationsNew').then(
 const CapstoneArchitecture = dynamic(() => import('./LessonAnimationsNew').then(m => m.CapstoneArchitecture), { ssr: false });
 
 const map: Record<string, React.ReactElement> = {
-  '01-programmable-control':   <ScanCycleAnimation />,
+  '01-programmable-control':   <Lesson01InteractiveHub />,
   '02-s7-1200-tia-portal':     <S7RackExplorer />,
   // '03-tia-portal' → đã gộp vào '02-s7-1200-tia-portal' (<TIAProjectSteps /> chưa dùng)
   '03-binary-operations':      <TIALadderAnimation />,
