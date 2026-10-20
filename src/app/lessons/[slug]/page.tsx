@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getLessonBySlug, lessons } from '@/lib/lessons';
 import { lessonContent } from '@/data/lesson-content';
 import LessonAnimationWrapper from '@/components/animations/LessonAnimationWrapper';
+import LessonSectionAnimation from '@/components/animations/LessonSectionAnimation';
 import LessonMathBlock from '@/components/ui/LessonMathBlock';
 import LessonDownloads from '@/components/content/LessonDownloads';
 import LessonVideo from '@/components/content/LessonVideo';
@@ -141,6 +142,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
                           💡 {sec.note}
                         </div>
                       )}
+                      <LessonSectionAnimation slug={slug} sectionIndex={i} sectionTitle={sec.title} />
                     </div>
                   </div>
                 ))}
