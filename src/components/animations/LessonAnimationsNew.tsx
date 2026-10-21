@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 
 /* ─────────────────────────────────────────────
-   L02 — đã chuyển sang ./S7RackExplorer.tsx
-   (hình chiếu đứng rack S7-1200 vẽ đúng tỉ lệ mm)
+   L02 — Moved to ./S7RackExplorer.tsx
+   (front elevation drawing of real S7-1200 rack in mm)
 ───────────────────────────────────────────── */
 
 /* ─────────────────────────────────────────────
@@ -14,19 +14,19 @@ export function TIAProjectSteps() {
   const [step, setStep] = useState(0);
 
   const steps = [
-    { icon: '📁', title: 'Tạo Project mới', color: '#1a3a6b', detail: 'File → New Project → Đặt tên → chọn đường dẫn lưu → Create', tip: 'Đặt tên project không dấu, không khoảng trắng. Ví dụ: Motor_Control_v1' },
-    { icon: '🖥️', title: 'Thêm thiết bị (CPU)', color: '#3b82f6', detail: 'Add new device → PLC → SIMATIC S7-1200 → CPU 1214C DC/DC/DC → Add', tip: 'Chọn đúng Order Number của CPU thật trong lab. Ví dụ: 6ES7 214-1AG40-0XB0' },
-    { icon: '⚙️', title: 'Cấu hình phần cứng', color: '#f59e0b', detail: 'Device Configuration → kéo module mở rộng vào slot → cấu hình địa chỉ IP', tip: 'IP mặc định S7-1200: 192.168.0.1. Đặt cùng subnet với máy tính lập trình.' },
-    { icon: '🏷️', title: 'Tạo biến (Tag Table)', color: '#8b5cf6', detail: 'PLC tags → Default tag table → thêm tên biến, kiểu dữ liệu, địa chỉ', tip: 'Dùng tên có nghĩa: Motor_Start thay vì M0.0. Giúp debug dễ hơn rất nhiều.' },
-    { icon: '📝', title: 'Viết chương trình OB1', color: '#16a34a', detail: 'Program blocks → Main (OB1) → thêm networks → lập trình LAD/FBD/SCL', tip: 'Mỗi network giải quyết một chức năng. Thêm comment để dễ bảo trì.' },
-    { icon: '🔨', title: 'Compile & Download', color: '#ef4444', detail: 'Compile (Ctrl+Shift+B) → kiểm tra lỗi → Download to device (F8) → RUN', tip: 'Luôn compile trước khi download. Đọc kỹ warning — một số warning là lỗi nghiêm trọng.' },
-    { icon: '👁️', title: 'Monitor & Debug', color: '#0891b2', detail: 'Go Online → Monitor all → xem giá trị biến thay đổi → Watch Table', tip: 'Dùng Modify (Force) để test từng phần riêng lẻ. Cẩn thận khi force trên thiết bị thật!' },
+    { icon: '📁', title: 'Create New Project', color: '#1a3a6b', detail: 'File → New Project → Enter project name → Select directory path → Click Create', tip: 'Use alphanumeric naming without spaces or special characters (e.g., Motor_Control_v1).' },
+    { icon: '🖥️', title: 'Add Device (CPU)', color: '#3b82f6', detail: 'Add new device → Controllers → SIMATIC S7-1200 → CPU 1214C DC/DC/DC → Add', tip: 'Select the exact Article Number (MLFB) matching your lab hardware (e.g., 6ES7 214-1AG40-0XB0).' },
+    { icon: '⚙️', title: 'Hardware Configuration', color: '#f59e0b', detail: 'Device Configuration → Drag expansion modules into rack slots → Assign IP address & subnet', tip: 'Default S7-1200 IP is 192.168.0.1. Verify that your engineering PC is on the same subnet.' },
+    { icon: '🏷️', title: 'Define Tags (Tag Table)', color: '#8b5cf6', detail: 'PLC tags → Default tag table → Enter symbolic tag name, data type, and absolute address', tip: 'Always use meaningful symbolic identifiers like Motor_Start instead of raw addresses like %M0.0.' },
+    { icon: '📝', title: 'Program Organization (OB1)', color: '#16a34a', detail: 'Program blocks → Main (OB1) → Add networks → Implement ladder logic (LAD/FBD/SCL)', tip: 'Isolate distinct control functions into dedicated networks and provide clear rung comments.' },
+    { icon: '🔨', title: 'Compile & Download', color: '#ef4444', detail: 'Compile (Ctrl+Shift+B) → Verify 0 errors → Download to device (Ctrl+D) → Switch to RUN', tip: 'Always perform a full rebuild before downloading. Examine all warnings closely.' },
+    { icon: '👁️', title: 'Monitor & Commission', color: '#0891b2', detail: 'Go Online → Monitor all (glasses icon) → Observe live ladder status → Open Watch Table', tip: 'Use Watch Tables for controlled signal verification. Exercise extreme care when forcing physical outputs!' },
   ];
 
   return (
     <div style={{ background: '#fafafa', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '16px' }}>
       <div style={{ fontSize: '13px', fontWeight: 700, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '16px' }}>
-        💻 Quy trình làm việc với TIA Portal
+        💻 TIA Portal Engineering Workflow
       </div>
 
       {/* Step progress bar */}
@@ -59,12 +59,12 @@ export function TIAProjectSteps() {
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '14px' }}>
         <button onClick={() => setStep(s => Math.max(0, s - 1))} disabled={step === 0}
           style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid #e5e5e5', background: step === 0 ? '#f5f5f5' : '#fff', color: step === 0 ? '#ccc' : '#374151', cursor: step === 0 ? 'default' : 'pointer', fontWeight: 600, fontSize: '13px' }}>
-          ← Trước
+          ← Previous
         </button>
         <span style={{ fontSize: '12px', color: '#9ca3af', alignSelf: 'center' }}>{step + 1} / {steps.length}</span>
         <button onClick={() => setStep(s => Math.min(steps.length - 1, s + 1))} disabled={step === steps.length - 1}
           style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid #e5e5e5', background: step === steps.length - 1 ? '#f5f5f5' : '#1a3a6b', color: step === steps.length - 1 ? '#ccc' : '#fff', cursor: step === steps.length - 1 ? 'default' : 'pointer', fontWeight: 600, fontSize: '13px' }}>
-          Tiếp →
+          Next →
         </button>
       </div>
     </div>
@@ -92,7 +92,7 @@ export function DataTypeExplorer() {
   return (
     <div style={{ background: '#fafafa', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '16px' }}>
       <div style={{ fontSize: '13px', fontWeight: 700, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '16px' }}>
-        🔢 Kiểu dữ liệu — Tràn số (Overflow) Demo
+        🔢 Data Types & Arithmetic Overflow Simulator
       </div>
 
       {/* Type bars */}
@@ -108,7 +108,7 @@ export function DataTypeExplorer() {
                 <div style={{ height: '100%', width: `${pct}%`, background: overflow ? '#ef4444' : t.color, borderRadius: '4px', transition: 'width 0.2s' }} />
               </div>
               <span style={{ fontSize: '11px', fontWeight: 700, minWidth: '80px', textAlign: 'right', color: overflow ? '#ef4444' : t.color }}>
-                {overflow ? '⚠️ TRÀN SỐ' : (t.name === 'REAL' ? result.toFixed(1) : result)}
+                {overflow ? '⚠️ OVERFLOW' : (t.name === 'REAL' ? result.toFixed(1) : result)}
               </span>
             </div>
           );
@@ -119,18 +119,18 @@ export function DataTypeExplorer() {
       <div style={{ background: '#fff', border: '1px solid #e5e5e5', borderRadius: '10px', padding: '16px' }}>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
           <input type="number" value={val} onChange={e => setVal(Number(e.target.value))}
-            style={{ width: '100px', padding: '8px', borderRadius: '6px', border: '1px solid #e5e5e5', fontSize: '14px', fontWeight: 700, textAlign: 'center' }} />
+            style={{ width: '100px', padding: '6px 10px', border: '1px solid #e5e5e5', borderRadius: '6px', fontSize: '14px', fontWeight: 700 }} />
           <div style={{ display: 'flex', gap: '4px' }}>
-            <button onClick={() => setOp('add')} style={{ padding: '8px 14px', borderRadius: '6px', border: 'none', background: op === 'add' ? '#1a3a6b' : '#f0f0f0', color: op === 'add' ? '#fff' : '#374151', fontWeight: 700, cursor: 'pointer', fontSize: '16px' }}>+</button>
-            <button onClick={() => setOp('mul')} style={{ padding: '8px 14px', borderRadius: '6px', border: 'none', background: op === 'mul' ? '#1a3a6b' : '#f0f0f0', color: op === 'mul' ? '#fff' : '#374151', fontWeight: 700, cursor: 'pointer', fontSize: '16px' }}>×</button>
+            <button onClick={() => setOp('add')} style={{ padding: '6px 12px', borderRadius: '6px', border: 'none', background: op === 'add' ? '#1a3a6b' : '#f0f0f0', color: op === 'add' ? '#fff' : '#374151', cursor: 'pointer', fontWeight: 700 }}>+</button>
+            <button onClick={() => setOp('mul')} style={{ padding: '6px 12px', borderRadius: '6px', border: 'none', background: op === 'mul' ? '#1a3a6b' : '#f0f0f0', color: op === 'mul' ? '#fff' : '#374151', cursor: 'pointer', fontWeight: 700 }}>×</button>
           </div>
           <input type="number" value={b} onChange={e => setB(Number(e.target.value))}
-            style={{ width: '100px', padding: '8px', borderRadius: '6px', border: '1px solid #e5e5e5', fontSize: '14px', fontWeight: 700, textAlign: 'center' }} />
+            style={{ width: '100px', padding: '6px 10px', border: '1px solid #e5e5e5', borderRadius: '6px', fontSize: '14px', fontWeight: 700 }} />
           <span style={{ fontSize: '16px', fontWeight: 700 }}>=</span>
-          <span style={{ fontSize: '18px', fontWeight: 800, color: Math.abs(result) > 32767 ? '#ef4444' : '#16a34a' }}>{result.toLocaleString()}</span>
+          <span style={{ fontSize: '18px', fontWeight: 800, color: '#1a3a6b' }}>{result.toLocaleString()}</span>
         </div>
-        <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '8px' }}>
-          Thử nhập số lớn để xem kiểu dữ liệu nào bị tràn (màu đỏ ⚠️)
+        <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '8px' }}>
+          Test large arithmetic operands to observe data type limit saturation and overflow (highlighted in red ⚠️).
         </div>
       </div>
     </div>
@@ -153,7 +153,7 @@ export function FCFBVisualizer() {
   return (
     <div style={{ background: '#fafafa', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '16px' }}>
       <div style={{ fontSize: '13px', fontWeight: 700, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '16px' }}>
-        🧩 FC vs FB — Bộ nhớ hoạt động
+        🧩 FC vs FB — Execution & Memory Architecture
       </div>
 
       {/* Toggle */}
@@ -170,8 +170,8 @@ export function FCFBVisualizer() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
         <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '10px', padding: '14px' }}>
           <div style={{ fontSize: '11px', fontWeight: 700, color: '#3b82f6', marginBottom: '8px' }}>📥 INPUT / TEMP</div>
-          <div style={{ fontSize: '13px', color: '#374151' }}>Lần gọi: <strong>{call}</strong></div>
-          <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>Giá trị tạm — xóa sau mỗi lần gọi</div>
+          <div style={{ fontSize: '13px', color: '#374151' }}>Execution Calls: <strong>{call}</strong></div>
+          <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>Temporary memory — cleared upon block exit</div>
           <div style={{ marginTop: '8px', height: '8px', background: '#bfdbfe', borderRadius: '4px', overflow: 'hidden' }}>
             <div style={{ height: '100%', width: call > 0 ? '100%' : '0%', background: '#3b82f6', transition: 'width 0.3s' }} />
           </div>
@@ -179,31 +179,31 @@ export function FCFBVisualizer() {
 
         <div style={{ background: mode === 'fb' ? '#fffbeb' : '#f9fafb', border: `1px solid ${mode === 'fb' ? '#fde68a' : '#e5e5e5'}`, borderRadius: '10px', padding: '14px', transition: 'all 0.3s' }}>
           <div style={{ fontSize: '11px', fontWeight: 700, color: mode === 'fb' ? '#f59e0b' : '#9ca3af', marginBottom: '8px' }}>
-            {mode === 'fb' ? '💾 STATIC (Instance DB)' : '🚫 STATIC (không có)'}
+            {mode === 'fb' ? '💾 STATIC (Instance DB)' : '🚫 STATIC (None)'}
           </div>
           {mode === 'fb' ? (
             <>
-              <div style={{ fontSize: '13px', color: '#374151' }}>Tổng tích lũy: <strong style={{ color: '#f59e0b' }}>{staticVal}</strong></div>
-              <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>Giá trị giữ nguyên giữa các lần gọi!</div>
+              <div style={{ fontSize: '13px', color: '#374151' }}>Accumulated Total: <strong style={{ color: '#f59e0b' }}>{staticVal}</strong></div>
+              <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>Values persist across subsequent scans!</div>
               <div style={{ marginTop: '8px', height: '8px', background: '#fde68a', borderRadius: '4px', overflow: 'hidden' }}>
                 <div style={{ height: '100%', width: `${Math.min(100, staticVal)}%`, background: '#f59e0b', transition: 'width 0.3s' }} />
               </div>
             </>
           ) : (
-            <div style={{ fontSize: '12px', color: '#c4c4c4', marginTop: '4px' }}>FC không có bộ nhớ tĩnh</div>
+            <div style={{ fontSize: '12px', color: '#c4c4c4', marginTop: '4px' }}>FC has no internal static memory</div>
           )}
         </div>
       </div>
 
       <button onClick={handleCall}
         style={{ width: '100%', padding: '12px', borderRadius: '10px', border: 'none', background: mode === 'fc' ? '#3b82f6' : '#f59e0b', color: '#fff', fontWeight: 700, fontSize: '14px', cursor: 'pointer' }}>
-        ▶ Gọi {mode.toUpperCase()} lần nữa (đã gọi: {call} lần)
+        ▶ Execute {mode.toUpperCase()} Call #{call + 1}
       </button>
 
       <div style={{ marginTop: '12px', fontSize: '13px', color: '#374151', padding: '10px 14px', background: '#f9fafb', borderRadius: '8px', borderLeft: `3px solid ${mode === 'fc' ? '#3b82f6' : '#f59e0b'}` }}>
         {mode === 'fc'
-          ? '⚡ FC: Mỗi lần gọi là một tờ giấy trắng — không nhớ lần trước.'
-          : '🗃️ FB: Instance DB giống "bộ nhớ riêng" — giá trị static tích lũy qua từng lần gọi.'}
+          ? '⚡ FC: Stateless calculation block — does not retain variable states between calls.'
+          : '🗃️ FB: Stateful block with an Instance DB — retains all static variables across consecutive cycles.'}
       </div>
     </div>
   );
@@ -234,7 +234,7 @@ export function PWMVisualizer() {
         </div>
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-            <span style={{ fontSize: '13px', fontWeight: 600 }}>Tần số</span>
+            <span style={{ fontSize: '13px', fontWeight: 600 }}>Frequency</span>
             <span style={{ fontSize: '16px', fontWeight: 800, color: '#3b82f6' }}>{freq}Hz</span>
           </div>
           <input type="range" min={100} max={10000} step={100} value={freq} onChange={e => setFreq(Number(e.target.value))} style={{ width: '100%', accentColor: '#3b82f6' }} />
@@ -277,9 +277,9 @@ export function PWMVisualizer() {
       {/* Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px' }}>
         {[
-          { l: 'Thời gian ON', v: `${(period * duty / 100).toFixed(2)}ms`, c: '#ef4444' },
-          { l: 'Thời gian OFF', v: `${(period * (100 - duty) / 100).toFixed(2)}ms`, c: '#6b7280' },
-          { l: 'Điện áp TB', v: `${(24 * duty / 100).toFixed(1)}V`, c: '#f59e0b' },
+          { l: 'ON Time', v: `${(period * duty / 100).toFixed(2)}ms`, c: '#ef4444' },
+          { l: 'OFF Time', v: `${(period * (100 - duty) / 100).toFixed(2)}ms`, c: '#6b7280' },
+          { l: 'Average Voltage', v: `${(24 * duty / 100).toFixed(1)}V`, c: '#f59e0b' },
         ].map(s => (
           <div key={s.l} style={{ textAlign: 'center', padding: '10px', background: '#fff', borderRadius: '8px', border: '1px solid #e5e5e5' }}>
             <div style={{ fontSize: '18px', fontWeight: 800, color: s.c }}>{s.v}</div>
@@ -320,14 +320,14 @@ export function PIDVisualizer() {
   return (
     <div style={{ background: '#fafafa', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '16px' }}>
       <div style={{ fontSize: '13px', fontWeight: 700, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '16px' }}>
-        🎯 PID Response — Điều chỉnh thông số
+        🎯 PID Step Response & Parameter Tuning
       </div>
 
       {/* PID gains */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-        {[{ l: 'Kp (Tỷ lệ)', v: kp, set: setKp, min: 0.1, max: 10, step: 0.1, c: '#3b82f6' },
-          { l: 'Ki (Tích phân)', v: ki, set: setKi, min: 0, max: 5, step: 0.1, c: '#f59e0b' },
-          { l: 'Kd (Vi phân)', v: kd, set: setKd, min: 0, max: 2, step: 0.05, c: '#ef4444' }
+        {[{ l: 'Kp (Proportional)', v: kp, set: setKp, min: 0.1, max: 10, step: 0.1, c: '#3b82f6' },
+          { l: 'Ki (Integral)', v: ki, set: setKi, min: 0, max: 5, step: 0.1, c: '#f59e0b' },
+          { l: 'Kd (Derivative)', v: kd, set: setKd, min: 0, max: 2, step: 0.05, c: '#ef4444' }
         ].map(g => (
           <div key={g.l}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
@@ -372,9 +372,9 @@ export function PIDVisualizer() {
       {/* Stats */}
       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
         {[
-          { l: 'Overshoot', v: maxOvershoot > sp + 1 ? `${((maxOvershoot - sp) / sp * 100).toFixed(1)}%` : 'Không', c: maxOvershoot > sp * 1.1 ? '#ef4444' : '#16a34a' },
-          { l: 'Thời gian ổn định', v: settled > 0 ? `${settled * 0.1}s` : '>6s', c: settled < 30 ? '#16a34a' : '#f59e0b' },
-          { l: 'Trạng thái', v: Math.abs(points[points.length - 1] - sp) < 2 ? 'Ổn định ✓' : 'Chưa ổn', c: Math.abs(points[points.length - 1] - sp) < 2 ? '#16a34a' : '#ef4444' },
+          { l: 'Overshoot', v: maxOvershoot > sp + 1 ? `${((maxOvershoot - sp) / sp * 100).toFixed(1)}%` : 'None', c: maxOvershoot > sp * 1.1 ? '#ef4444' : '#16a34a' },
+          { l: 'Settling Time', v: settled > 0 ? `${settled * 0.1}s` : '>6s', c: settled < 30 ? '#16a34a' : '#f59e0b' },
+          { l: 'Loop Status', v: Math.abs(points[points.length - 1] - sp) < 2 ? 'Stable ✓' : 'Settling...', c: Math.abs(points[points.length - 1] - sp) < 2 ? '#16a34a' : '#ef4444' },
         ].map(s => (
           <div key={s.l} style={{ flex: 1, minWidth: '80px', padding: '10px', background: '#fff', borderRadius: '8px', border: '1px solid #e5e5e5', textAlign: 'center' }}>
             <div style={{ fontSize: '14px', fontWeight: 800, color: s.c }}>{s.v}</div>
@@ -421,11 +421,11 @@ export function ProfinetDemo() {
     <div style={{ background: '#fafafa', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '16px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
         <span style={{ fontSize: '13px', fontWeight: 700, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-          🌐 PROFINET Network — Mô phỏng
+          🌐 PROFINET Network — Real-Time IO Simulation
         </span>
         <button onClick={() => setRunning(r => !r)}
           style={{ fontSize: '12px', padding: '4px 12px', borderRadius: '6px', border: '1px solid #e5e5e5', background: running ? '#fee2e2' : '#dcfce7', color: running ? '#dc2626' : '#16a34a', cursor: 'pointer', fontWeight: 600 }}>
-          {running ? '⏸ Pause' : '▶ Bắt đầu'}
+          {running ? '⏸ Pause' : '▶ Start'}
         </button>
       </div>
 
@@ -453,7 +453,7 @@ export function ProfinetDemo() {
       {/* Packet log */}
       <div style={{ background: '#0f172a', borderRadius: '10px', padding: '10px 12px', minHeight: '60px' }}>
         {packets.length === 0 ? (
-          <div style={{ color: '#4b5563', fontSize: '12px', textAlign: 'center', paddingTop: '8px' }}>Nhấn ▶ Bắt đầu để xem packet PROFINET</div>
+          <div style={{ color: '#4b5563', fontSize: '12px', textAlign: 'center', paddingTop: '8px' }}>Click ▶ Start to observe cyclic PROFINET real-time data packets</div>
         ) : packets.map(p => (
           <div key={p.id} style={{ fontSize: '11px', color: '#22c55e', fontFamily: 'monospace', marginBottom: '2px' }}>
             [{String(p.id).padStart(4, '0')}] {p.from} → {p.to} <span style={{ color: '#60a5fa' }}>PROFINET cyclic data frame</span>
@@ -482,21 +482,21 @@ export function HMIScreenBuilder() {
   return (
     <div style={{ background: '#fafafa', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '16px' }}>
       <div style={{ fontSize: '13px', fontWeight: 700, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '16px' }}>
-        🖥️ HMI Simulator — Màn hình vận hành mẫu
+        🖥️ HMI Simulator — Operator Interface Mockup
       </div>
 
       {/* HMI Screen */}
       <div style={{ background: '#1a1a2e', borderRadius: '12px', padding: '16px', border: '3px solid #374151', marginBottom: '12px' }}>
         {/* HMI Title bar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', paddingBottom: '10px', borderBottom: '1px solid #374151' }}>
-          <span style={{ color: '#94a3b8', fontSize: '12px', fontWeight: 700 }}>PLANT OVERVIEW — Xưởng A</span>
+          <span style={{ color: '#94a3b8', fontSize: '12px', fontWeight: 700 }}>PLANT OVERVIEW — Workshop A</span>
           <span style={{ color: '#22c55e', fontSize: '11px' }}>● ONLINE</span>
         </div>
 
         {/* Alarm banner */}
         {showAlarm && (
           <div style={{ background: '#7f1d1d', border: '1px solid #ef4444', borderRadius: '6px', padding: '8px 12px', marginBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ color: '#fca5a5', fontSize: '12px', fontWeight: 700 }}>⚠️ ALARM: Nhiệt độ cao — {temp}°C {'>'} 90°C</span>
+            <span style={{ color: '#fca5a5', fontSize: '12px', fontWeight: 700 }}>⚠️ ALARM: High Temperature Threshold Exceeded — {temp}°C {'>'} 90°C</span>
             <button onClick={() => setShowAlarm(false)} style={{ background: 'none', border: '1px solid #ef4444', color: '#fca5a5', padding: '2px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '11px' }}>ACK</button>
           </div>
         )}
@@ -504,14 +504,14 @@ export function HMIScreenBuilder() {
         {/* Process values */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
           <div style={{ background: '#0f172a', borderRadius: '8px', padding: '12px' }}>
-            <div style={{ color: '#60a5fa', fontSize: '10px', fontWeight: 700, marginBottom: '4px' }}>🌡️ NHIỆT ĐỘ</div>
+            <div style={{ color: '#60a5fa', fontSize: '10px', fontWeight: 700, marginBottom: '4px' }}>🌡️ TEMPERATURE</div>
             <div style={{ color: temp > 90 ? '#ef4444' : '#22c55e', fontSize: '28px', fontWeight: 800 }}>{temp}°C</div>
             <div style={{ height: '6px', background: '#1e293b', borderRadius: '3px', marginTop: '6px' }}>
               <div style={{ height: '100%', width: `${temp}%`, background: temp > 90 ? '#ef4444' : '#22c55e', borderRadius: '3px', transition: 'width 0.3s' }} />
             </div>
           </div>
           <div style={{ background: '#0f172a', borderRadius: '8px', padding: '12px' }}>
-            <div style={{ color: '#60a5fa', fontSize: '10px', fontWeight: 700, marginBottom: '4px' }}>💧 MỨC NƯỚC</div>
+            <div style={{ color: '#60a5fa', fontSize: '10px', fontWeight: 700, marginBottom: '4px' }}>💧 LIQUID LEVEL</div>
             <div style={{ color: level < 20 ? '#ef4444' : '#22c55e', fontSize: '28px', fontWeight: 800 }}>{level}%</div>
             <div style={{ height: '6px', background: '#1e293b', borderRadius: '3px', marginTop: '6px' }}>
               <div style={{ height: '100%', width: `${level}%`, background: '#3b82f6', borderRadius: '3px', transition: 'width 0.3s' }} />
@@ -527,7 +527,7 @@ export function HMIScreenBuilder() {
           </button>
           <button onClick={() => setPump(p => !p)}
             style={{ flex: 1, padding: '10px 8px', borderRadius: '8px', border: `2px solid ${pump ? '#22c55e' : '#4b5563'}`, background: pump ? '#14532d' : '#1e293b', color: pump ? '#22c55e' : '#9ca3af', fontWeight: 700, fontSize: '12px', cursor: 'pointer', transition: 'all 0.2s' }}>
-            {pump ? '🟢' : '🔴'} BƠM
+            {pump ? '🟢' : '🔴'} PUMP
           </button>
         </div>
       </div>
@@ -535,12 +535,12 @@ export function HMIScreenBuilder() {
       {/* Controls for simulation */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
         <div>
-          <div style={{ fontSize: '12px', fontWeight: 600, marginBottom: '4px' }}>Điều chỉnh nhiệt độ ({temp}°C)</div>
+          <div style={{ fontSize: '12px', fontWeight: 600, marginBottom: '4px' }}>Adjust Temperature ({temp}°C)</div>
           <input type="range" min={20} max={110} value={temp} onChange={e => setTemp(Number(e.target.value))} style={{ width: '100%', accentColor: '#ef4444' }} />
-          <div style={{ fontSize: '11px', color: '#9ca3af' }}>Kéo qua 90°C để xem alarm</div>
+          <div style={{ fontSize: '11px', color: '#9ca3af' }}>Drag slider above 90°C to trigger high alarm</div>
         </div>
         <div>
-          <div style={{ fontSize: '12px', fontWeight: 600, marginBottom: '4px' }}>Mức nước ({level}%)</div>
+          <div style={{ fontSize: '12px', fontWeight: 600, marginBottom: '4px' }}>Liquid Level ({level}%)</div>
           <input type="range" min={0} max={100} value={level} onChange={e => setLevel(Number(e.target.value))} style={{ width: '100%', accentColor: '#3b82f6' }} />
         </div>
       </div>
@@ -555,17 +555,17 @@ export function SCADAPyramid() {
   const [selected, setSelected] = useState<number | null>(null);
 
   const levels = [
-    { label: 'ERP / MES', sub: 'SAP, Oracle — Quản lý doanh nghiệp', color: '#8b5cf6', w: 100, icon: '🏢', detail: 'Lập kế hoạch sản xuất, quản lý nguồn lực, phân tích kinh doanh. Kết nối với SCADA qua OPC UA hoặc REST API.' },
-    { label: 'SCADA', sub: 'WinCC, Ignition — Giám sát toàn nhà máy', color: '#ef4444', w: 80, icon: '📡', detail: 'Giám sát tổng thể, lưu trữ lịch sử dữ liệu, báo cáo, quản lý alarm. Chạy trên PC server trong phòng điều khiển.' },
-    { label: 'HMI', sub: 'KTP700, TP1500 — Giao diện vận hành', color: '#f59e0b', w: 60, icon: '🖥️', detail: 'Màn hình cảm ứng tại chỗ để vận hành máy móc. Hiển thị trạng thái, nhận lệnh từ operator.' },
-    { label: 'PLC / DCS', sub: 'S7-1200/1500 — Điều khiển thời gian thực', color: '#3b82f6', w: 70, icon: '🟦', detail: 'Xử lý logic điều khiển theo chu kỳ ms. Nhận tín hiệu từ sensor, điều khiển actuator. Đây là "não" của hệ thống.' },
-    { label: 'Field Devices', sub: 'Sensor, Motor, Van — Thiết bị thực tế', color: '#16a34a', w: 100, icon: '⚙️', detail: 'Cảm biến đo lường (nhiệt độ, áp suất, lưu lượng) và thiết bị chấp hành (motor, van, bơm) tại hiện trường.' },
+    { label: 'ERP / MES', sub: 'SAP, Oracle — Enterprise Management', color: '#8b5cf6', w: 100, icon: '🏢', detail: 'Production scheduling, material resource planning, KPI reporting, and ERP integration via OPC UA and REST APIs.' },
+    { label: 'SCADA', sub: 'WinCC, Ignition — Plant-Wide Supervision', color: '#ef4444', w: 80, icon: '📡', detail: 'Centralized supervision, long-term historical trending, alarm management, and multi-station plant dispatching.' },
+    { label: 'HMI', sub: 'KTP700, TP1500 — Operator Interface', color: '#f59e0b', w: 60, icon: '🖥️', detail: 'Local touchscreen panel for machine control, parameter adjustment, manual override, and immediate fault visualization.' },
+    { label: 'PLC / DCS', sub: 'S7-1200 / S7-1500 — Real-Time Control', color: '#3b82f6', w: 70, icon: '🟦', detail: 'Deterministic cyclic execution of interlocks, PID loops, motion commands, and I/O image updates.' },
+    { label: 'Field Devices', sub: 'Sensors, Motors, Valves — Physical Layer', color: '#16a34a', w: 100, icon: '⚙️', detail: 'Physical instrumentation (RTDs, pressure transmitters, flowmeters) and prime movers (motors, VFDs, pneumatic valves).' },
   ];
 
   return (
     <div style={{ background: '#fafafa', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '16px' }}>
       <div style={{ fontSize: '13px', fontWeight: 700, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '16px' }}>
-        📡 Tháp tự động hóa — Click để xem chi tiết
+        📡 Automation Hierarchy Pyramid (ISA-95) — Click to Inspect
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '16px' }}>
@@ -599,30 +599,30 @@ export function DiagnosticPanel() {
   const [scenario, setScenario] = useState(0);
 
   const scenarios = [
-    { label: 'CPU bình thường', leds: [
-      { name: 'RUN/STOP', color: '#16a34a', label: 'RUN — Xanh lá' },
-      { name: 'ERROR', color: '#e5e5e5', label: 'Không lỗi' },
-      { name: 'MAINT', color: '#e5e5e5', label: 'Không bảo trì' },
-      { name: 'LINK', color: '#16a34a', label: 'PROFINET kết nối' },
-    ], desc: 'CPU hoạt động bình thường. RUN xanh, ERROR tắt.' },
+    { label: 'Normal CPU Run Mode', leds: [
+      { name: 'RUN/STOP', color: '#16a34a', label: 'RUN — Solid Green' },
+      { name: 'ERROR', color: '#e5e5e5', label: 'No Fault (Off)' },
+      { name: 'MAINT', color: '#e5e5e5', label: 'No Maintenance (Off)' },
+      { name: 'LINK', color: '#16a34a', label: 'PROFINET Connected' },
+    ], desc: 'CPU is executing OB1 cyclic program normally without errors. All diagnostic checks healthy.' },
     { label: 'CPU Stop Mode', leds: [
-      { name: 'RUN/STOP', color: '#f59e0b', label: 'STOP — Vàng' },
-      { name: 'ERROR', color: '#e5e5e5', label: 'Không lỗi' },
-      { name: 'MAINT', color: '#e5e5e5', label: 'Không bảo trì' },
+      { name: 'RUN/STOP', color: '#f59e0b', label: 'STOP — Solid Amber' },
+      { name: 'ERROR', color: '#e5e5e5', label: 'No Fault (Off)' },
+      { name: 'MAINT', color: '#e5e5e5', label: 'No Maintenance (Off)' },
       { name: 'LINK', color: '#16a34a', label: 'PROFINET OK' },
-    ], desc: 'CPU ở chế độ STOP. Chương trình không chạy. Kiểm tra lý do: download, error, hoặc manual stop.' },
-    { label: 'Lỗi chương trình', leds: [
-      { name: 'RUN/STOP', color: '#ef4444', label: 'ERROR — Đỏ nhấp nháy' },
-      { name: 'ERROR', color: '#ef4444', label: 'ERROR — Đỏ' },
-      { name: 'MAINT', color: '#e5e5e5', label: 'Không bảo trì' },
+    ], desc: 'CPU is in STOP mode. User program is not running. Outputs are held in safe configured state.' },
+    { label: 'Program / Memory Error', leds: [
+      { name: 'RUN/STOP', color: '#ef4444', label: 'FAULT — Flashing Red' },
+      { name: 'ERROR', color: '#ef4444', label: 'ERROR — Solid Red' },
+      { name: 'MAINT', color: '#e5e5e5', label: 'No Maintenance' },
       { name: 'LINK', color: '#16a34a', label: 'PROFINET OK' },
-    ], desc: 'Lỗi nghiêm trọng trong chương trình (ví dụ: chia cho 0, truy cập vùng nhớ không hợp lệ). Xem Diagnostic Buffer.' },
-    { label: 'Mất kết nối mạng', leds: [
-      { name: 'RUN/STOP', color: '#16a34a', label: 'RUN — Xanh lá' },
-      { name: 'ERROR', color: '#e5e5e5', label: 'Không lỗi' },
-      { name: 'MAINT', color: '#f59e0b', label: 'MAINT — Cần chú ý' },
-      { name: 'LINK', color: '#ef4444', label: 'LINK — Mất kết nối' },
-    ], desc: 'CPU đang chạy nhưng mất kết nối PROFINET với thiết bị nào đó. Kiểm tra cáp mạng và địa chỉ IP.' },
+    ], desc: 'Fatal program execution fault (e.g., division by zero, cycle timeout, memory out-of-bounds). Review Diagnostic Buffer.' },
+    { label: 'Network Disconnection', leds: [
+      { name: 'RUN/STOP', color: '#16a34a', label: 'RUN — Solid Green' },
+      { name: 'ERROR', color: '#e5e5e5', label: 'No Fault (Off)' },
+      { name: 'MAINT', color: '#f59e0b', label: 'MAINT — Attention Needed' },
+      { name: 'LINK', color: '#ef4444', label: 'LINK — Disconnected (Red)' },
+    ], desc: 'CPU is running but PROFINET link to distributed IO or HMI is lost. Inspect network patch cables and switch ports.' },
   ];
 
   const sc = scenarios[scenario];
@@ -630,7 +630,7 @@ export function DiagnosticPanel() {
   return (
     <div style={{ background: '#fafafa', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '16px' }}>
       <div style={{ fontSize: '13px', fontWeight: 700, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '16px' }}>
-        🔍 Đèn LED CPU S7-1200 — Đọc trạng thái
+        🔍 S7-1200 CPU Status LEDs & Fault Diagnostics
       </div>
 
       {/* Scenario selector */}
@@ -685,9 +685,9 @@ export function CapstoneArchitecture() {
     { id: 'di', label: 'DI Sensors', icon: '📥', color: '#3b82f6', required: true },
     { id: 'do', label: 'DO Actuators', icon: '📤', color: '#ef4444', required: true },
     { id: 'ai', label: 'AI Sensors (4–20mA)', icon: '📊', color: '#16a34a', required: false },
-    { id: 'ao', label: 'AO — Biến tần', icon: '🎛️', color: '#8b5cf6', required: false },
-    { id: 'scada', label: 'SCADA PC', icon: '📡', color: '#0891b2', required: false },
-    { id: 'safety', label: 'Safety E-Stop', icon: '🔴', color: '#dc2626', required: false },
+    { id: 'ao', label: 'AO — VFD Inverter (0–10V)', icon: '🎛️', color: '#8b5cf6', required: false },
+    { id: 'scada', label: 'SCADA Host PC', icon: '📡', color: '#0891b2', required: false },
+    { id: 'safety', label: 'Emergency Stop (E-Stop)', icon: '🔴', color: '#dc2626', required: false },
   ];
 
   const score = checked.length;
@@ -696,11 +696,11 @@ export function CapstoneArchitecture() {
   return (
     <div style={{ background: '#fafafa', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '16px' }}>
       <div style={{ fontSize: '13px', fontWeight: 700, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '16px' }}>
-        🏆 Capstone — Xây dựng kiến trúc hệ thống
+        🏆 Capstone — System Architecture Designer
       </div>
 
       <p style={{ fontSize: '13px', color: '#374151', marginBottom: '16px' }}>
-        Chọn các thành phần cần thiết cho dự án tự động hóa của bạn. Bắt buộc ✔ là những thành phần không thể thiếu.
+        Select the components required for your automation project. Mandatory (✔) components are critical for core system operation.
       </p>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '16px' }}>
@@ -712,7 +712,7 @@ export function CapstoneArchitecture() {
               <span style={{ fontSize: '20px' }}>{c.icon}</span>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '12px', fontWeight: 700, color: on ? c.color : '#374151' }}>{c.label}</div>
-                {c.required && <div style={{ fontSize: '10px', color: '#ef4444', fontWeight: 600 }}>Bắt buộc ✔</div>}
+                {c.required && <div style={{ fontSize: '10px', color: '#ef4444', fontWeight: 600 }}>Mandatory ✔</div>}
               </div>
               <div style={{ width: 20, height: 20, borderRadius: '4px', border: `2px solid ${on ? c.color : '#d1d5db'}`, background: on ? c.color : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.2s' }}>
                 {on && <span style={{ color: '#fff', fontSize: '12px', lineHeight: 1 }}>✓</span>}
@@ -726,11 +726,11 @@ export function CapstoneArchitecture() {
       <div style={{ padding: '14px 16px', background: hasAll ? '#f0fdf4' : '#fff7ed', border: `1px solid ${hasAll ? '#bbf7d0' : '#fed7aa'}`, borderRadius: '10px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontWeight: 700, fontSize: '14px', color: hasAll ? '#15803d' : '#c2410c' }}>
-            {hasAll ? '✅ Hệ thống đủ thành phần bắt buộc!' : '⚠️ Chưa đủ thành phần bắt buộc'}
+            {hasAll ? '✅ All mandatory architecture components selected!' : '⚠️ Missing mandatory components'}
           </span>
-          <span style={{ fontSize: '14px', fontWeight: 800, color: '#374151' }}>{score} / {components.length} thành phần</span>
+          <span style={{ fontSize: '14px', fontWeight: 800, color: '#374151' }}>{score} / {components.length} components</span>
         </div>
-        {score >= 6 && <div style={{ marginTop: '6px', fontSize: '13px', color: '#16a34a' }}>🎉 Dự án đầy đủ chức năng! Sẵn sàng commissioning.</div>}
+        {score >= 6 && <div style={{ marginTop: '6px', fontSize: '13px', color: '#16a34a' }}>🎉 Complete functional architecture! Ready for commissioning.</div>}
       </div>
     </div>
   );
@@ -744,10 +744,10 @@ export function ScanCycleAnimation() {
   const [running, setRunning] = useState(true);
 
   const steps = [
-    { label: 'Read Inputs', sub: 'The CPU copies every DI and AI into the process image', color: '#3b82f6', icon: '📥' },
-    { label: 'Execute Program', sub: 'The CPU runs each network of OB1 against that image', color: '#16a34a', icon: '⚙️' },
-    { label: 'Self-Test', sub: 'The CPU checks for faults and services interrupts', color: '#f59e0b', icon: '🔍' },
-    { label: 'Write Outputs', sub: 'The CPU updates the physical DO and AO terminals', color: '#ef4444', icon: '📤' },
+    { label: 'Read Inputs', sub: 'The CPU copies every DI and AI into the process image (PII)', color: '#3b82f6', icon: '📥' },
+    { label: 'Execute Program', sub: 'The CPU executes each network of OB1 cyclically', color: '#16a34a', icon: '⚙️' },
+    { label: 'Housekeeping', sub: 'The CPU performs diagnostic checks and services communication', color: '#f59e0b', icon: '🔍' },
+    { label: 'Write Outputs', sub: 'The CPU transfers PIQ states to physical DO and AO modules', color: '#ef4444', icon: '📤' },
   ];
 
   useEffect(() => {
@@ -807,7 +807,7 @@ export function StartStopAnimation() {
 
   return (
     <div style={{ background: '#fafafa', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '16px' }}>
-      <div style={{ fontSize: '13px', fontWeight: 700, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '20px' }}>🪜 Mạch Start-Stop — Tương tác</div>
+      <div style={{ fontSize: '13px', fontWeight: 700, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '20px' }}>🪜 Start-Stop Motor Control — Interactive LAD</div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 0, background: '#fff', border: '1px solid #e5e5e5', borderRadius: '10px', padding: '20px', marginBottom: '16px', overflowX: 'auto' }}>
         <div style={{ width: 6, height: 80, background: '#374151', borderRadius: '3px', flexShrink: 0 }} />
         <div style={{ height: 3, background: '#374151', flex: 1, minWidth: 12 }} />
@@ -848,7 +848,7 @@ export function StartStopAnimation() {
       </div>
       <div style={{ textAlign: 'center', padding: '12px', background: motor ? '#f0fdf4' : '#fafafa', border: `1px solid ${motor ? '#bbf7d0' : '#e5e5e5'}`, borderRadius: '8px', transition: 'all 0.3s' }}>
         <span style={{ fontSize: '24px' }}>{motor ? '🟢' : '🔴'}</span>
-        <span style={{ marginLeft: '10px', fontWeight: 700, fontSize: '14px', color: motor ? '#16a34a' : '#ef4444' }}>MOTOR: {motor ? 'ĐANG CHẠY (Q0.0 = 1)' : 'DỪNG (Q0.0 = 0)'}</span>
+        <span style={{ marginLeft: '10px', fontWeight: 700, fontSize: '14px', color: motor ? '#16a34a' : '#ef4444' }}>MOTOR: {motor ? 'RUNNING (Q0.0 = 1)' : 'STOPPED (Q0.0 = 0)'}</span>
       </div>
     </div>
   );
@@ -877,13 +877,13 @@ export function TimerTONAnimation() {
   return (
     <div style={{ background: '#fafafa', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '16px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <span style={{ fontSize: '13px', fontWeight: 700, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.08em' }}>⏱️ Timer TON — Mô phỏng</span>
+        <span style={{ fontSize: '13px', fontWeight: 700, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.08em' }}>⏱️ TON On-Delay Timer — Simulation</span>
         <div style={{ display: 'flex', gap: '8px' }}>
-          <button onClick={() => { setTick(0); setRunning(true); }} style={{ fontSize: '12px', padding: '4px 12px', borderRadius: '6px', border: '1px solid #dcfce7', background: '#dcfce7', color: '#16a34a', cursor: 'pointer', fontWeight: 600 }}>▶ Play thử</button>
+          <button onClick={() => { setTick(0); setRunning(true); }} style={{ fontSize: '12px', padding: '4px 12px', borderRadius: '6px', border: '1px solid #dcfce7', background: '#dcfce7', color: '#16a34a', cursor: 'pointer', fontWeight: 600 }}>▶ Run Test</button>
           <button onClick={() => { setTick(0); setRunning(false); }} style={{ fontSize: '12px', padding: '4px 12px', borderRadius: '6px', border: '1px solid #e5e5e5', background: '#fff', color: '#737373', cursor: 'pointer', fontWeight: 600 }}>↺ Reset</button>
         </div>
       </div>
-      {[{ l: 'IN', v: inOn, c: '#3b82f6', bg: '#f0f9ff', bc: '#bfdbfe' }, { l: 'ET', pct: etPct, label: et > 0 ? `${et * 80}ms / PT=${PT * 80}ms` : 'Chờ IN=1', c: '#f59e0b', bg: '#fffbeb', bc: '#fde68a' }, { l: 'Q', v: qOn, c: '#16a34a', bg: '#f0fdf4', bc: '#bbf7d0' }].map((s, i) => (
+      {[{ l: 'IN', v: inOn, c: '#3b82f6', bg: '#f0f9ff', bc: '#bfdbfe' }, { l: 'ET', pct: etPct, label: et > 0 ? `${et * 80}ms / PT=${PT * 80}ms` : 'Waiting for IN=1', c: '#f59e0b', bg: '#fffbeb', bc: '#fde68a' }, { l: 'Q', v: qOn, c: '#16a34a', bg: '#f0fdf4', bc: '#bbf7d0' }].map((s, i) => (
         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
           <span style={{ fontSize: '12px', fontWeight: 700, color: s.c, minWidth: '28px' }}>{s.l}</span>
           <div style={{ flex: 1, height: '36px', background: s.bg, borderRadius: '6px', border: `1px solid ${s.bc}`, position: 'relative', overflow: 'hidden' }}>
@@ -898,11 +898,11 @@ export function TimerTONAnimation() {
         </div>
       ))}
       <div style={{ background: qOn ? '#f0fdf4' : inOn ? '#fffbeb' : '#f8f9fa', border: `1px solid ${qOn ? '#bbf7d0' : inOn ? '#fde68a' : '#e5e5e5'}`, borderRadius: '8px', padding: '12px 14px', fontSize: '13px', color: '#374151', fontWeight: 500 }}>
-        {tick === 0 && '⏳ Nhấn "Chạy thử" để xem mô phỏng TON'}
-        {tick > 0 && !inOn && '⏳ IN = 0 — Timer chưa bắt đầu'}
-        {inOn && !qOn && `⏱️ IN = 1 — Đang đếm: ET = ${et * 80}ms, cần thêm ${(PT - et) * 80}ms nữa...`}
-        {qOn && '✅ ET ≥ PT → Q = 1 — Đầu ra đã bật!'}
-        {tick === TOTAL && ' (Hoàn thành)'}
+        {tick === 0 && '⏳ Click "Run Test" to simulate TON timer'}
+        {tick > 0 && !inOn && '⏳ IN = 0 — Timer input de-energized'}
+        {inOn && !qOn && `⏱️ IN = 1 — Timing: ET = ${et * 80}ms, ${(PT - et) * 80}ms remaining...`}
+        {qOn && '✅ ET ≥ PT → Q = 1 — Output contact energized!'}
+        {tick === TOTAL && ' (Completed)'}
       </div>
     </div>
   );
@@ -919,21 +919,21 @@ export function AnalogScaleAnimation() {
 
   return (
     <div style={{ background: '#fafafa', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '16px' }}>
-      <div style={{ fontSize: '13px', fontWeight: 700, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '20px' }}>🌡️ NORM_X / SCALE_X — Máy tính tương tác</div>
+      <div style={{ fontSize: '13px', fontWeight: 700, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '20px' }}>🌡️ NORM_X / SCALE_X — Interactive Calculator</div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
         <span style={{ fontSize: '13px', fontWeight: 600 }}>Raw AI Value (AIW64)</span>
         <span style={{ fontSize: '14px', fontWeight: 800, color: '#1a3a6b' }}>{raw}</span>
       </div>
       <input type="range" min={0} max={27648} value={raw} onChange={e => setRaw(Number(e.target.value))} style={{ width: '100%', accentColor: '#1a3a6b', marginBottom: '16px' }} />
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
-        {[{ l: 'Raw Input', v: String(raw), c: '#1d4ed8', bg: '#eff6ff' }, { l: 'NORM_X', v: norm.toFixed(4), c: '#b45309', bg: '#fffbeb' }, { l: 'Nhiệt độ (°C)', v: `${temp.toFixed(1)}°C`, c: '#15803d', bg: '#f0fdf4' }].map((s, i, arr) => (
-          <>
-            <div key={s.l} style={{ padding: '10px 14px', background: s.bg, borderRadius: '8px', textAlign: 'center', flex: 1, minWidth: '90px' }}>
+        {[{ l: 'Raw Input', v: String(raw), c: '#1d4ed8', bg: '#eff6ff' }, { l: 'NORM_X', v: norm.toFixed(4), c: '#b45309', bg: '#fffbeb' }, { l: 'Temperature (°C)', v: `${temp.toFixed(1)}°C`, c: '#15803d', bg: '#f0fdf4' }].map((s, i, arr) => (
+          <div key={s.l} style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: '90px' }}>
+            <div style={{ padding: '10px 14px', background: s.bg, borderRadius: '8px', textAlign: 'center', width: '100%' }}>
               <div style={{ fontSize: '11px', color: s.c, fontWeight: 600, marginBottom: '4px' }}>{s.l}</div>
               <div style={{ fontSize: '18px', fontWeight: 800, color: s.c }}>{s.v}</div>
             </div>
-            {i < arr.length - 1 && <span key={`a${i}`} style={{ fontSize: '20px', color: '#9ca3af' }}>→</span>}
-          </>
+            {i < arr.length - 1 && <span style={{ fontSize: '20px', color: '#9ca3af' }}>→</span>}
+          </div>
         ))}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>

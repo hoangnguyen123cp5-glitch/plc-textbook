@@ -203,7 +203,7 @@ export function validateVideoIndex(): VideoIndexIssue[] {
       issues.push({
         lessonSlug,
         kind: 'unknown-lesson',
-        detail: `Không có bài nào mang slug '${lessonSlug}' trong lessons.ts`,
+        detail: `No lesson with slug '${lessonSlug}' found in lessons.ts`,
       });
       continue;
     }
@@ -214,7 +214,7 @@ export function validateVideoIndex(): VideoIndexIssue[] {
         issues.push({
           lessonSlug,
           kind: 'unknown-topic',
-          detail: `Topic '${topicSlug}' không tồn tại trong bài '${lessonSlug}'`,
+          detail: `Topic '${topicSlug}' does not exist in lesson '${lessonSlug}'`,
         });
       }
     }
@@ -224,14 +224,14 @@ export function validateVideoIndex(): VideoIndexIssue[] {
       issues.push({
         lessonSlug,
         kind: 'missing-zero',
-        detail: `YouTube cần mốc đầu tiên là 0:00, hiện là ${formatTimestamp(marks[0])}`,
+        detail: `YouTube requires first timestamp to be 0:00, currently ${formatTimestamp(marks[0])}`,
       });
     }
     if (marks.length > 0 && marks.length < 3) {
       issues.push({
         lessonSlug,
         kind: 'too-few-chapters',
-        detail: `YouTube cần ít nhất 3 chapter, hiện có ${marks.length}`,
+        detail: `YouTube requires at least 3 chapters, currently ${marks.length}`,
       });
     }
     const over = marks.filter((m) => m > video.durationSec);
@@ -239,7 +239,7 @@ export function validateVideoIndex(): VideoIndexIssue[] {
       issues.push({
         lessonSlug,
         kind: 'beyond-duration',
-        detail: `${over.length} mốc vượt quá thời lượng video (${formatTimestamp(video.durationSec)})`,
+        detail: `${over.length} timestamp(s) exceed video duration (${formatTimestamp(video.durationSec)})`,
       });
     }
   }
@@ -247,12 +247,12 @@ export function validateVideoIndex(): VideoIndexIssue[] {
   return issues;
 }
 
-// Cảnh báo ngay lúc dev, không ảnh hưởng bản build production
+// Development warning, does not affect production build
 if (process.env.NODE_ENV === 'development') {
   const issues = validateVideoIndex();
   if (issues.length) {
     console.warn(
-      `[video-index] ${issues.length} vấn đề:\n` +
+      `[video-index] ${issues.length} issue(s):\n` +
         issues.map((i) => `  · [${i.lessonSlug}] ${i.detail}`).join('\n')
     );
   }

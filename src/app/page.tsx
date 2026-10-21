@@ -134,7 +134,7 @@ export default function Home() {
             <iframe
               style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
               src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-              title="Lập trình PLC – Giới thiệu khoá học"
+              title="PLC Programming – Course Introduction"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />

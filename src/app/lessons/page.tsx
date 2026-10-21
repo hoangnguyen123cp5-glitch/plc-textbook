@@ -31,20 +31,20 @@ export default function LessonsPage() {
           Curriculum
         </p>
         <h1 style={{ fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.03em', color: '#0a0a0a', marginBottom: '12px' }}>
-          Giáo trình PLC Programming
+          PLC Programming Curriculum
         </h1>
         <p style={{ fontSize: '14px', color: '#737373', lineHeight: 1.7, maxWidth: '540px', marginBottom: '20px' }}>
-          Chương trình đào tạo lập trình PLC Siemens S7-1200/1500 trên TIA Portal — từ phần cứng cơ bản đến tích hợp SCADA toàn hệ thống.
+          Comprehensive Siemens S7-1200/1500 & TIA Portal training curriculum — from hardware fundamentals to plant-wide SCADA integration.
         </p>
 
         {/* Stats row */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
           {[
-            { v: '15', l: 'Bài học' },
+            { v: '15', l: 'Lessons' },
             { v: String(totalTopics), l: 'Video topics' },
-            { v: `${totalHours}h`, l: 'Nội dung' },
+            { v: `${totalHours}h`, l: 'Content' },
             { v: '5', l: 'Modules' },
-            { v: '6', l: 'Lab thực hành' },
+            { v: '6', l: 'Hands-on Labs' },
           ].map(s => (
             <div key={s.l} style={{ padding: '10px 16px', border: '1px solid #e5e5e5', borderRadius: '8px', textAlign: 'center', minWidth: '80px' }}>
               <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0a0a0a', letterSpacing: '-0.03em' }}>{s.v}</div>
@@ -77,7 +77,7 @@ export default function LessonsPage() {
                   {mod.label}
                 </span>
                 <span style={{ fontSize: '12px', color: mod.color + 'aa', fontWeight: 600 }}>
-                  {modLessons.length} bài · {modTopics} topics · {Math.round(modMins / 60)}h
+                  {modLessons.length} lessons · {modTopics} topics · {Math.round(modMins / 60)}h
                 </span>
               </div>
 
@@ -142,7 +142,7 @@ export default function LessonsPage() {
                             <Link href={`/lessons/${lesson.slug}`}
                               style={{ fontSize: '12px', color: mod.color, fontWeight: 600, padding: '5px 8px', textDecoration: 'none' }}
                             >
-                              + {lesson.topics.length - 5} topics nữa →
+                              + {lesson.topics.length - 5} more topics →
                             </Link>
                           )}
                         </div>
@@ -159,13 +159,13 @@ export default function LessonsPage() {
       {/* Bottom CTA */}
       <div style={{ marginTop: '48px', padding: '28px 32px', background: '#f8f9ff', border: '1px solid #e5e5e5', borderRadius: '12px', textAlign: 'center' }}>
         <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#0a0a0a', marginBottom: '8px' }}>
-          Sẵn sàng bắt đầu?
+          Ready to Start?
         </div>
         <p style={{ fontSize: '13px', color: '#737373', marginBottom: '20px' }}>
-          Bắt đầu từ Bài 1 — không cần kiến thức lập trình trước.
+          Start from Lesson 1 — no prior programming experience required.
         </p>
         <Link href="/lessons/01-programmable-control" className="btn-primary" style={{ background: '#1a3a6b' }}>
-          Bắt đầu học
+          Start Learning
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
           </svg>

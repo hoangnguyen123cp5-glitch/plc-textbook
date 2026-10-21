@@ -10,10 +10,10 @@ export function ScanCycleAnimation() {
   const [running, setRunning] = useState(true);
 
   const steps = [
-    { label: 'Đọc đầu vào', sub: 'CPU đọc trạng thái tất cả DI, AI', color: '#3b82f6', icon: '📥' },
-    { label: 'Thực thi chương trình', sub: 'CPU chạy từng network trong OB1', color: '#16a34a', icon: '⚙️' },
-    { label: 'Kiểm tra nội bộ', sub: 'CPU kiểm tra lỗi, xử lý ngắt', color: '#f59e0b', icon: '🔍' },
-    { label: 'Ghi đầu ra', sub: 'CPU cập nhật trạng thái DO, AO', color: '#ef4444', icon: '📤' },
+    { label: 'Read Inputs', sub: 'CPU copies all physical DI and AI states into PII', color: '#3b82f6', icon: '📥' },
+    { label: 'Execute Program', sub: 'CPU executes user logic networks in OB1 cyclically', color: '#16a34a', icon: '⚙️' },
+    { label: 'Internal Diagnostics', sub: 'CPU tests internal integrity, handles comms & interrupts', color: '#f59e0b', icon: '🔍' },
+    { label: 'Write Outputs', sub: 'CPU transfers PIQ data to physical DO and AO modules', color: '#ef4444', icon: '📤' },
   ];
 
   useEffect(() => {
@@ -26,13 +26,13 @@ export function ScanCycleAnimation() {
     <div style={{ background: '#fafafa', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '16px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <span style={{ fontSize: '13px', fontWeight: 700, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-          🎬 PLC Scan Cycle — Mô phỏng
+          🎬 PLC Scan Cycle — Interactive Simulator
         </span>
         <button
           onClick={() => setRunning(r => !r)}
           style={{ fontSize: '12px', padding: '4px 12px', borderRadius: '6px', border: '1px solid #e5e5e5', background: running ? '#fee2e2' : '#dcfce7', color: running ? '#dc2626' : '#16a34a', cursor: 'pointer', fontWeight: 600 }}
         >
-          {running ? '⏸ Dừng' : '▶ Chạy'}
+          {running ? '⏸ Pause' : '▶ Run'}
         </button>
       </div>
 
@@ -89,7 +89,7 @@ export function ScanCycleAnimation() {
         transition: 'all 0.3s ease',
       }}>
         <div style={{ fontWeight: 700, fontSize: '14px', color: steps[active].color, marginBottom: '4px' }}>
-          Bước {active + 1}: {steps[active].label}
+          Phase {active + 1}: {steps[active].label}
         </div>
         <div style={{ fontSize: '13px', color: '#525252' }}>{steps[active].sub}</div>
       </div>
@@ -134,12 +134,12 @@ export function TimerTONAnimation() {
     <div style={{ background: '#fafafa', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '16px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <span style={{ fontSize: '13px', fontWeight: 700, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-          ⏱️ Timer TON — Mô phỏng
+          ⏱️ TON On-Delay Timer — Interactive Simulation
         </span>
         <div style={{ display: 'flex', gap: '8px' }}>
           <button onClick={() => { setTick(0); setRunning(true); }}
             style={{ fontSize: '12px', padding: '4px 12px', borderRadius: '6px', border: '1px solid #dcfce7', background: '#dcfce7', color: '#16a34a', cursor: 'pointer', fontWeight: 600 }}>
-            ▶ Chạy thử
+            ▶ Run Test
           </button>
           <button onClick={reset}
             style={{ fontSize: '12px', padding: '4px 12px', borderRadius: '6px', border: '1px solid #e5e5e5', background: '#fff', color: '#737373', cursor: 'pointer', fontWeight: 600 }}>
@@ -180,7 +180,7 @@ export function TimerTONAnimation() {
               transition: 'width 0.08s linear',
             }} />
             <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: '10px', fontSize: '11px', fontWeight: 700, color: '#92400e' }}>
-              {et > 0 ? `${et * 80}ms / PT = ${PT * 80}ms` : 'Chờ IN = 1'}
+              {et > 0 ? `${et * 80}ms / PT = ${PT * 80}ms` : 'Waiting for IN = 1'}
             </div>
           </div>
           <div style={{ fontSize: '11px', fontWeight: 600, color: '#f59e0b', minWidth: '44px', textAlign: 'center' }}>
@@ -209,11 +209,11 @@ export function TimerTONAnimation() {
 
       {/* Status box */}
       <div style={{ background: qOn ? '#f0fdf4' : inOn ? '#fffbeb' : '#f8f9fa', border: `1px solid ${qOn ? '#bbf7d0' : inOn ? '#fde68a' : '#e5e5e5'}`, borderRadius: '8px', padding: '12px 14px', fontSize: '13px', color: '#374151', fontWeight: 500 }}>
-        {tick === 0 && '⏳ Nhấn "Chạy thử" để xem mô phỏng TON timer'}
-        {tick > 0 && !inOn && '⏳ IN = 0 — Timer chưa bắt đầu'}
-        {inOn && !qOn && `⏱️ IN = 1 — Đang đếm: ET = ${et * 80}ms, cần thêm ${(PT - et) * 80}ms nữa...`}
-        {qOn && '✅ ET ≥ PT → Q = 1 — Đầu ra đã bật!'}
-        {tick === TOTAL && ' (Hoàn thành)'}
+        {tick === 0 && '⏳ Click "Run Test" to observe TON on-delay timing'}
+        {tick > 0 && !inOn && '⏳ IN = 0 — Timer input de-energized'}
+        {inOn && !qOn && `⏱️ IN = 1 — Timing active: ET = ${et * 80}ms, ${(PT - et) * 80}ms remaining...`}
+        {qOn && '✅ ET ≥ PT → Q = 1 — Output contact energized!'}
+        {tick === TOTAL && ' (Cycle Completed)'}
       </div>
     </div>
   );
@@ -242,7 +242,7 @@ export function StartStopAnimation() {
   return (
     <div style={{ background: '#fafafa', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '16px' }}>
       <div style={{ fontSize: '13px', fontWeight: 700, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '20px' }}>
-        🪜 Mạch Start-Stop — Tương tác
+        🪜 Start-Stop Motor Control — Interactive LAD Rung
       </div>
 
       {/* Ladder diagram */}
@@ -323,7 +323,7 @@ export function StartStopAnimation() {
       <div style={{ textAlign: 'center', padding: '12px', background: motor ? '#f0fdf4' : '#fafafa', border: `1px solid ${motor ? '#bbf7d0' : '#e5e5e5'}`, borderRadius: '8px', transition: 'all 0.3s' }}>
         <span style={{ fontSize: '24px' }}>{motor ? '🟢' : '🔴'}</span>
         <span style={{ marginLeft: '10px', fontWeight: 700, fontSize: '14px', color: motor ? '#16a34a' : '#ef4444' }}>
-          MOTOR: {motor ? 'ĐANG CHẠY (Q0.0 = 1)' : 'DỪNG (Q0.0 = 0)'}
+          MOTOR STATUS: {motor ? 'RUNNING (Q0.0 = 1)' : 'STOPPED (Q0.0 = 0)'}
         </span>
       </div>
     </div>
@@ -345,14 +345,14 @@ export function AnalogScaleAnimation() {
   return (
     <div style={{ background: '#fafafa', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '16px' }}>
       <div style={{ fontSize: '13px', fontWeight: 700, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '20px' }}>
-        🌡️ NORM_X / SCALE_X — Máy tính tương tác
+        🌡️ NORM_X / SCALE_X — Interactive Analog Scaling Calculator
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         {/* Raw value slider */}
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: '#374151' }}>Raw AI Value (AIW64)</span>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: '#374151' }}>Raw Analog Input (AIW64)</span>
             <span style={{ fontSize: '14px', fontWeight: 800, color: '#1a3a6b' }}>{raw}</span>
           </div>
           <input type="range" min={0} max={27648} value={raw}
@@ -391,8 +391,8 @@ export function AnalogScaleAnimation() {
         </div>
 
         <div style={{ fontSize: '12px', color: '#6b7280', background: '#f9fafb', borderRadius: '8px', padding: '10px 14px', fontFamily: 'monospace' }}>
-          Cảm biến PT100: [{minEng}°C → {maxEng}°C] | Raw [{minRaw} → {maxRaw}]<br/>
-          Công thức: {temp.toFixed(1)} = {minEng} + {norm.toFixed(3)} × ({maxEng} − {minEng})
+          PT100 RTD Sensor: [{minEng}°C → {maxEng}°C] | Raw Integer [{minRaw} → {maxRaw}]<br/>
+          Formula: {temp.toFixed(1)} = {minEng} + {norm.toFixed(3)} × ({maxEng} − {minEng})
         </div>
       </div>
     </div>

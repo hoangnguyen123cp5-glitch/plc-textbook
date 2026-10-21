@@ -178,7 +178,7 @@ export default function TIALadderAnimation() {
       </div>
 
       {/* Network 1 */}
-      <Network num="Network 1" comment="Motor START-STOP với self-hold">
+      <Network num="Network 1" comment="Motor START-STOP with self-holding seal-in circuit">
         <Rung active={rung1}>
           {/* Parallel branch: START || Self-hold */}
           <div style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
@@ -209,7 +209,7 @@ export default function TIALadderAnimation() {
       </Network>
 
       {/* Network 2 */}
-      <Network num="Network 2" comment="Đèn báo chạy">
+      <Network num="Network 2" comment="Running status indicator lamp">
         <Rung active={motor}>
           <ContactNO label="Motor_Q" addr="%Q0.0" active={motor} />
           <Wire active={motor} />

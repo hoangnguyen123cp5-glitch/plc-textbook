@@ -80,7 +80,7 @@ export default function SiteNav({
           <button
             onClick={onMenuClick}
             className="site-nav__menu"
-            aria-label="Mở mục lục khoá học"
+            aria-label="Open course navigation"
             aria-expanded={menuExpanded}
             style={{
               background: 'none',

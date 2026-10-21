@@ -87,7 +87,7 @@ export default function LessonsLayout({ children }: { children: React.ReactNode 
         {/* ── SIDEBAR ──
             Từ 1080px trở lên: nằm trong dòng chảy, luôn hiện.
             Dưới 1080px: ngăn kéo cố định, trượt vào theo data-open. */}
-        <aside className="lesson-sidebar" data-open={drawerOpen} aria-label="Mục lục khoá học">
+        <aside className="lesson-sidebar" data-open={drawerOpen} aria-label="Course Curriculum">
           <div style={{ padding: '16px 12px' }}>
             <p
               style={{

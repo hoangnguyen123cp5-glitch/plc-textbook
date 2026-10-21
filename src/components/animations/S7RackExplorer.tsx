@@ -50,13 +50,13 @@ const RACK: Mod[] = [
     doors: 'dsub',
     bus: true,
     desc:
-      'Communication Module — cổng nối tiếp RS422/RS485 cách ly, dùng cho Modbus RTU, USS Drive hoặc giao thức Freeport tự định nghĩa. Lắp BÊN TRÁI CPU, tối đa 3 module. Được CPU cấp nguồn qua backplane nên không cần nguồn ngoài.',
+      'Communication Module — isolated serial RS422/RS485 interface for Modbus RTU, USS drive protocols, or user-defined Freeport communication. Installs to the LEFT of the CPU (up to 3 CMs). Powered directly via the CPU backplane bus without external supply.',
     specs: [
-      'RS422 / RS485 cách ly',
+      'Isolated RS422 / RS485',
       '300 bps – 115.2 kbps',
       'Modbus RTU · USS · Freeport',
-      'Đầu nối D-sub 9 chân',
-      'Tối đa 3 CM bên trái CPU',
+      '9-pin D-sub female connector',
+      'Max 3 CMs left of CPU',
     ],
     leds: [
       { t: 'DIAG', c: 'diag' },
@@ -75,7 +75,7 @@ const RACK: Mod[] = [
     doors: 'screw',
     bus: true,
     desc:
-      'Bộ xử lý trung tâm — chứa chương trình người dùng, thực thi chu kỳ quét (đọc PII → xử lý logic → ghi PIQ), quản lý toàn bộ I/O trên backplane và truyền thông PROFINET. Biến thể DC/DC/RLY: nguồn nuôi 24VDC, đầu vào 24VDC, đầu ra tiếp điểm relay.',
+      'Central Processing Unit — stores user logic, executes cyclic scan (Read PII → Process OB1 → Write PIQ), manages expansion I/O over backplane, and handles PROFINET industrial Ethernet. DC/DC/RLY variant: 24VDC supply, 24VDC digital inputs, 2A electromechanical relay outputs.',
     specs: [
       '14 × DI 24VDC (sink/source)',
       '10 × DQ relay 2A',
@@ -84,7 +84,7 @@ const RACK: Mod[] = [
       '4 MB load memory',
       'PROFINET 100 Mbps (RJ45)',
       '6 × HSC 100 kHz',
-      'Tối đa 8 SM + 3 CM + 1 SB',
+      'Max 8 SM + 3 CM + 1 SB',
     ],
     leds: [
       { t: 'RUN/STOP', c: 'run' },
@@ -113,14 +113,14 @@ const RACK: Mod[] = [
     doors: 'screw',
     bus: true,
     desc:
-      'Signal Module đầu vào số. Mở rộng thêm 8 (hoặc 16) kênh DI 24VDC. Cắm nối tiếp BÊN PHẢI CPU qua backplane, tự nhận địa chỉ khi khai báo trong Device Configuration của TIA Portal.',
+      'Digital Input Signal Module — expands the system by 8 (or 16) channels of 24VDC inputs. Mounts to the RIGHT of the CPU via backplane slide connector; addresses are auto-allocated in TIA Portal Device Configuration.',
     specs: [
       '8 × DI 24VDC',
       'IEC 61131-2 Type 1 sink',
-      'Ngưỡng ON: 15–30 VDC',
-      'Ngưỡng OFF: −3…+5 VDC',
-      'Cách ly quang 500 VAC',
-      'Lọc nhiễu 0.2–12.8 ms',
+      'ON threshold: 15–30 VDC',
+      'OFF threshold: −3…+5 VDC',
+      '500 VAC optical isolation',
+      'Input filter: 0.2–12.8 ms',
     ],
     leds: [{ t: 'DIAG', c: 'diag' }],
     top: [{ count: 8, label: 'DI a' }],
@@ -136,13 +136,13 @@ const RACK: Mod[] = [
     doors: 'screw',
     bus: true,
     desc:
-      'Signal Module đầu ra số. Hai biến thể: transistor (24VDC, 0.5A, chuyển mạch nhanh, chỉ tải DC) và relay (2A, đóng được tải AC nhưng tuổi thọ tiếp điểm hữu hạn — cỡ 10⁵ lần đóng cắt ở tải định mức).',
+      'Digital Output Signal Module — available in transistor (24VDC, 0.5A, high switching frequency for DC loads) and relay variants (2A, handles AC/DC loads with mechanical endurance up to 10⁵ cycles at rated load).',
     specs: [
       '8 × DQ 24VDC / 0.5A',
-      'Biến thể relay: 2A AC/DC',
-      'Dòng rò ≤ 10 µA',
-      'KHÔNG bảo vệ quá dòng',
-      'Cần diode dập cho tải cảm',
+      'Relay variant: 2A AC/DC',
+      'Leakage current ≤ 10 µA',
+      'No built-in overcurrent trip',
+      'Flyback diode needed for inductive loads',
     ],
     leds: [{ t: 'DIAG', c: 'diag' }],
     bot: [{ count: 8, label: 'DQ a' }],
@@ -158,14 +158,14 @@ const RACK: Mod[] = [
     doors: 'screw',
     bus: true,
     desc:
-      'Signal Module đầu vào tương tự. Đọc điện áp ±10V/±5V/±2.5V hoặc dòng 0–20 mA. Giá trị số hoá trả về dải chuẩn hoá 0–27648 (đơn cực) — con số phải nhớ khi dùng NORM_X / SCALE_X.',
+      'Analog Input Signal Module — reads voltage (±10V, ±5V, ±2.5V) or current (0–20 mA). Digitized raw values range from 0 to 27648 (unipolar), used as input to NORM_X and SCALE_X instructions.',
     specs: [
-      '4 × AI, 12-bit + dấu',
+      '4 × AI, 12-bit + sign',
       '±10V / ±5V / ±2.5V / 0–20mA',
-      'Dải số: 0–27648',
-      'Trở kháng vào ≥ 9 MΩ (áp)',
-      'Chuyển đổi 625 µs/kênh',
-      'Khử nhiễu 400/60/50/10 Hz',
+      'Raw range: 0–27648',
+      'Input impedance ≥ 9 MΩ (volt)',
+      'Conversion time 625 µs/channel',
+      'Noise rejection 400/60/50/10 Hz',
     ],
     leds: [{ t: 'DIAG', c: 'diag' }],
     top: [
@@ -183,14 +183,14 @@ const RACK: Mod[] = [
     doors: 'screw',
     bus: true,
     desc:
-      'Signal Module đầu ra tương tự. Phát ±10V (14-bit) hoặc 0–20 mA (13-bit) để điều khiển biến tần, van tỷ lệ, servo drive. Lưu ý giới hạn tải: ≤ 1 kΩ với ngõ ra dòng, ≥ 1 kΩ với ngõ ra áp.',
+      'Analog Output Signal Module — outputs ±10V (14-bit) or 0–20 mA (13-bit) to command variable frequency drives, proportional valves, and actuator positioners. Load limits: ≤ 1 kΩ for current output, ≥ 1 kΩ for voltage output.',
     specs: [
       '2 × AQ',
       '±10V: 14-bit',
       '0–20 mA: 13-bit',
-      'Dải số: 0–27648',
-      'Tải ≤ 1 kΩ (dòng) / ≥ 1 kΩ (áp)',
-      'Thời gian ổn định 300 µs',
+      'Raw range: 0–27648',
+      'Load ≤ 1 kΩ (current) / ≥ 1 kΩ (voltage)',
+      'Settling time 300 µs',
     ],
     leds: [{ t: 'DIAG', c: 'diag' }],
     bot: [{ count: 4, label: 'AQ 0–1', names: ['0', '0M', '1', '1M'] }],
@@ -200,7 +200,7 @@ const RACK: Mod[] = [
 const PSU: Mod = {
   id: 'psu',
   w: 70,
-  label: 'PM 1207 — Nguồn 24VDC',
+  label: 'PM 1207 — Power Supply 24VDC',
   print: 'PM 1207',
   print2: '24V / 2.5A',
   order: '6EP1332-1SH71',
@@ -208,14 +208,14 @@ const PSU: Mod = {
   doors: 'screw',
   bus: false,
   desc:
-    'Bộ nguồn ổn áp AC/DC cấp 24VDC cho CPU, các module và thiết bị hiện trường. QUAN TRỌNG: PM 1207 KHÔNG cắm vào backplane — nó chỉ gá cạnh CPU trên cùng thanh DIN và nối bằng dây tới cặp cực L+/M. Đây là lỗi rất hay gặp khi sinh viên vẽ sơ đồ lắp đặt lần đầu.',
+    'Regulated AC/DC industrial power supply delivering stabilized 24VDC to CPU, signal modules, and field devices. CRITICAL: PM 1207 does NOT connect to the backplane bus — it mounts alongside on the DIN rail and wires externally to the CPU L+/M screw terminals.',
   specs: [
-    'Vào: 120/230 VAC (85–264 V)',
-    'Ra: 24 VDC ± 3%, 2.5 A',
+    'Input: 120/230 VAC (85–264 V)',
+    'Output: 24 VDC ± 3%, 2.5 A',
     'Ripple < 150 mV pp',
-    'Hiệu suất ~ 87%',
-    'Bảo vệ quá tải / ngắn mạch',
-    'Không chiếm slot backplane',
+    'Efficiency ~ 87%',
+    'Overload / short-circuit protected',
+    'Does not consume backplane slot',
   ],
   leds: [{ t: 'DC OK', c: 'run' }],
   top: [{ count: 3, label: 'AC IN', names: ['L', 'N', 'PE'] }],
@@ -545,12 +545,12 @@ export default function S7RackExplorer() {
             letterSpacing: '0.08em',
           }}
         >
-          🔧 Rack SIMATIC S7-1200 — click vào module
+          🔧 SIMATIC S7-1200 Rack Explorer — Click any module
         </div>
         <div style={{ flex: 1 }} />
         <button
           onClick={() => setRunning((r) => !r)}
-          aria-label="Đổi trạng thái CPU giữa RUN và STOP"
+          aria-label="Toggle CPU state between RUN and STOP"
           style={{
             padding: '6px 14px',
             borderRadius: '99px',
@@ -592,7 +592,7 @@ export default function S7RackExplorer() {
           viewBox={`0 0 ${VB_W} ${VB_H}`}
           style={{ width: '100%', minWidth: '880px', display: 'block' }}
           role="group"
-          aria-label="Sơ đồ rack SIMATIC S7-1200"
+          aria-label="SIMATIC S7-1200 Rack Architecture Diagram"
         >
           <defs>
             <linearGradient id={`${uid}-body`} x1="0" y1="0" x2="0" y2="1">
@@ -662,7 +662,7 @@ export default function S7RackExplorer() {
               textAnchor="middle"
               fontWeight={700}
             >
-              KHÔNG
+              NO
             </text>
             <text
               x={PSU_X + PSU.w + GAP / 2}
@@ -756,14 +756,13 @@ export default function S7RackExplorer() {
             fontSize: '13px',
           }}
         >
-          👆 Click vào module bất kỳ để xem thông số · Hình vẽ đúng tỉ lệ mm theo catalog Siemens
+          👆 Click any module to view engineering specifications · Rendered to 1:1 true mm scale from Siemens catalog
         </div>
       )}
 
       <p style={{ fontSize: '11px', color: '#a3a3a3', marginTop: '10px', lineHeight: 1.6 }}>
-        Thứ tự lắp chuẩn: <strong>CM (tối đa 3) ← CPU → SM (tối đa 8)</strong>. PM 1207 không chiếm slot
-        backplane, chỉ gá cùng thanh DIN TS35 rồi nối dây L+/M sang CPU. Kích thước và thông số theo{' '}
-        <em>S7-1200 System Manual</em> — số MLFB nên đối chiếu lại trên Siemens Industry Mall trước khi đặt hàng.
+        Standard mounting sequence: <strong>CM (max 3) ← CPU → SM (max 8)</strong>. The PM 1207 power supply does not occupy a backplane slot; it mounts on the TS35 DIN rail and wires L+/M to the CPU. Dimensions and specifications per{' '}
+        <em>S7-1200 System Manual</em> — verify MLFB order numbers on Siemens Industry Mall prior to ordering.
       </p>
     </div>
   );

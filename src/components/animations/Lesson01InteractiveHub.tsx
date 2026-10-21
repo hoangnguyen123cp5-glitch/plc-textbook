@@ -4,14 +4,14 @@ import React, { useState, useEffect } from 'react';
 
 /* ═════════════════════════════════════════════════════════════════════════
    L01 — Interactive Engineering Hub: Programmable Control Fundamentals
-   Chương 1: Khái niệm Điều khiển lập trình & Chu kỳ quét PLC
+   Chapter 1: Programmable Control Concepts & The PLC Scan Cycle
 
-   Mô-đun học tập tương tác toàn diện:
-     1. Vòng quét PLC (Scan Cycle & PII / PIQ Process Images)
-     2. Hệ điều khiển Vòng hở vs Vòng kín (Open vs Closed Loop + Disturbance)
-     3. Rơ-le nối dây cứng vs PLC (Hardwired vs Programmable Comparison)
-     4. Cấu trúc phần cứng S7-1200 & Đèn LED chẩn đoán (CPU 1214C)
-     5. Ngôn ngữ IEC 61131-3: LAD vs FBD vs SCL (Interactive Code Viewer)
+   Comprehensive Interactive Learning Modules:
+     1. The PLC Scan Cycle & Process Images (PII / PIQ)
+     2. Open-Loop vs Closed-Loop Control Systems (+ Disturbance Simulation)
+     3. Hardwired Relay Control vs PLC Comparison
+     4. S7-1200 Hardware Architecture & Diagnostic LEDs (CPU 1214C)
+     5. IEC 61131-3 Languages: LAD vs FBD vs SCL (Interactive Comparison)
 ═════════════════════════════════════════════════════════════════════════ */
 
 type TabType = 'scan' | 'loop' | 'relay' | 'hw' | 'languages';
@@ -34,7 +34,7 @@ export default function Lesson01InteractiveHub() {
               </span>
             </div>
             <h2 className="text-base sm:text-lg font-bold text-slate-900 m-0">
-              Mô phỏng Trực quan — Khái niệm Điều khiển & Vòng quét PLC
+              Interactive Simulation — Control Systems & The PLC Scan Cycle
             </h2>
           </div>
 
@@ -47,7 +47,7 @@ export default function Lesson01InteractiveHub() {
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <span>🔄</span> Vòng quét PLC
+              <span>🔄</span> Scan Cycle
             </button>
             <button
               onClick={() => setActiveTab('loop')}
@@ -57,7 +57,7 @@ export default function Lesson01InteractiveHub() {
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <span>🔁</span> Vòng hở / Vòng kín
+              <span>🔁</span> Open vs Closed Loop
             </button>
             <button
               onClick={() => setActiveTab('relay')}
@@ -67,7 +67,7 @@ export default function Lesson01InteractiveHub() {
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <span>⚡</span> Rơ-le vs PLC
+              <span>⚡</span> Relay vs PLC
             </button>
             <button
               onClick={() => setActiveTab('hw')}
@@ -77,7 +77,7 @@ export default function Lesson01InteractiveHub() {
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <span>🖥️</span> Cấu trúc & LED
+              <span>🖥️</span> Architecture & LEDs
             </button>
             <button
               onClick={() => setActiveTab('languages')}
@@ -87,7 +87,7 @@ export default function Lesson01InteractiveHub() {
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <span>📝</span> Ngôn ngữ IEC
+              <span>📝</span> IEC Languages
             </button>
           </div>
         </div>
@@ -106,33 +106,32 @@ export default function Lesson01InteractiveHub() {
 }
 
 /* ═════════════════════════════════════════════════════════════════════════
-   TAB 1: Scan Cycle Simulator (Mô phỏng Vòng quét & Vùng ảnh I/O)
+   TAB 1: Scan Cycle Simulator (Interactive Process Images & Logic Flow)
 ═════════════════════════════════════════════════════════════════════════ */
 function ScanCycleSimulator() {
-  const [phase, setPhase] = useState<number>(0); // 0: Read Inputs, 1: Execute OB1, 2: Comms/Diag, 3: Write Outputs
+  const [phase, setPhase] = useState<number>(0);
   const [isRunning, setIsRunning] = useState<boolean>(true);
   const [scanSpeed, setScanSpeed] = useState<number>(1400); // ms per step
   const [cycleCount, setCycleCount] = useState<number>(1);
 
-  // Inputs
+  // Field Inputs
   const [swStart, setSwStart] = useState<boolean>(false);
   const [swStop, setSwStop] = useState<boolean>(false);
   const [swSensor, setSwSensor] = useState<boolean>(false);
 
-  // Process Images
+  // Process Images in RAM
   const [piiStart, setPiiStart] = useState<boolean>(false);
   const [piiStop, setPiiStop] = useState<boolean>(false);
   const [piiSensor, setPiiSensor] = useState<boolean>(false);
 
-  // Program Logic & Outputs
+  // Program Logic & Output Image
   const [piqMotor, setPiqMotor] = useState<boolean>(false);
   const [piqAlarm, setPiqAlarm] = useState<boolean>(false);
 
-  // Physical Output terminals
+  // Physical Output Terminals
   const [physicalMotor, setPhysicalMotor] = useState<boolean>(false);
   const [physicalAlarm, setPhysicalAlarm] = useState<boolean>(false);
 
-  // Auto scan cycle loop
   useEffect(() => {
     if (!isRunning) return;
     const interval = setInterval(() => {
@@ -153,14 +152,12 @@ function ScanCycleSimulator() {
         setCycleCount((c) => c + 1);
       } else if (nextPhase === 1) {
         // Phase 2: Execute OB1 program logic:
-        // Logic: Motor := (piiStart OR piqMotor) AND (NOT piiStop)
         const nextMotor = (piiStart || piqMotor) && !piiStop;
         const nextAlarm = piiSensor && nextMotor;
         setPiqMotor(nextMotor);
         setPiqAlarm(nextAlarm);
       } else if (nextPhase === 2) {
         // Phase 3: Communication & Diagnostics (CPU Internal Housekeeping)
-        // No I/O changes
       } else if (nextPhase === 3) {
         // Phase 4: Write PIQ to physical outputs
         setPhysicalMotor(piqMotor);
@@ -174,35 +171,35 @@ function ScanCycleSimulator() {
   const phases = [
     {
       id: 0,
-      title: '1. Đọc ngõ vào vào PII (Process Image Input)',
+      title: '1. Read Inputs to PII',
       tag: 'PII Snapshot',
       color: '#0284c7',
-      desc: 'CPU đọc toàn bộ trạng thái điện áp 24V từ các đầu nối DI (I0.0, I0.1, I0.2) và sao chép vào bộ nhớ đệm PII.',
-      action: 'Chụp ảnh tức thời (Snapshot) — tín hiệu vật lý thay đổi sau thời điểm này sẽ KHÔNG ảnh hưởng tới vòng quét hiện tại!',
+      desc: 'The CPU scans all 24V DI terminals (I0.0, I0.1, I0.2) and takes a snapshot into the Process Image Input (PII) table.',
+      action: 'Instantaneous snapshot: field signal changes during program execution will NOT affect the current scan cycle!',
     },
     {
       id: 1,
-      title: '2. Thực thi chương trình (Execute OB1)',
+      title: '2. Execute Program (OB1)',
       tag: 'Ladder Logic',
       color: '#16a34a',
-      desc: 'CPU quét qua các Network từ trên xuống dưới, từ trái qua phải, chỉ đọc giá trị từ vùng nhớ PII chứ KHÔNG đọc lại cọc đấu dây.',
-      action: 'Tính toán logic: Q0.0 = (I0.0 OR Q0.0) AND NOT I0.1. Kết quả tính được ghi tạm vào PIQ.',
+      desc: 'The CPU evaluates networks top-to-bottom and left-to-right, reading from PII memory rather than field screw terminals.',
+      action: 'Logic evaluation: Q0.0 = (I0.0 OR Q0.0) AND NOT I0.1. Intermediate results are stored in the PIQ buffer.',
     },
     {
       id: 2,
-      title: '3. Truyền thông & Tự chẩn đoán (Diagnostics)',
+      title: '3. Housekeeping & Diagnostics',
       tag: 'Self-Test',
       color: '#d97706',
-      desc: 'CPU kiểm tra tính toàn vẹn phần cứng, giám sát nhiệt độ, xử lý kết nối PROFINET tới TIA Portal hoặc màn hình HMI.',
-      action: 'Cập nhật Diagnostic Buffer, phát hiện đứt dây hoặc lỗi bus trước khi xuất lệnh ra tải.',
+      desc: 'The CPU checks hardware integrity, monitors operating temperatures, and services PROFINET / HMI communication requests.',
+      action: 'Updates diagnostic buffer and detects module disconnects or wire breaks before energizing loads.',
     },
     {
       id: 3,
-      title: '4. Ghi ngõ ra từ PIQ ra thiết bị (Write Outputs)',
+      title: '4. Write PIQ to Outputs',
       tag: 'PIQ -> Physical',
       color: '#dc2626',
-      desc: 'CPU chuyển toàn bộ dữ liệu từ bộ nhớ đệm PIQ ra các transistor/rơ-le ngõ ra vật lý (Q0.0, Q0.1) điều khiển động cơ và đèn.',
-      action: 'Đóng/ngắt cuộn hút contactor thực tế. Kết thúc 1 chu kỳ quét và quay lại Bước 1.',
+      desc: 'The CPU copies values from the Process Image Output (PIQ) table to the physical output transistors/relays (Q0.0, Q0.1).',
+      action: 'Energizes contactors and field solenoids simultaneously, completing one cycle before looping back to Phase 1.',
     },
   ];
 
@@ -219,22 +216,22 @@ function ScanCycleSimulator() {
                 : 'bg-emerald-600 text-white hover:bg-emerald-700'
             }`}
           >
-            {isRunning ? '⏸ Tạm dừng' : '▶ Tiếp tục chạy'}
+            {isRunning ? '⏸ Pause' : '▶ Resume Auto Scan'}
           </button>
           <button
             onClick={advanceStep}
             disabled={isRunning}
             className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            ⏭ Chạy 1 Bước (Single Step)
+            ⏭ Single Step
           </button>
           <span className="text-xs text-slate-500 font-mono ml-2">
-            Chu kỳ: <strong className="text-slate-800">#{cycleCount}</strong>
+            Scan Count: <strong className="text-slate-800">#{cycleCount}</strong>
           </span>
         </div>
 
         <div className="flex items-center gap-3 text-xs text-slate-600">
-          <span>Tốc độ quét:</span>
+          <span>Cycle Time:</span>
           <input
             type="range"
             min={400}
@@ -263,7 +260,7 @@ function ScanCycleSimulator() {
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                  Giai đoạn {p.id + 1}
+                  Phase {p.id + 1}
                 </span>
                 {isActive && (
                   <span className="inline-block w-2 h-2 rounded-full bg-blue-600 animate-ping" />
@@ -286,7 +283,7 @@ function ScanCycleSimulator() {
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 m-0 flex items-center gap-1.5">
-              <span>🔌</span> 1. Thiết bị ngõ vào vật lý
+              <span>🔌</span> 1. Field Input Devices
             </h4>
             <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-mono">
               Field Inputs
@@ -297,8 +294,8 @@ function ScanCycleSimulator() {
             {/* Input 1: Start Button */}
             <div className="p-2.5 rounded-lg border border-slate-200 flex items-center justify-between bg-slate-50/50">
               <div>
-                <div className="text-xs font-bold text-slate-800">Nút ấn START (I0.0)</div>
-                <div className="text-[11px] text-slate-500">Tiếp điểm thường mở (NO)</div>
+                <div className="text-xs font-bold text-slate-800">START Button (I0.0)</div>
+                <div className="text-[11px] text-slate-500">Normally Open (NO) Contact</div>
               </div>
               <button
                 onClick={() => setSwStart(!swStart)}
@@ -308,15 +305,15 @@ function ScanCycleSimulator() {
                     : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                 }`}
               >
-                {swStart ? 'ĐANG NHẤN (24V)' : 'THẢ RA (0V)'}
+                {swStart ? 'PRESSED (24V)' : 'RELEASED (0V)'}
               </button>
             </div>
 
             {/* Input 2: Stop Button */}
             <div className="p-2.5 rounded-lg border border-slate-200 flex items-center justify-between bg-slate-50/50">
               <div>
-                <div className="text-xs font-bold text-slate-800">Nút ấn STOP (I0.1)</div>
-                <div className="text-[11px] text-slate-500">Dừng khẩn cấp / Dừng máy</div>
+                <div className="text-xs font-bold text-slate-800">STOP Button (I0.1)</div>
+                <div className="text-[11px] text-slate-500">Emergency Stop / Halt</div>
               </div>
               <button
                 onClick={() => setSwStop(!swStop)}
@@ -326,15 +323,15 @@ function ScanCycleSimulator() {
                     : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                 }`}
               >
-                {swStop ? 'ĐANG NGẮT (1)' : 'BÌNH THƯỜNG (0)'}
+                {swStop ? 'ENGAGED (1)' : 'NORMAL (0)'}
               </button>
             </div>
 
             {/* Input 3: Safety Sensor */}
             <div className="p-2.5 rounded-lg border border-slate-200 flex items-center justify-between bg-slate-50/50">
               <div>
-                <div className="text-xs font-bold text-slate-800">Cảm biến nhiệt/áp (I0.2)</div>
-                <div className="text-[11px] text-slate-500">Cảnh báo nhiệt độ cao</div>
+                <div className="text-xs font-bold text-slate-800">Interlock Sensor (I0.2)</div>
+                <div className="text-[11px] text-slate-500">High Temp/Pressure Alarm</div>
               </div>
               <button
                 onClick={() => setSwSensor(!swSensor)}
@@ -344,7 +341,7 @@ function ScanCycleSimulator() {
                     : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                 }`}
               >
-                {swSensor ? 'BÁO ĐỘNG (1)' : 'AN TOÀN (0)'}
+                {swSensor ? 'ALARM (1)' : 'SAFE (0)'}
               </button>
             </div>
           </div>
@@ -353,10 +350,10 @@ function ScanCycleSimulator() {
           <div className="mt-4 pt-3 border-t border-slate-200">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-bold text-blue-700 flex items-center gap-1">
-                <span>📸</span> Vùng đệm ảnh PII (Bộ nhớ RAM)
+                <span>📸</span> Process Image Input (PII Memory)
               </span>
               <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${phase === 0 ? 'bg-blue-600 text-white animate-pulse' : 'bg-slate-100 text-slate-600'}`}>
-                {phase === 0 ? 'Đang nạp dữ liệu' : 'Đã khóa snapshot'}
+                {phase === 0 ? 'Sampling Inputs' : 'Snapshot Locked'}
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2 font-mono text-center text-xs">
@@ -379,18 +376,17 @@ function ScanCycleSimulator() {
         }`}>
           <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 m-0 flex items-center gap-1.5">
-              <span>🧠</span> 2. Khối xử lý trung tâm OB1
+              <span>🧠</span> 2. Central Processing Unit (OB1)
             </h4>
             <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${phase === 1 ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'}`}>
-              {phase === 1 ? 'Đang thực thi' : 'Chờ vòng quét'}
+              {phase === 1 ? 'Executing' : 'Idle'}
             </span>
           </div>
 
           {/* Ladder Diagram visualization */}
           <div className="border border-slate-200 rounded-lg p-3 bg-slate-50 font-mono text-xs">
-            <div className="text-[11px] text-slate-500 font-sans font-bold mb-2">Network 1: Mạch khởi động động cơ tự giữ</div>
+            <div className="text-[11px] text-slate-500 font-sans font-bold mb-2">Network 1: Motor Start / Seal-In Circuit</div>
             
-            {/* Visual LAD rung */}
             <svg viewBox="0 0 320 80" className="w-full h-auto bg-white rounded border border-slate-200">
               {/* Power Rails */}
               <line x1="10" y1="10" x2="10" y2="70" stroke="#0284c7" strokeWidth="2.5" />
@@ -435,8 +431,8 @@ function ScanCycleSimulator() {
             </svg>
 
             <div className="mt-2 text-[11px] text-slate-600 space-y-1">
-              <div>• Biểu thức: <code className="bg-slate-200 px-1 py-0.5 rounded text-slate-800">Q0.0 := (I0.0 OR Q0.0) AND NOT I0.1</code></div>
-              <div>• Trạng thái tính toán: <strong className={piqMotor ? 'text-emerald-700' : 'text-slate-500'}>{piqMotor ? 'MOTOR = TRUE' : 'MOTOR = FALSE'}</strong></div>
+              <div>• Boolean Expression: <code className="bg-slate-200 px-1 py-0.5 rounded text-slate-800">Q0.0 := (I0.0 OR Q0.0) AND NOT I0.1</code></div>
+              <div>• Evaluated State: <strong className={piqMotor ? 'text-emerald-700' : 'text-slate-500'}>{piqMotor ? 'MOTOR = TRUE' : 'MOTOR = FALSE'}</strong></div>
             </div>
           </div>
 
@@ -444,16 +440,16 @@ function ScanCycleSimulator() {
           <div className="mt-4 pt-3 border-t border-slate-200">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-bold text-emerald-700 flex items-center gap-1">
-                <span>📝</span> Vùng đệm ảnh PIQ (Process Image Output)
+                <span>📝</span> Process Image Output (PIQ Buffer)
               </span>
-              <span className="text-[10px] text-slate-500">Chờ cập nhật cọc đấu dây</span>
+              <span className="text-[10px] text-slate-500">Awaiting terminal write</span>
             </div>
             <div className="grid grid-cols-2 gap-2 font-mono text-center text-xs">
               <div className={`p-1.5 rounded border ${piqMotor ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
-                PIQ.Q0.0 = {piqMotor ? '1 (BẬT)' : '0 (TẮT)'}
+                PIQ.Q0.0 = {piqMotor ? '1 (ON)' : '0 (OFF)'}
               </div>
               <div className={`p-1.5 rounded border ${piqAlarm ? 'bg-rose-50 border-rose-300 text-rose-800 font-bold' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
-                PIQ.Q0.1 = {piqAlarm ? '1 (CÒI HÚ)' : '0 (IM LẶNG)'}
+                PIQ.Q0.1 = {piqAlarm ? '1 (ALARM)' : '0 (QUIET)'}
               </div>
             </div>
           </div>
@@ -463,10 +459,10 @@ function ScanCycleSimulator() {
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 m-0 flex items-center gap-1.5">
-              <span>💡</span> 3. Thiết bị chấp hành vật lý
+              <span>💡</span> 3. Physical Actuators
             </h4>
             <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${phase === 3 ? 'bg-rose-600 text-white animate-pulse' : 'bg-slate-100 text-slate-600'}`}>
-              {phase === 3 ? 'Cập nhật DO' : 'Giữ trạng thái'}
+              {phase === 3 ? 'Updating DO' : 'Outputs Latched'}
             </span>
           </div>
 
@@ -479,14 +475,14 @@ function ScanCycleSimulator() {
                 <div className="flex items-center gap-2">
                   <span className={`text-2xl ${physicalMotor ? 'animate-spin' : ''}`}>⚙️</span>
                   <div>
-                    <div className="text-xs font-bold text-slate-800">ĐỘNG CƠ BĂNG TẢI (Q0.0)</div>
-                    <div className="text-[11px] text-slate-500">Contactor 3P 380VAC</div>
+                    <div className="text-xs font-bold text-slate-800">CONVEYOR MOTOR (Q0.0)</div>
+                    <div className="text-[11px] text-slate-500">3-Phase 380VAC Contactor</div>
                   </div>
                 </div>
                 <span className={`px-2 py-1 rounded text-xs font-bold ${
                   physicalMotor ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-600'
                 }`}>
-                  {physicalMotor ? 'ĐANG QUAY' : 'DỪNG'}
+                  {physicalMotor ? 'ENERGIZED' : 'STOPPED'}
                 </span>
               </div>
             </div>
@@ -499,22 +495,22 @@ function ScanCycleSimulator() {
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">{physicalAlarm ? '🚨' : '⚪'}</span>
                   <div>
-                    <div className="text-xs font-bold text-slate-800">ĐÈN / CÒI CẢNH BÁO (Q0.1)</div>
-                    <div className="text-[11px] text-slate-500">Đèn tháp 24VDC</div>
+                    <div className="text-xs font-bold text-slate-800">WARNING TOWER LIGHT (Q0.1)</div>
+                    <div className="text-[11px] text-slate-500">24VDC Strobe & Siren</div>
                   </div>
                 </div>
                 <span className={`px-2 py-1 rounded text-xs font-bold ${
                   physicalAlarm ? 'bg-rose-600 text-white' : 'bg-slate-200 text-slate-600'
                 }`}>
-                  {physicalAlarm ? 'BÁO ĐỘNG!' : 'BÌNH THƯỜNG'}
+                  {physicalAlarm ? 'ALARM ON' : 'NORMAL'}
                 </span>
               </div>
             </div>
 
             {/* Lesson Takeaway Card */}
             <div className="p-3 bg-amber-50/70 border border-amber-200 rounded-lg text-xs text-amber-900 leading-relaxed">
-              <strong className="block text-amber-950 font-bold mb-1">💡 Điểm mấu chốt của Vòng quét:</strong>
-              Nếu bạn nhấn rồi nhả nút <strong>START</strong> cực nhanh trong khi CPU đang ở Bước 2, PLC sẽ chỉ ghi nhận tín hiệu khi quay trở lại <strong>Bước 1</strong> ở chu kỳ tiếp theo!
+              <strong className="block text-amber-950 font-bold mb-1">💡 Key Scan Cycle Takeaway:</strong>
+              If you press and release the <strong>START</strong> button extremely fast while the CPU is executing Phase 2, the PLC will only catch the input when it loops back to <strong>Phase 1</strong> in the next cycle!
             </div>
           </div>
         </div>
@@ -524,20 +520,19 @@ function ScanCycleSimulator() {
 }
 
 /* ═════════════════════════════════════════════════════════════════════════
-   TAB 2: Control Loop Simulator (Hệ thống Vòng hở vs Vòng kín)
+   TAB 2: Control Loop Simulator (Open-Loop vs Closed-Loop)
 ═════════════════════════════════════════════════════════════════════════ */
 function ControlLoopSimulator() {
   const [isClosedLoop, setIsClosedLoop] = useState<boolean>(true);
-  const [setpoint, setSetpoint] = useState<number>(60); // 60°C
-  const [temp, setTemp] = useState<number>(25); // Current temp
-  const [heaterPower, setHeaterPower] = useState<number>(0); // 0-100%
-  const [disturbance, setDisturbance] = useState<boolean>(false); // Cold draft / door open
+  const [setpoint, setSetpoint] = useState<number>(60);
+  const [temp, setTemp] = useState<number>(25);
+  const [heaterPower, setHeaterPower] = useState<number>(0);
+  const [disturbance, setDisturbance] = useState<boolean>(false);
 
-  // Live simulation tick
   useEffect(() => {
     const timer = setInterval(() => {
       setTemp((currentTemp) => {
-        const ambient = disturbance ? 12 : 24; // If cold wind, ambient drops to 12°C
+        const ambient = disturbance ? 12 : 24;
         const coolingLoss = (currentTemp - ambient) * 0.08;
         const heatingGain = (heaterPower / 100) * 8.5;
         const newTemp = Math.max(10, Math.min(100, currentTemp + heatingGain - coolingLoss));
@@ -548,20 +543,17 @@ function ControlLoopSimulator() {
     return () => clearInterval(timer);
   }, [heaterPower, disturbance]);
 
-  // Controller algorithm
   useEffect(() => {
     if (isClosedLoop) {
-      // Closed loop: Proportional controller (P-control)
       const error = setpoint - temp;
       let power = 0;
       if (error > 0) {
-        power = Math.min(100, Math.max(0, error * 8)); // Kp = 8
+        power = Math.min(100, Math.max(0, error * 8));
       } else {
         power = 0;
       }
       setHeaterPower(Math.round(power));
     } else {
-      // Open loop: Fixed manual output power (e.g. 45% based on assumption)
       setHeaterPower(45);
     }
   }, [isClosedLoop, setpoint, temp]);
@@ -572,10 +564,10 @@ function ControlLoopSimulator() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl mb-6">
         <div>
           <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-0.5">
-            Lựa chọn chế độ điều khiển
+            Control Mode Selection
           </div>
           <h3 className="text-sm font-bold text-slate-900 m-0">
-            {isClosedLoop ? 'Hệ thống Điều khiển Vòng kín (Closed-Loop with Sensor Feedback)' : 'Hệ thống Điều khiển Vòng hở (Open-Loop Control)'}
+            {isClosedLoop ? 'Closed-Loop Control System (Sensor Feedback)' : 'Open-Loop Control System (No Feedback)'}
           </h3>
         </div>
 
@@ -588,7 +580,7 @@ function ControlLoopSimulator() {
                 : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
             }`}
           >
-            Vòng hở (Open-Loop)
+            Open-Loop
           </button>
           <button
             onClick={() => setIsClosedLoop(true)}
@@ -598,7 +590,7 @@ function ControlLoopSimulator() {
                 : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
             }`}
           >
-            Vòng kín (Closed-Loop)
+            Closed-Loop
           </button>
         </div>
       </div>
@@ -608,13 +600,13 @@ function ControlLoopSimulator() {
         {/* Setpoint & Disturbance */}
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
           <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-3 flex items-center gap-1.5">
-            <span>🎯</span> Giá trị đặt & Nhiễu tác động
+            <span>🎯</span> Setpoint & Disturbance
           </h4>
 
           <div className="space-y-4">
             <div>
               <div className="flex justify-between text-xs font-medium text-slate-600 mb-1">
-                <span>Nhiệt độ mong muốn (Setpoint):</span>
+                <span>Target Temperature (Setpoint):</span>
                 <span className="font-bold text-blue-700 font-mono">{setpoint}°C</span>
               </div>
               <input
@@ -628,7 +620,7 @@ function ControlLoopSimulator() {
             </div>
 
             <div className="pt-2 border-t border-slate-100">
-              <div className="text-xs font-medium text-slate-700 mb-2">Thử nghiệm gây nhiễu môi trường:</div>
+              <div className="text-xs font-medium text-slate-700 mb-2">Simulate Environmental Disturbance:</div>
               <button
                 onClick={() => setDisturbance(!disturbance)}
                 className={`w-full py-2 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-all ${
@@ -637,10 +629,10 @@ function ControlLoopSimulator() {
                     : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
                 }`}
               >
-                <span>{disturbance ? '❄️ ĐANG MỞ CỬA LÒ (Gió lạnh 12°C)' : '🚪 Cửa lò đang đóng kín'}</span>
+                <span>{disturbance ? '❄️ OVEN DOOR OPEN (Cold Draft 12°C)' : '🚪 Oven Door Closed'}</span>
               </button>
               <p className="text-[11px] text-slate-500 mt-1">
-                Nhấn để xem hệ thống phản ứng thế nào khi có nhiễu đột ngột xuất hiện!
+                Click to see how each control topology reacts when an unexpected disturbance occurs!
               </p>
             </div>
           </div>
@@ -649,7 +641,7 @@ function ControlLoopSimulator() {
         {/* Live Gauges */}
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between">
           <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2 flex items-center gap-1.5">
-            <span>🌡️</span> Trạng thái nhiệt độ thực tế (PV)
+            <span>🌡️</span> Actual Temperature (PV)
           </h4>
 
           <div className="text-center my-auto py-2">
@@ -657,12 +649,11 @@ function ControlLoopSimulator() {
               {temp}°C
             </div>
             <div className="text-xs font-semibold text-slate-500 mt-1">
-              Sai lệch: <span className={Math.abs(setpoint - temp) > 3 ? 'text-rose-600 font-bold' : 'text-emerald-600 font-bold'}>
+              Error e(t): <span className={Math.abs(setpoint - temp) > 3 ? 'text-rose-600 font-bold' : 'text-emerald-600 font-bold'}>
                 {(setpoint - temp).toFixed(1)}°C
               </span>
             </div>
 
-            {/* Visual Temperature Bar */}
             <div className="w-full bg-slate-100 h-3 rounded-full mt-3 overflow-hidden border border-slate-200">
               <div
                 className="h-full bg-linear-to-r from-blue-500 via-amber-500 to-rose-500 transition-all duration-300"
@@ -673,15 +664,15 @@ function ControlLoopSimulator() {
 
           <div className="text-[11px] text-slate-500 bg-slate-50 p-2 rounded border border-slate-100">
             {isClosedLoop
-              ? '✅ Cảm biến nhiệt gửi phản hồi liên tục về bộ so sánh.'
-              : '❌ Không có cảm biến phản hồi — bộ điều khiển không hề biết nhiệt độ thực.'}
+              ? '✅ Thermocouple sensor feeds actual temperature back to the comparator.'
+              : '❌ No feedback sensor — the controller has no knowledge of actual temperature.'}
           </div>
         </div>
 
         {/* Controller Output */}
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between">
           <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2 flex items-center gap-1.5">
-            <span>⚡</span> Tín hiệu điều khiển lò (MV)
+            <span>⚡</span> Heating Command (MV)
           </h4>
 
           <div className="text-center my-auto py-2">
@@ -689,10 +680,9 @@ function ControlLoopSimulator() {
               {heaterPower}%
             </div>
             <div className="text-xs font-semibold text-slate-500 mt-1">
-              Công suất thanh điện trở
+              Solid-State Relay Output Duty
             </div>
 
-            {/* Visual Power Bar */}
             <div className="w-full bg-slate-100 h-3 rounded-full mt-3 overflow-hidden border border-slate-200">
               <div
                 className="h-full bg-amber-500 transition-all duration-300"
@@ -704,11 +694,11 @@ function ControlLoopSimulator() {
           <div className="text-[11px] text-slate-600 bg-slate-50 p-2 rounded border border-slate-100">
             {isClosedLoop ? (
               <span>
-                Khi mở cửa lò lạnh, PLC tự động <strong>tăng công suất lên {heaterPower}%</strong> để bù lại nhiệt mất đi.
+                When the oven door opens, the PLC automatically <strong>boosts output to {heaterPower}%</strong> to compensate for heat loss.
               </span>
             ) : (
               <span>
-                Công suất cố định ở 45%. Khi gặp gió lạnh, lò bị nguội đi mà không thể tự bù nhiệt!
+                Output power is fixed at 45%. When cold wind enters, the chamber cools down with no ability to compensate!
               </span>
             )}
           </div>
@@ -718,19 +708,19 @@ function ControlLoopSimulator() {
       {/* Block Diagram SVG */}
       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
         <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">
-          Sơ đồ khối chức năng: {isClosedLoop ? 'Hệ thống Vòng kín (Closed-Loop Block Diagram)' : 'Hệ thống Vòng hở (Open-Loop Block Diagram)'}
+          Functional Block Diagram: {isClosedLoop ? 'Closed-Loop Feedback Architecture' : 'Open-Loop Architecture'}
         </h4>
 
         <div className="overflow-x-auto">
           <svg viewBox="0 0 760 170" className="w-full min-w-[650px] h-auto">
             {/* Setpoint Input */}
             <rect x="10" y="50" width="90" height="40" rx="6" fill="#f8fafc" stroke="#94a3b8" strokeWidth="1.5" />
-            <text x="55" y="68" fontSize="10" fontWeight="bold" textAnchor="middle" fill="#0f172a">Giá trị đặt SP</text>
+            <text x="55" y="68" fontSize="10" fontWeight="bold" textAnchor="middle" fill="#0f172a">Setpoint (SP)</text>
             <text x="55" y="82" fontSize="9" textAnchor="middle" fill="#0284c7" fontWeight="bold">{setpoint}°C</text>
 
-            <line x1="100" y1="70" x2="135" y2="70" stroke="#0284c7" strokeWidth="2" markerEnd="url(#arrow)" />
+            <line x1="100" y1="70" x2="135" y2="70" stroke="#0284c7" strokeWidth="2" />
 
-            {/* Comparator (Only active in closed loop) */}
+            {/* Comparator */}
             <circle cx="150" cy="70" r="14" fill={isClosedLoop ? '#eff6ff' : '#f1f5f9'} stroke={isClosedLoop ? '#0284c7' : '#94a3b8'} strokeWidth="2" />
             <text x="150" y="74" fontSize="14" fontWeight="bold" textAnchor="middle" fill={isClosedLoop ? '#0284c7' : '#94a3b8'}>
               {isClosedLoop ? 'Σ' : '—'}
@@ -738,48 +728,47 @@ function ControlLoopSimulator() {
 
             <line x1="164" y1="70" x2="195" y2="70" stroke="#0284c7" strokeWidth="2" />
 
-            {/* Controller (PLC) */}
+            {/* Controller */}
             <rect x="195" y="45" width="115" height="50" rx="8" fill="#eff6ff" stroke="#0284c7" strokeWidth="2" />
-            <text x="252" y="68" fontSize="11" fontWeight="bold" textAnchor="middle" fill="#1e3a8a">Bộ điều khiển</text>
+            <text x="252" y="68" fontSize="11" fontWeight="bold" textAnchor="middle" fill="#1e3a8a">Controller</text>
             <text x="252" y="82" fontSize="9" textAnchor="middle" fill="#0284c7">PLC S7-1200</text>
 
             <line x1="310" y1="70" x2="350" y2="70" stroke="#0284c7" strokeWidth="2" />
 
             {/* Actuator */}
             <rect x="350" y="45" width="105" height="50" rx="8" fill="#fef3c7" stroke="#d97706" strokeWidth="2" />
-            <text x="402" y="68" fontSize="11" fontWeight="bold" textAnchor="middle" fill="#78350f">Cơ cấu chấp hành</text>
-            <text x="402" y="82" fontSize="9" textAnchor="middle" fill="#d97706">SSR / Thanh nhiệt</text>
+            <text x="402" y="68" fontSize="11" fontWeight="bold" textAnchor="middle" fill="#78350f">Actuator</text>
+            <text x="402" y="82" fontSize="9" textAnchor="middle" fill="#d97706">SSR / Heating Coil</text>
 
             <line x1="455" y1="70" x2="495" y2="70" stroke="#d97706" strokeWidth="2" />
 
             {/* Process */}
             <rect x="495" y="40" width="115" height="60" rx="8" fill="#f0fdf4" stroke="#16a34a" strokeWidth="2" />
-            <text x="552" y="68" fontSize="11" fontWeight="bold" textAnchor="middle" fill="#14532d">Đối tượng</text>
-            <text x="552" y="82" fontSize="9" textAnchor="middle" fill="#16a34a">Lò sấy / Quá trình</text>
+            <text x="552" y="68" fontSize="11" fontWeight="bold" textAnchor="middle" fill="#14532d">Process</text>
+            <text x="552" y="82" fontSize="9" textAnchor="middle" fill="#16a34a">Thermal Chamber</text>
 
             <line x1="610" y1="70" x2="665" y2="70" stroke="#16a34a" strokeWidth="2" />
 
             {/* Controlled Output */}
             <rect x="665" y="50" width="85" height="40" rx="6" fill="#f8fafc" stroke="#94a3b8" strokeWidth="1.5" />
-            <text x="707" y="68" fontSize="10" fontWeight="bold" textAnchor="middle" fill="#0f172a">Đầu ra (PV)</text>
+            <text x="707" y="68" fontSize="10" fontWeight="bold" textAnchor="middle" fill="#0f172a">Output (PV)</text>
             <text x="707" y="82" fontSize="9" textAnchor="middle" fill="#16a34a" fontWeight="bold">{temp}°C</text>
 
             {/* Disturbance Arrow */}
             <line x1="552" y1="10" x2="552" y2="35" stroke={disturbance ? '#dc2626' : '#94a3b8'} strokeWidth="2" strokeDasharray="3 3" />
             <text x="552" y="8" fontSize="9" fontWeight="bold" textAnchor="middle" fill={disturbance ? '#dc2626' : '#64748b'}>
-              {disturbance ? '⚠️ Nhiễu: Gió lạnh 12°C' : 'Nhiễu (Disturbance)'}
+              {disturbance ? '⚠️ Disturbance: Cold Draft' : 'Disturbance'}
             </text>
 
-            {/* Feedback Loop (Closed loop only) */}
+            {/* Feedback Loop */}
             {isClosedLoop ? (
               <g>
                 <line x1="635" y1="70" x2="635" y2="135" stroke="#0284c7" strokeWidth="2" />
                 <line x1="635" y1="135" x2="480" y2="135" stroke="#0284c7" strokeWidth="2" />
                 
-                {/* Sensor block */}
                 <rect x="365" y="115" width="115" height="40" rx="6" fill="#eff6ff" stroke="#0284c7" strokeWidth="1.5" />
-                <text x="422" y="133" fontSize="10" fontWeight="bold" textAnchor="middle" fill="#1e3a8a">Cảm biến đo (Sensor)</text>
-                <text x="422" y="146" fontSize="8" textAnchor="middle" fill="#0284c7">Can nhiệt PT100 / K</text>
+                <text x="422" y="133" fontSize="10" fontWeight="bold" textAnchor="middle" fill="#1e3a8a">Sensor</text>
+                <text x="422" y="146" fontSize="8" textAnchor="middle" fill="#0284c7">PT100 / Thermocouple</text>
 
                 <line x1="365" y1="135" x2="150" y2="135" stroke="#0284c7" strokeWidth="2" />
                 <line x1="150" y1="135" x2="150" y2="88" stroke="#0284c7" strokeWidth="2" />
@@ -791,7 +780,7 @@ function ControlLoopSimulator() {
                 <line x1="635" y1="135" x2="150" y2="135" stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="4 4" />
                 <line x1="150" y1="135" x2="150" y2="88" stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="4 4" />
                 <text x="390" y="130" fontSize="10" fontWeight="bold" fill="#dc2626" textAnchor="middle">
-                  ❌ KHÔNG CÓ ĐƯỜNG PHẢN HỒI (NO FEEDBACK)
+                  ❌ NO FEEDBACK PATH
                 </text>
               </g>
             )}
@@ -803,7 +792,7 @@ function ControlLoopSimulator() {
 }
 
 /* ═════════════════════════════════════════════════════════════════════════
-   TAB 3: Relay Hardwired vs PLC Comparison (So sánh Tủ Rơ-le & PLC)
+   TAB 3: Relay Hardwired vs PLC Comparison
 ═════════════════════════════════════════════════════════════════════════ */
 function RelayVsPlcComparison() {
   const [requirementChanged, setRequirementChanged] = useState<boolean>(false);
@@ -815,15 +804,15 @@ function RelayVsPlcComparison() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
-              Tình huống thực tế trong nhà máy
+              Real-World Factory Scenario
             </span>
             <h3 className="text-sm font-bold text-slate-900 mt-1 mb-0.5">
-              Khởi động 2 động cơ: Yêu cầu thay đổi công nghệ đột xuất
+              Two-Motor Conveyor: Sudden Production Specification Change
             </h3>
             <p className="text-xs text-slate-600 m-0">
               {requirementChanged
-                ? 'Yêu cầu mới: Động cơ 1 chạy trước 5s -> Động cơ 2 chạy. KHI DỪNG: Động cơ 2 phải dừng trước, 3s sau Động cơ 1 mới được dừng.'
-                : 'Yêu cầu ban đầu: Nhấn Start -> Động cơ 1 chạy. Sau 5 giây, Động cơ 2 tự động khởi động theo.'}
+                ? 'New Specification: Motor 1 starts first -> 5s delay -> Motor 2 starts. UPON STOP: Motor 2 must stop first, 3s delay before Motor 1 stops.'
+                : 'Initial Specification: Press Start -> Motor 1 starts. After 5 seconds, Motor 2 starts automatically.'}
             </p>
           </div>
 
@@ -835,7 +824,7 @@ function RelayVsPlcComparison() {
                 : 'bg-blue-600 text-white hover:bg-blue-700'
             }`}
           >
-            {requirementChanged ? '↺ Quay lại yêu cầu ban đầu' : '⚡ Yêu cầu Khách hàng Đổi công nghệ'}
+            {requirementChanged ? '↺ Revert to Initial Spec' : '⚡ Request Engineering Change'}
           </button>
         </div>
       </div>
@@ -849,42 +838,41 @@ function RelayVsPlcComparison() {
               <div className="flex items-center gap-2">
                 <span className="text-xl">🗄️</span>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900 m-0">1. Tủ Điều khiển Rơ-le Cứng (Hardwired)</h4>
-                  <span className="text-[11px] text-slate-500">Mạch rơ-le trung gian & contactor</span>
+                  <h4 className="text-sm font-bold text-slate-900 m-0">1. Hardwired Relay Cabinet</h4>
+                  <span className="text-[11px] text-slate-500">Electromechanical timers & contactors</span>
                 </div>
               </div>
               <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded">
-                Công nghệ trước 1970
+                Pre-1970 Technology
               </span>
             </div>
 
-            {/* Visual Representation */}
             <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 mb-4 font-mono text-xs">
-              <div className="text-[11px] font-sans font-bold text-slate-700 mb-2">Trạng thái tủ điện:</div>
+              <div className="text-[11px] font-sans font-bold text-slate-700 mb-2">Panel Status:</div>
               {requirementChanged ? (
                 <div className="space-y-2 text-rose-700 bg-rose-50 p-2.5 rounded border border-rose-200 text-[11px]">
                   <div className="font-bold flex items-center gap-1.5">
-                    <span>🛑</span> PHẢI CẮT NGUỒN & ĐẤU LẠI DÂY VẬT LÝ:
+                    <span>🛑</span> MANDATORY SHUTDOWN & PHYSICAL REWIRING:
                   </div>
-                  <div>• Mua thêm: 1 Rơ-le thời gian OFF-Delay + 2 Rơ-le kiếng phụ.</div>
-                  <div>• Tháo gỡ 14 đầu cosse dây điện cũ, đi máng dây mới.</div>
-                  <div>• Thời gian dừng máy: <strong>3 – 4 giờ</strong> (tổn thất sản xuất).</div>
-                  <div>• Nguy cơ đấu sai sót, rơ-le cơ khí bị kẹt tiếp điểm theo thời gian.</div>
+                  <div>• Purchase: 1 OFF-delay pneumatic timer + 2 auxiliary ice-cube relays.</div>
+                  <div>• Remove 14 existing terminal ferrules, install new wire ducts.</div>
+                  <div>• Factory Line Downtime: <strong>3 – 4 Hours</strong> (costly production loss).</div>
+                  <div>• High risk of wiring errors, mechanical contact pitting over time.</div>
                 </div>
               ) : (
                 <div className="space-y-1.5 text-slate-600 text-[11px]">
-                  <div>• Tủ điện kích thước lớn (600x800mm), nặng nề.</div>
-                  <div>• Hàng chục rơ-le trung gian, dây điện chằng chịt trong máng.</div>
-                  <div>• Tiêu hao điện liên tục để giữ cuộn hút rơ-le đóng.</div>
-                  <div>• Khó tìm điểm lỗi khi một tiếp điểm bị move rỉ sét.</div>
+                  <div>• Bulky floor-standing enclosure (800x1200mm).</div>
+                  <div>• Dozens of relays with complex point-to-point copper wiring.</div>
+                  <div>• Continuous power consumption energizing mechanical coils.</div>
+                  <div>• Difficult troubleshooting when contacts oxidize or fail.</div>
                 </div>
               )}
             </div>
           </div>
 
           <div className="p-3 bg-slate-100 rounded-lg text-xs text-slate-600">
-            <strong className="text-slate-800 block mb-0.5">Hạn chế cốt lõi:</strong>
-            Logic điều khiển bị "khóa cứng" trong các sợi dây đồng nối giữa các linh kiện. Muốn đổi thuật toán bắt buộc phải thay đổi phần cứng!
+            <strong className="text-slate-800 block mb-0.5">Core Limitation:</strong>
+            Control logic is permanently locked into copper wires. Any algorithmic modification demands costly physical rewiring and machine downtime!
           </div>
         </div>
 
@@ -895,42 +883,41 @@ function RelayVsPlcComparison() {
               <div className="flex items-center gap-2">
                 <span className="text-xl">💻</span>
                 <div>
-                  <h4 className="text-sm font-bold text-blue-950 m-0">2. Điều khiển Lập trình PLC S7-1200</h4>
-                  <span className="text-[11px] text-blue-700 font-medium">Logic nằm trong Bộ nhớ phần mềm</span>
+                  <h4 className="text-sm font-bold text-blue-950 m-0">2. Programmable Controller (PLC)</h4>
+                  <span className="text-[11px] text-blue-700 font-medium">Logic Resides in Software Memory</span>
                 </div>
               </div>
               <span className="text-[10px] font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded">
-                Chuẩn công nghiệp hiện đại
+                Modern Standard
               </span>
             </div>
 
-            {/* Visual Representation */}
             <div className="p-3 bg-blue-50/50 rounded-lg border border-blue-100 mb-4 font-mono text-xs">
-              <div className="text-[11px] font-sans font-bold text-slate-700 mb-2">Trạng thái hệ thống PLC:</div>
+              <div className="text-[11px] font-sans font-bold text-slate-700 mb-2">PLC System Status:</div>
               {requirementChanged ? (
                 <div className="space-y-2 text-emerald-800 bg-emerald-50 p-2.5 rounded border border-emerald-200 text-[11px]">
                   <div className="font-bold flex items-center gap-1.5">
-                    <span>⚡</span> DÂY ĐIỆN VẬT LÝ GIỮ NGUYÊN 100%:
+                    <span>⚡</span> FIELD WIRING UNTOUCHED (100% PRESERVED):
                   </div>
-                  <div>• Không cần chạm tay vào 1 sợi dây điện nào trong tủ!</div>
-                  <div>• Mở TIA Portal, sửa 2 Network trong khối OB1 (thêm khối TOF).</div>
-                  <div>• Bấm <strong>Download</strong> nạp xuống PLC mất đúng <strong>10 giây</strong>.</div>
-                  <div>• Hoạt động bền bỉ, tuổi thọ điện tử hàng triệu chu kỳ đóng cắt.</div>
+                  <div>• No physical rewiring required!</div>
+                  <div>• Open TIA Portal, insert a TOF timer block into OB1.</div>
+                  <div>• Download to CPU in <strong>10 Seconds</strong> without interrupting field cables.</div>
+                  <div>• Solid-state reliability: millions of trouble-free switching operations.</div>
                 </div>
               ) : (
                 <div className="space-y-1.5 text-slate-600 text-[11px]">
-                  <div>• Kích thước nhỏ gọn gắn vừa thanh ray DIN TS35 tiêu chuẩn.</div>
-                  <div>• Dây đấu nối tối giản: cảm biến nối vào DI, động cơ nối vào DO.</div>
-                  <div>• Giám sát online (Go Online) xem trạng thái logic thời gian thực.</div>
-                  <div>• Tích hợp sẵn bộ nhớ lưu trữ, truyền thông Ethernet PROFINET.</div>
+                  <div>• Compact DIN-rail footprint (110x100mm).</div>
+                  <div>• Minimal wiring: sensors wired to DI, contactors wired to DO.</div>
+                  <div>• Real-time online monitoring (Go Online) with Watch Tables.</div>
+                  <div>• Native Ethernet PROFINET networking and diagnostic buffer.</div>
                 </div>
               )}
             </div>
           </div>
 
           <div className="p-3 bg-blue-50 rounded-lg text-xs text-blue-900 border border-blue-100">
-            <strong className="text-blue-950 block mb-0.5">Ưu thế mang tính cách mạng:</strong>
-            Mục tiêu học PLC không đơn thuần là học một ngôn ngữ lập trình, mà là học cách đưa logic vào bộ nhớ để <strong>biến việc thay đổi công nghệ trở nên cực kỳ rẻ và tức thì</strong>!
+            <strong className="text-blue-950 block mb-0.5">Revolutionary Advantage:</strong>
+            Learning PLC is not merely learning a syntax; it is learning how to place logic in memory to <strong>make operational changes fast, inexpensive, and risk-free</strong>!
           </div>
         </div>
       </div>
@@ -939,7 +926,7 @@ function RelayVsPlcComparison() {
 }
 
 /* ═════════════════════════════════════════════════════════════════════════
-   TAB 4: Hardware Architecture & Status LEDs (Cấu trúc & Đèn LED)
+   TAB 4: Hardware Architecture & Status LEDs
 ═════════════════════════════════════════════════════════════════════════ */
 function HardwareAndLedExplorer() {
   const [cpuMode, setCpuMode] = useState<'run' | 'stop' | 'error' | 'maint'>('run');
@@ -947,50 +934,50 @@ function HardwareAndLedExplorer() {
 
   const blocks: Record<string, { title: string; desc: string; specs: string[] }> = {
     cpu: {
-      title: 'Khối Vi xử lý Trung tâm (CPU & Microprocessor)',
-      desc: 'Bộ não của PLC S7-1200 thực thi hệ điều hành thời gian thực (RTOS) và chương trình người dùng được biên dịch sẵn.',
+      title: 'Central Processing Unit (CPU & Microprocessor)',
+      desc: 'The central brain of the S7-1200 executing a real-time deterministic operating system (RTOS) and compiled user OB1 rungs.',
       specs: [
-        'Tốc độ xử lý: ~0.08 µs / lệnh boolean',
-        'Bộ nhớ Work Memory: 100 KB RAM tốc độ cao',
-        'Bộ nhớ Load Memory: 4 MB Flash (mở rộng tới 32 GB bằng thẻ SD)',
-        'Bộ nhớ Retentive: 10 KB giữ dữ liệu khi mất nguồn (không cần pin dự phòng)',
+        'Execution speed: ~0.08 µs per boolean instruction',
+        'Work Memory: 100 KB high-speed RAM',
+        'Load Memory: 4 MB internal Flash (expandable up to 32 GB via SD card)',
+        'Retentive Memory: 10 KB NVRAM (retains setpoints on power loss without battery)',
       ],
     },
     power: {
-      title: 'Khối Nguồn cấp (Power Supply Module)',
-      desc: 'Biến đổi nguồn 220VAC hoặc nhận nguồn 24VDC công nghiệp để hạ áp nuôi vi xử lý và cấp nguồn cảm biến phụ trợ.',
+      title: 'Power Supply Module',
+      desc: 'Regulates industrial 24VDC or 120/230VAC mains to provide isolated internal voltages for the processor and auxiliary sensors.',
       specs: [
-        'Điện áp cấp: 24 VDC (hoặc 120/230 VAC tùy mã CPU)',
-        'Dải dung sai cho phép: 20.4 VDC – 28.8 VDC',
-        'Nguồn ra phụ L+/M: 24 VDC, tối đa 400 mA nuôi cảm biến',
+        'Supply Voltage: 24 VDC (or 120/230 VAC depending on CPU part number)',
+        'Permissible range: 20.4 VDC – 28.8 VDC',
+        'Auxiliary Sensor Power Output: 24 VDC, up to 400 mA',
       ],
     },
     di: {
-      title: 'Khối Ngõ vào Số (Digital Input Module)',
-      desc: 'Giao tiếp với nút ấn, công tắc hành trình, cảm biến quang/tiệm cận. Cách ly quang học để bảo vệ CPU khỏi xung sét lan truyền.',
+      title: 'Digital Input Section (14 DI · 24VDC)',
+      desc: 'Interfaces field switches, pushbuttons, and proximity sensors. Optocouplers provide galvanic isolation against high-voltage surges.',
       specs: [
-        '14 ngõ vào số 24VDC (Sink hoặc Source theo chân 1M)',
-        'Mức logic 0: 0 – 5 VDC (dưới 1 mA)',
-        'Mức logic 1: 15 – 30 VDC (dòng kích 4 mA)',
-        'Tích hợp 6 bộ đếm tốc độ cao HSC (High Speed Counter) tới 100 kHz',
+        '14 integrated digital inputs 24VDC (Sink or Source via 1M terminal)',
+        'Logic 0 threshold: 0 – 5 VDC (< 1 mA)',
+        'Logic 1 threshold: 15 – 30 VDC (4 mA nominal)',
+        '6 integrated High-Speed Counters (HSC) up to 100 kHz',
       ],
     },
     do: {
-      title: 'Khối Ngõ ra Số (Digital Output Module)',
-      desc: 'Xuất tín hiệu đóng cắt điều khiển rơ-le trung gian, van khí nén hoặc ngõ vào biến tần.',
+      title: 'Digital Output Section (10 DO · Transistor 0.5A)',
+      desc: 'Solid-state transistor outputs switching 24VDC to drive auxiliary relays, solenoid valves, or VFD control terminals.',
       specs: [
-        '10 ngõ ra transistor 24VDC (hoặc rơ-le 2A đối với mã CPU ...-1BE40)',
-        'Dòng tải tối đa: 0.5A / ngõ ra transistor',
-        'Hỗ trợ 4 kênh phát xung tốc độ cao PTO/PWM tới 100 kHz',
+        '10 integrated transistor outputs (or 2A mechanical relays on ...-1BE40 models)',
+        'Current capacity: 0.5A per transistor channel',
+        'Supports 4 high-speed pulse outputs (PTO/PWM) up to 100 kHz',
       ],
     },
     profinet: {
-      title: 'Cổng Truyền thông PROFINET (RJ45 Port)',
-      desc: 'Giao tiếp mạng công nghiệp thời gian thực dựa trên Ethernet, dùng để nạp code từ TIA Portal, kết nối HMI và biến tần.',
+      title: 'PROFINET Communication Port (RJ45)',
+      desc: 'Real-time Industrial Ethernet port for engineering software (TIA Portal), HMI connection, and decentralized I/O.',
       specs: [
-        'Tốc độ: 10/100 Mbit/s Full Duplex',
-        'Giao thức hỗ trợ: PROFINET IO Controller/Device, S7 Communication, Modbus TCP, Open User Comms',
-        'Đầu cắm chuẩn RJ45 công nghiệp có chống nhiễu',
+        'Data Rate: 10/100 Mbit/s Full Duplex with Auto-Crossover',
+        'Protocols: PROFINET IO Controller/Device, S7 Communication, Modbus TCP, Open User Comms',
+        'Shielded RJ45 industrial standard',
       ],
     },
   };
@@ -1000,8 +987,8 @@ function HardwareAndLedExplorer() {
       {/* Interactive LED State Selector */}
       <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl mb-6">
         <div>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Chẩn đoán sự cố</span>
-          <h3 className="text-sm font-bold text-slate-900 m-0">Kiểm tra trạng thái các Đèn LED trên mặt trước CPU</h3>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Diagnostics</span>
+          <h3 className="text-sm font-bold text-slate-900 m-0">Inspect CPU Status LED Indicators</h3>
         </div>
 
         <div className="flex items-center gap-2">
@@ -1011,7 +998,7 @@ function HardwareAndLedExplorer() {
               cpuMode === 'run' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-white border border-slate-300 text-slate-700'
             }`}
           >
-            🟢 RUN (Bình thường)
+            🟢 RUN (Normal)
           </button>
           <button
             onClick={() => setCpuMode('stop')}
@@ -1019,7 +1006,7 @@ function HardwareAndLedExplorer() {
               cpuMode === 'stop' ? 'bg-amber-500 text-white shadow-xs' : 'bg-white border border-slate-300 text-slate-700'
             }`}
           >
-            🟡 STOP (Dừng CPU)
+            🟡 STOP (Halted)
           </button>
           <button
             onClick={() => setCpuMode('error')}
@@ -1027,7 +1014,7 @@ function HardwareAndLedExplorer() {
               cpuMode === 'error' ? 'bg-rose-600 text-white shadow-xs animate-pulse' : 'bg-white border border-slate-300 text-slate-700'
             }`}
           >
-            🔴 ERROR (Lỗi hệ thống)
+            🔴 ERROR (Fault)
           </button>
           <button
             onClick={() => setCpuMode('maint')}
@@ -1035,7 +1022,7 @@ function HardwareAndLedExplorer() {
               cpuMode === 'maint' ? 'bg-amber-600 text-white shadow-xs' : 'bg-white border border-slate-300 text-slate-700'
             }`}
           >
-            🟠 MAINT (Bảo trì/Thẻ)
+            🟠 MAINT (Maintenance)
           </button>
         </div>
       </div>
@@ -1043,16 +1030,16 @@ function HardwareAndLedExplorer() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left: Interactive Front Panel Elevation (SVG) */}
         <div className="lg:col-span-7 bg-slate-100/70 p-4 rounded-xl border border-slate-200 flex flex-col items-center">
-          <div className="text-xs font-bold text-slate-700 mb-2">Nhấp vào từng bộ phận trên CPU để tra cứu:</div>
+          <div className="text-xs font-bold text-slate-700 mb-2">Click on any section to inspect technical specifications:</div>
           
           <svg viewBox="0 0 340 320" className="w-full max-w-[340px] h-auto drop-shadow-sm select-none">
             {/* CPU Chassis Base */}
             <rect x="20" y="20" width="300" height="280" rx="10" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="2" />
             
-            {/* Top Terminal Strip (Power & Digital Inputs) */}
+            {/* Top Terminal Strip */}
             <g onClick={() => setSelectedBlock('di')} className="cursor-pointer group">
               <rect x="35" y="30" width="270" height="40" rx="4" fill={selectedBlock === 'di' ? '#bae6fd' : '#f8fafc'} stroke="#64748b" strokeWidth="1.5" />
-              <text x="170" y="54" fontSize="10" fontWeight="bold" textAnchor="middle" fill="#0369a1">CẦU ĐẤU NGÕ VÀO (14 DI · 24VDC)</text>
+              <text x="170" y="54" fontSize="10" fontWeight="bold" textAnchor="middle" fill="#0369a1">INPUT TERMINAL STRIP (14 DI · 24VDC)</text>
             </g>
 
             {/* Central Display & Logo Area */}
@@ -1065,7 +1052,6 @@ function HardwareAndLedExplorer() {
 
             {/* Diagnostic LED Indicators */}
             <g transform="translate(185, 92)">
-              {/* RUN/STOP LED */}
               <circle
                 cx="15" cy="12" r="5"
                 fill={cpuMode === 'run' ? '#16a34a' : cpuMode === 'stop' ? '#eab308' : '#94a3b8'}
@@ -1073,7 +1059,6 @@ function HardwareAndLedExplorer() {
               />
               <text x="26" y="15" fontSize="8" fontWeight="bold" fill="#1e293b">RUN/STOP</text>
 
-              {/* ERROR LED */}
               <circle
                 cx="15" cy="27" r="5"
                 fill={cpuMode === 'error' ? '#dc2626' : '#94a3b8'}
@@ -1082,7 +1067,6 @@ function HardwareAndLedExplorer() {
               />
               <text x="26" y="30" fontSize="8" fontWeight="bold" fill={cpuMode === 'error' ? '#dc2626' : '#64748b'}>ERROR</text>
 
-              {/* MAINT LED */}
               <circle
                 cx="15" cy="42" r="5"
                 fill={cpuMode === 'maint' ? '#f59e0b' : '#94a3b8'}
@@ -1091,48 +1075,48 @@ function HardwareAndLedExplorer() {
               <text x="26" y="45" fontSize="8" fontWeight="bold" fill="#64748b">MAINT</text>
             </g>
 
-            {/* CPU Core Block Clickable */}
+            {/* CPU Core Block */}
             <g onClick={() => setSelectedBlock('cpu')} className="cursor-pointer">
               <rect x="50" y="150" width="130" height="65" rx="6" fill={selectedBlock === 'cpu' ? '#dbeafe' : '#ffffff'} stroke="#3b82f6" strokeWidth="1.5" />
-              <text x="115" y="178" fontSize="10" fontWeight="bold" textAnchor="middle" fill="#1e40af">CPU & BỘ NHỚ</text>
+              <text x="115" y="178" fontSize="10" fontWeight="bold" textAnchor="middle" fill="#1e40af">CPU & MEMORY</text>
               <text x="115" y="195" fontSize="8" textAnchor="middle" fill="#64748b">Load / Work / Retentive</text>
             </g>
 
-            {/* PROFINET Port Clickable */}
+            {/* PROFINET Port */}
             <g onClick={() => setSelectedBlock('profinet')} className="cursor-pointer">
               <rect x="195" y="150" width="110" height="65" rx="6" fill={selectedBlock === 'profinet' ? '#ccfbf1' : '#ffffff'} stroke="#0d9488" strokeWidth="1.5" />
               <text x="250" y="178" fontSize="10" fontWeight="bold" textAnchor="middle" fill="#0f766e">PROFINET</text>
-              <text x="250" y="195" fontSize="8" textAnchor="middle" fill="#64748b">Cổng RJ45 (100Mbps)</text>
+              <text x="250" y="195" fontSize="8" textAnchor="middle" fill="#64748b">RJ45 Port (100Mbps)</text>
             </g>
 
-            {/* Bottom Terminal Strip (Digital Outputs & Power Out) */}
+            {/* Bottom Terminal Strip */}
             <g onClick={() => setSelectedBlock('do')} className="cursor-pointer">
               <rect x="35" y="235" width="270" height="40" rx="4" fill={selectedBlock === 'do' ? '#fee2e2' : '#f8fafc'} stroke="#64748b" strokeWidth="1.5" />
-              <text x="170" y="259" fontSize="10" fontWeight="bold" textAnchor="middle" fill="#991b1b">CẦU ĐẤU NGÕ RA (10 DO · TRANSISTOR 0.5A)</text>
+              <text x="170" y="259" fontSize="10" fontWeight="bold" textAnchor="middle" fill="#991b1b">OUTPUT TERMINAL STRIP (10 DO · TRANSISTOR 0.5A)</text>
             </g>
           </svg>
 
           {/* LED Diagnosis Description */}
           <div className="w-full mt-3 p-3 bg-white rounded-lg border border-slate-200 text-xs">
-            <strong className="text-slate-900 block mb-1">Ý nghĩa chẩn đoán thực tế của đèn LED hiện tại:</strong>
+            <strong className="text-slate-900 block mb-1">Diagnostic Meaning of Current LED Pattern:</strong>
             {cpuMode === 'run' && (
               <p className="text-emerald-800 m-0">
-                🟢 <strong>RUN (Xanh lá sáng liên tục):</strong> CPU đang thực thi chương trình OB1 bình thường. Mọi ngõ ra được cập nhật theo logic.
+                🟢 <strong>RUN (Solid Green):</strong> The CPU is actively executing the OB1 user program. Field outputs are updated cyclically.
               </p>
             )}
             {cpuMode === 'stop' && (
               <p className="text-amber-800 m-0">
-                🟡 <strong>STOP (Vàng sáng liên tục):</strong> CPU bị tạm dừng (người dùng chuyển chế độ từ TIA Portal hoặc thiếu OB xử lý lỗi). Tất cả ngõ ra DO bị ngắt về 0V an toàn.
+                🟡 <strong>STOP (Solid Yellow):</strong> The CPU is halted. All digital and analog outputs are forced into a safe de-energized state (0V).
               </p>
             )}
             {cpuMode === 'error' && (
               <p className="text-rose-800 m-0">
-                🔴 <strong>ERROR (Đỏ nhấp nháy):</strong> Đang có lỗi phần cứng (đứt dây sensor, mất module mở rộng, tràn bộ nhớ hoặc lỗi chia cho 0 trong logic). Cần mở <em>Diagnostic Buffer</em> trên TIA Portal để đọc mã lỗi!
+                🔴 <strong>ERROR (Flashing Red):</strong> Hardware fault, wire break, expansion module timeout, or fatal programming error (e.g. divide-by-zero). Open TIA Portal <em>Diagnostic Buffer</em> to read the event timestamp!
               </p>
             )}
             {cpuMode === 'maint' && (
               <p className="text-amber-800 m-0">
-                🟠 <strong>MAINT (Vàng):</strong> Nhắc nhở bảo trì, pin nuôi đồng hồ thời gian thực yếu, hoặc thẻ nhớ Micro SD chưa được gán đúng định dạng.
+                🟠 <strong>MAINT (Solid Yellow):</strong> Maintenance demanded, RTC backup capacitor discharged, or unformatted Memory Card detected.
               </p>
             )}
           </div>
@@ -1143,9 +1127,9 @@ function HardwareAndLedExplorer() {
           <div>
             <div className="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
               <span className="text-[11px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
-                Chi tiết kỹ thuật
+                Technical Specifications
               </span>
-              <span className="text-xs text-slate-400 font-mono">Catalog S7-1200</span>
+              <span className="text-xs text-slate-400 font-mono">S7-1200 Catalog</span>
             </div>
 
             <h3 className="text-base font-bold text-slate-900 mb-2">
@@ -1157,7 +1141,7 @@ function HardwareAndLedExplorer() {
             </p>
 
             <div className="space-y-2">
-              <div className="text-xs font-bold text-slate-700">Thông số kỹ thuật tiêu chuẩn:</div>
+              <div className="text-xs font-bold text-slate-700">Catalog Parameters:</div>
               <ul className="m-0 p-0 list-none space-y-1.5 text-xs text-slate-600">
                 {blocks[selectedBlock].specs.map((spec, i) => (
                   <li key={i} className="flex items-start gap-2">
@@ -1170,7 +1154,7 @@ function HardwareAndLedExplorer() {
           </div>
 
           <div className="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-500">
-            💡 Nhấp vào các khối khác trên hình vẽ CPU bên cạnh để khám phá thêm!
+            💡 Click on other sections on the interactive CPU illustration to inspect!
           </div>
         </div>
       </div>
@@ -1201,8 +1185,8 @@ function IecLanguagesShowcase() {
       {/* Header & Language Tabs */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl mb-6">
         <div>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Tiêu chuẩn quốc tế IEC 61131-3</span>
-          <h3 className="text-sm font-bold text-slate-900 m-0">So sánh 3 ngôn ngữ lập trình trên cùng một bài toán</h3>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">IEC 61131-3 Standard</span>
+          <h3 className="text-sm font-bold text-slate-900 m-0">Comparing 3 Standard Languages on the Same Circuit</h3>
         </div>
 
         <div className="flex items-center gap-1.5 bg-slate-200/80 p-1 rounded-xl">
@@ -1220,7 +1204,7 @@ function IecLanguagesShowcase() {
               selectedLang === 'fbd' ? 'bg-white text-blue-700 shadow-xs' : 'text-slate-600'
             }`}
           >
-            FBD (Khối hàm Logic)
+            FBD (Function Block)
           </button>
           <button
             onClick={() => setSelectedLang('scl')}
@@ -1228,28 +1212,28 @@ function IecLanguagesShowcase() {
               selectedLang === 'scl' ? 'bg-white text-blue-700 shadow-xs' : 'text-slate-600'
             }`}
           >
-            SCL (Văn bản có cấu trúc)
+            SCL (Structured Text)
           </button>
         </div>
       </div>
 
       {/* Interactive circuit tester */}
       <div className="flex items-center gap-3 mb-4 p-3 bg-blue-50/60 border border-blue-200 rounded-lg text-xs">
-        <span className="font-bold text-blue-900">Thử nghiệm tương tác:</span>
+        <span className="font-bold text-blue-900">Interactive Circuit Test:</span>
         <button
           onClick={handleStart}
           className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded shadow-xs"
         >
-          Nhấn nút START
+          Press START Button
         </button>
         <button
           onClick={handleStop}
           className="px-3 py-1 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded shadow-xs"
         >
-          Nhấn nút STOP
+          Press STOP Button
         </button>
         <div className="ml-auto flex items-center gap-2">
-          <span>Trạng thái động cơ:</span>
+          <span>Motor State:</span>
           <span className={`px-2 py-0.5 rounded font-bold font-mono ${isMotorOn ? 'bg-emerald-600 text-white animate-pulse' : 'bg-slate-200 text-slate-700'}`}>
             {isMotorOn ? 'RUNNING (Q0.0=1)' : 'STOPPED (Q0.0=0)'}
           </span>
@@ -1262,10 +1246,10 @@ function IecLanguagesShowcase() {
           <div>
             <div className="flex items-center justify-between mb-3">
               <div>
-                <h4 className="text-sm font-bold text-slate-900 m-0">LAD — Ladder Diagram (Sơ đồ hình thang)</h4>
-                <p className="text-xs text-slate-500 m-0">Mô phỏng đường cấp nguồn và các tiếp điểm rơ-le. Phổ biến nhất tại Việt Nam.</p>
+                <h4 className="text-sm font-bold text-slate-900 m-0">LAD — Ladder Diagram</h4>
+                <p className="text-xs text-slate-500 m-0">Simulates electromechanical relay contact rails. Most widely used in industrial electrical engineering.</p>
               </div>
-              <span className="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded">Ngành Điện - Tự động</span>
+              <span className="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded">Electrical & Controls</span>
             </div>
 
             <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
@@ -1322,10 +1306,10 @@ function IecLanguagesShowcase() {
           <div>
             <div className="flex items-center justify-between mb-3">
               <div>
-                <h4 className="text-sm font-bold text-slate-900 m-0">FBD — Function Block Diagram (Sơ đồ khối hàm)</h4>
-                <p className="text-xs text-slate-500 m-0">Dựa trên các cổng logic điện tử số (AND, OR, NOT). Rất trực quan với kỹ sư điện tử.</p>
+                <h4 className="text-sm font-bold text-slate-900 m-0">FBD — Function Block Diagram</h4>
+                <p className="text-xs text-slate-500 m-0">Based on interconnected boolean logic gates (AND, OR, NOT). Natural for electronics engineers.</p>
               </div>
-              <span className="text-[10px] bg-purple-100 text-purple-800 font-bold px-2 py-0.5 rounded">Ngành Điện tử - Điều khiển</span>
+              <span className="text-[10px] bg-purple-100 text-purple-800 font-bold px-2 py-0.5 rounded">Digital Electronics</span>
             </div>
 
             <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
@@ -1363,27 +1347,27 @@ function IecLanguagesShowcase() {
           <div>
             <div className="flex items-center justify-between mb-3">
               <div>
-                <h4 className="text-sm font-bold text-slate-900 m-0">SCL — Structured Control Language (Ngôn ngữ có cấu trúc)</h4>
-                <p className="text-xs text-slate-500 m-0">Dạng văn bản cấp cao tương tự Pascal / C. Cực mạnh khi xử lý công thức toán, mảng và thuật toán phức tạp.</p>
+                <h4 className="text-sm font-bold text-slate-900 m-0">SCL — Structured Control Language</h4>
+                <p className="text-xs text-slate-500 m-0">High-level structured text resembling Pascal / C. Powerful for math formulas, arrays, and algorithms.</p>
               </div>
-              <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">Ngành Công nghệ thông tin</span>
+              <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">Computer Science & Algorithms</span>
             </div>
 
             <div className="p-4 bg-slate-900 rounded-lg font-mono text-xs text-emerald-400 overflow-x-auto">
               <pre className="m-0 leading-relaxed">
 {`// ─────────────────────────────────────────────────────────────
-// S7-1200 SCL: Mạch khởi động và tự giữ động cơ
+// S7-1200 SCL: Motor Start / Seal-In Interlock Logic
 // ─────────────────────────────────────────────────────────────
 IF ("btn_Start" OR "motor_Q0_0") AND NOT "btn_Stop" THEN
-    "motor_Q0_0" := TRUE;   // Động cơ được kích hoạt và tự giữ
+    "motor_Q0_0" := TRUE;   // Motor latched and running
 ELSE
-    "motor_Q0_0" := FALSE;  // Ngắt động cơ khi nhấn nút Stop
+    "motor_Q0_0" := FALSE;  // Stop command overrides and unlatches
 END_IF;
 
-// Trạng thái biến thực tế hiện tại:
+// Evaluated Variable States:
 "btn_Start"  := ${isStartPressed ? 'TRUE' : 'FALSE'};
 "btn_Stop"   := FALSE;
-"motor_Q0_0" => ${isMotorOn ? 'TRUE (Đang chạy 380V)' : 'FALSE (Đang dừng)'};`}
+"motor_Q0_0" => ${isMotorOn ? 'TRUE (Active 380VAC)' : 'FALSE (De-energized)'};`}
               </pre>
             </div>
           </div>

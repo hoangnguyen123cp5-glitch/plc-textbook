@@ -19,1595 +19,1576 @@ export interface LessonContent {
 export const lessonContent: Record<string, LessonContent> = {
 
   '01-programmable-control': {
-    overview:
-      'Mọi máy móc tự động hóa trong thực tế — từ thang máy, máy giặt công nghiệp đến dây chuyền chiết rót đóng chai — đều là một hệ thống điều khiển: thiết bị có khả năng đo lường, ra quyết định và thực thi hành động. Bài học này xây dựng nền tảng lý thuyết cốt lõi cho toàn bộ khóa học: Khái niệm hệ thống điều khiển vòng hở và vòng kín, lý do ngành công nghiệp từ bỏ các tủ rơ-le cồng kềnh để chuyển sang bộ điều khiển lập trình (PLC), cấu trúc phần cứng bên trong một CPU PLC, và đặc biệt là cơ chế vòng quét (Scan Cycle) — nguồn gốc của hơn 90% lỗi tư duy logic mà người mới học PLC thường mắc phải.',
-    objectives: [
-      'Giải thích bản chất hệ thống điều khiển và phân biệt chính xác điều khiển vòng hở (Open-loop), vòng kín (Closed-loop) và điều khiển vi tính',
-      'So sánh ưu nhược điểm giữa điều khiển nối dây cứng (Hardwired) và điều khiển lập trình (Programmable)',
-      'Mô tả cấu trúc phần cứng bên trong PLC: Khối nguồn, vi xử lý CPU, khối ngõ vào/ra và hệ thống bus',
-      'Phân biệt các vùng nhớ của PLC S7-1200 (Load Memory, Work Memory, Retentive) và giải mã ý nghĩa các đèn LED chẩn đoán (RUN, STOP, ERROR, MAINT)',
-      'Phân tích chi tiết 4 giai đoạn của Vòng quét PLC (Scan Cycle) và vai trò của vùng nhớ đệm ảnh I/O (PII và PIQ)',
-      'Nhận biết 5 ngôn ngữ lập trình theo tiêu chuẩn quốc tế IEC 61131-3 (LAD, FBD, SCL, STL, SFC) và lĩnh vực ứng dụng của từng ngôn ngữ',
+    "overview": "Every industrial automation machine—from high-speed elevators and industrial washing systems to automated beverage bottling lines—is fundamentally a control system: an engineered architecture capable of measurement, decision logic, and physical execution. This lesson establishes the theoretical cornerstone for the entire course: the core distinction between open-loop and closed-loop control systems, the economic and operational drivers behind the industrial shift from hardwired relay cabinets to Programmable Logic Controllers (PLCs), the internal hardware architecture of a PLC CPU, and specifically the scan cycle mechanism—the root origin of over 90% of logic errors encountered by beginner automation engineers.",
+    "objectives": [
+      "Explain the fundamental principles of control systems and accurately contrast open-loop, closed-loop, and computerised control architectures",
+      "Compare the technical and operational trade-offs between hardwired relay panels and software-programmable controllers",
+      "Describe the internal hardware architecture of a modern PLC: power supply unit, central processing unit (CPU), discrete/analog I/O sections, and internal system buses",
+      "Differentiate the functional memory areas of the Siemens S7-1200 (Load Memory, Work Memory, Retentive Memory) and interpret the front-panel diagnostic status LEDs (RUN/STOP, ERROR, MAINT)",
+      "Analyze the 4 sequential phases of the PLC scan cycle and explain the critical role of Process Image Input (PII) and Process Image Output (PIQ)",
+      "Identify the 5 standardized programming languages defined by IEC 61131-3 (LAD, FBD, SCL, STL, SFC) and assess the primary industrial application domain for each language"
     ],
-    sections: [
+    "sections": [
       {
-        title: '1.1 Tổng quan về Hệ thống Điều khiển (Control Systems)',
-        content:
-          'Một hệ thống điều khiển (Control System) có nhiệm vụ quản lý, chỉ huy, định hướng hoặc điều tiết hành vi của một thiết bị hoặc một quy trình công nghệ khác. Quy mô có thể từ một bộ điều nhiệt gia đình đơn giản đến một nhà máy tự động hóa phức tạp gồm hàng trăm dây chuyền, nhưng cấu trúc giải phẫu luôn bao gồm 5 thành phần cơ bản: Tín hiệu đặt tham chiếu (Reference input / Setpoint), Phần tử đo lường (Measurement element / Sensor), Bộ so sánh sai lệch (Comparator), Bộ điều khiển (Controller), và Cơ cấu chấp hành (Actuator). Hiểu rõ 5 khối này giúp kỹ sư phân định rạch ròi phạm vi của chương trình PLC: PLC chính là khối điều khiển, nhận dữ liệu từ cảm biến và xuất lệnh ra chấp hành.',
-        keyPoints: [
-          'Tín hiệu đặt (Setpoint - SP): Giá trị mong muốn hệ thống cần đạt (nhiệt độ 60°C, áp suất 4 bar, mức nước 2m)',
-          'Biến được điều khiển (Process Variable - PV): Giá trị vật lý thực tế đo được tại đầu ra của quá trình',
-          'Nhiễu tác động (Disturbance): Các yếu tố bên trong hoặc môi trường bên ngoài làm sai lệch hệ thống (gió lạnh, sụt áp, ma sát)',
-          'Cơ cấu chấp hành (Actuator): Thiết bị biến đổi tín hiệu điều khiển điện thành tác động cơ/nhiệt/thủy lực (động cơ, van, thanh điện trở)',
-          '5 khối này xuất hiện xuyên suốt trong mọi cấp độ điều khiển, từ rơ-le đơn giản đến hệ thống SCADA / DCS phân tán',
-        ],
+        "title": "1.1 Fundamentals of Control Systems",
+        "content": "A control system manages, commands, directs, or regulates the behavior of other devices or technological processes. Scope spans from a simple household bimetallic thermostat to a sprawling chemical refinery encompassing thousands of I/O loops; however, the anatomical architecture invariably comprises 5 foundational elements: Reference Input / Setpoint (SP), Measurement Element / Sensor, Error Detector / Comparator, Controller, and Actuator (Final Control Element). Understanding these 5 building blocks allows automation engineers to clearly delineate the software domain of the PLC: the PLC functions as the controller block, receiving digitized feedback from sensors and executing logic to command physical actuators.",
+        "keyPoints": [
+          "Setpoint (SP): The target or desired value the process variable must attain (e.g. 60°C, 4.0 bar, 2.5 m level)",
+          "Process Variable (PV): The actual measured physical state dynamically sampled at the plant output",
+          "Disturbance: Uncontrolled internal or external factors that perturb process equilibrium (e.g. ambient draft, voltage sag, mechanical friction)",
+          "Actuator: The physical device converting low-power electrical commands into mechanical, thermal, or fluid energy (e.g. electric motors, control valves, heating elements)",
+          "These 5 elements recur systematically across all industrial automation tiers, from discrete relay interlocks to distributed SCADA / DCS architectures"
+        ]
       },
       {
-        title: '1.2 Điều khiển Vòng hở, Vòng kín và Điều khiển Vi tính',
-        content:
-          'Trong hệ thống vòng hở (Open-loop), tín hiệu đầu ra không có bất kỳ ảnh hưởng nào ngược trở lại bộ điều khiển. Ví dụ điển hình là hệ thống đèn đường hẹn giờ: đèn bật lúc 18:00 và tắt lúc 06:00 bất kể hôm đó trời mưa giông tối sầm hay trăng sáng rực. Khi thay đồng hồ hẹn giờ bằng cảm biến quang trở đo độ sáng thực tế, hệ thống trở thành vòng kín (Closed-loop) — độ sáng đo được phản hồi ngược về để điều khiển đóng cắt đèn. Hệ vòng kín có độ chính xác cao và tự bù trừ sai lệch do nhiễu, nhưng phức tạp hơn và có nguy cơ mất ổn định (dao động). Hệ thống điều khiển vi tính (Computerised control) là hệ vòng kín trong đó bộ điều khiển là máy tính hoặc CPU PLC.',
-        keyPoints: [
-          'Vòng hở (Open-loop): Thiết kế đơn giản, chi phí thấp, không có nguy cơ dao động mất ổn định, nhưng sai lệch khi có nhiễu',
-          'Vòng kín (Closed-loop): Tự động sửa sai lệch nhờ đường phản hồi (Feedback), triệt tiêu ảnh hưởng của nhiễu môi trường',
-          'Công thức sai số điều khiển: e(t) = Setpoint (SP) - Process Variable (PV)',
-          'Hệ điều khiển vi tính: Dùng vi xử lý kỹ thuật số lấy mẫu tín hiệu theo chu kỳ thời gian thực',
-          'Lưu ý kỹ thuật: Không phải lúc nào vòng kín cũng tốt hơn — với các tải đơn giản không yêu cầu độ chính xác cao, vòng hở là lựa chọn kinh tế nhất',
+        "title": "1.2 Open-Loop, Closed-Loop, and Computerised Control",
+        "content": "In an open-loop control system, the output process variable has zero influence on the controller action. A classic example is a time-clock street lighting system: lamps turn on at 18:00 and off at 06:00 regardless of whether the sky is overcast by a severe thunderstorm or illuminated by a full moon. When the timer is replaced by a photo-conductive sensor (LDR photocell) measuring ambient light lux, the system becomes closed-loop: the measured light intensity is fed back to the comparator, dynamically switching the luminaires when lux drops below a calibrated threshold. Closed-loop systems exhibit high precision and automatic disturbance rejection, though they introduce loop complexity and potential closed-loop instability (hunting/oscillation). Computerised control refers to closed-loop architectures where digital microprocessors (such as PLCs or industrial PCs) sample process variables at discrete time intervals.",
+        "keyPoints": [
+          "Open-Loop: Simple topology, low upfront capital cost, unconditionally stable without feedback oscillation, but vulnerable to process disturbances",
+          "Closed-Loop: Automatically compensates for dynamic disturbances via continuous negative feedback loops",
+          "Control Error Formulation: e(t) = Setpoint (SP) − Process Variable (PV)",
+          "Computerised Control: Utilizes digital microprocessors running discrete-time cyclic scan algorithms",
+          "Engineering Design Rule: Closed-loop is not universally superior; for non-critical loads with predictable dynamics, open-loop remains the most cost-effective choice"
         ],
-        note: 'Đừng ngộ nhận "Vòng kín luôn tốt hơn vòng hở". Việc lựa chọn kiểu điều khiển phụ thuộc vào yêu cầu công nghệ và chi phí. Một hệ thống bơm tưới sân vườn hẹn giờ không cần đến vòng kín đắt đỏ.',
+        "note": "Avoid the naive assumption that \"closed-loop is always better\". Engineering selection depends on operational tolerances, safety criticality, and project budget. A lawn sprinkler timer rarely justifies the capital expense of soil moisture telemetry."
       },
       {
-        title: '1.3 Điều khiển Nối dây cứng (Hardwired) so với Điều khiển Lập trình (Programmable)',
-        content:
-          'Có hai phương pháp điều khiển chính trong lịch sử tự động hóa. Điều khiển nối dây cứng (Hardwired) gồm hai dạng: dạng tiếp điểm cơ điện (rơ-le trung gian, contactor, timer cơ) và dạng không tiếp điểm (cổng logic số bán dẫn, IC số, mạch kích SCR/TRIAC). Trong cả hai dạng này, toàn bộ thuật toán logic được cố định ("khóa cứng") vào cách đấu dây dẫn điện. Ngược lại, điều khiển lập trình (Programmable) đưa toàn bộ logic vào các ô nhớ của vi xử lý. Điều này tạo ra sự khác biệt căn bản trong quy trình thiết kế: hệ nối dây cứng khi cần đổi công nghệ phải dừng máy, tháo tủ và đấu nối lại hàng chục sợi dây; trong khi hệ PLC giữ nguyên 100% dây đấu nối vật lý, chỉ cần sửa vài dòng code trên phần mềm và tải xuống bộ nhớ.',
-        keyPoints: [
-          'Hệ nối dây tiếp điểm: Dùng rơ-le cơ điện, contactor; tiếp điểm cơ khí bị mòn và rỗ sau hàng trăm ngàn chu kỳ',
-          'Hệ nối dây không tiếp điểm: Cổng logic bán dẫn, transistor công suất; tốc độ cao hơn nhưng vẫn bị khóa cứng sơ đồ mạch',
-          'Điều khiển lập trình: Dây điện chỉ nối từ cảm biến vào cọc ngõ vào DI, và từ cọc ngõ ra DO ra cuộn hút tải',
-          'Quy trình nối dây cứng: Yêu cầu → Vẽ sơ đồ nguyên lý → Chọn linh kiện → Đấu dây tủ điện → Vận hành thử',
-          'Quy trình PLC: Yêu cầu → Thiết kế thuật toán → Viết chương trình phần mềm → Nạp vào CPU → Vận hành thử',
-        ],
+        "title": "1.3 Hardwired Relay Logic versus Programmable Control",
+        "content": "Historically, industrial automation evolved across two distinct paradigms. Hardwired control comprises electromechanical contact logic (interposing relays, contactors, pneumatic timers) and static solid-state logic (discrete logic gates, transistor arrays, SCR/TRIAC trigger modules). In both implementations, the control sequence is physically locked into copper wiring topologies. By contrast, programmable control encapsulates the decision logic entirely within microprocessor memory addresses. This distinction fundamentally transforms engineering workflows: re-sequencing a hardwired panel requires scheduled line shutdowns, mechanical panel re-drilling, contactor additions, and labor-intensive rewiring; a PLC system retains 100% of existing field terminal wiring, requiring only software logic modification and a 10-second program download.",
+        "keyPoints": [
+          "Electromechanical Relay Systems: Utilize moving mechanical contacts subject to contact pitting, mechanical wear, and arc erosion after hundreds of thousands of duty cycles",
+          "Solid-State Discrete Systems: Utilize discrete transistor and IC logic gates; offers faster switching speeds but remains topologically rigid to wiring layout",
+          "Programmable Logic Controllers: Physical copper wiring terminates once at screw terminals (DI/DO); all interlocking rules reside in software code",
+          "Hardwired Engineering Workflow: Requirement → Schematic Drafting → Component Procurement → Panel Wiring → Commissioning",
+          "PLC Engineering Workflow: Requirement → Algorithm Modeling → Software Coding → CPU Download → Online Debugging"
+        ]
       },
       {
-        title: '1.4 Tại sao Công nghiệp Chuyển đổi sang PLC: Bài toán So sánh',
-        content:
-          'Xét bài toán công nghiệp quen thuộc: Khởi động tuần tự 2 động cơ M1 và M2. Với giải pháp rơ-le truyền thống, bạn cần 2 contactor, 1 rơ-le thời gian ON-delay và hàng chục sợi dây câu nối. Khi khách hàng yêu cầu thay đổi công nghệ: "Động cơ phải dừng tuần tự ngược lại (M2 dừng trước, 5 giây sau M1 mới dừng)", tủ điện rơ-le bắt buộc phải ngừng vận hành, mua thêm rơ-le OFF-delay, tháo dỡ dây cũ và đấu lại toàn bộ. Với PLC, dây điện bên ngoài không cần chạm vào một sợi nào; kỹ sư chỉ việc mở TIA Portal, chèn thêm một khối timer trong chương trình OB1 và tải xuống trong 10 giây. Khả năng biến việc thay đổi công nghệ trở nên rẻ tiền và tức thời chính là lý do PLC thay thế hoàn toàn các tủ rơ-le trên toàn cầu.',
-        keyPoints: [
-          'Kích thước nhỏ gọn: Một CPU PLC kích thước 110x100mm thay thế cho cả một tủ rơ-le cồng kềnh 800x1200mm',
-          'Chi phí thay đổi cực thấp: Mọi thay đổi logic đều xử lý trên phần mềm mà không tốn chi phí vật tư dây dẫn',
-          'Tích hợp công cụ chẩn đoán: Tính năng Go Online và Watch Table cho phép xem trực tiếp trạng thái từng biến số thời gian thực',
-          'Khả năng mở rộng và kết nối mạng: Dễ dàng liên kết nhiều PLC qua chuẩn PROFINET / Modbus và kết nối lên máy tính SCADA / HMI',
-          'Độ tin cậy công nghiệp: Thiết bị bán dẫn thể rắn không có chi tiết chuyển động cơ học, hoạt động liên tục 24/7 trong 10-15 năm',
-        ],
+        "title": "1.4 Why Industry Switched to the PLC: Technical & Economic Case Study",
+        "content": "Consider a standard industrial manufacturing cell: sequential starting of two conveyor motors, M1 and M2. Under a traditional relay panel, the circuit requires two magnetic motor starters, an on-delay pneumatic timer relay, auxiliary contact blocks, and dozens of jumper wires. When manufacturing operations require a reverse-sequence shutdown (\"Motor 2 must stop first, followed 5 seconds later by Motor 1\"), the relay cabinet must be powered down, an additional off-delay timer purchased, existing control circuits dismantled, and the entire panel re-verified point-to-point. With a PLC, field cables remain untouched; the automation engineer simply opens TIA Portal, inserts an off-delay timer block (TOF) into OB1, and downloads the revision in seconds. The capability to make operational revisions virtually cost-free and instantaneous is the primary economic driver that eradicated relay panels worldwide.",
+        "keyPoints": [
+          "Footprint Reduction: A compact 110x100mm PLC CPU replaces an entire 800x1200mm industrial relay enclosure",
+          "Near-Zero Modification Overhead: Operational logic alterations are handled in software without wiring re-work or hardware scrap",
+          "Integrated Online Diagnostics: Real-time \"Go Online\" and \"Watch Table\" features expose live bit states directly on ladder rungs",
+          "Network Scalability: Standardized industrial Ethernet (PROFINET) enables seamless PLC-to-PLC coordination and HMI/SCADA data acquisition",
+          "Industrial Reliability: Solid-state microelectronics feature zero moving parts, delivering uninterrupted 24/7 service over 10 to 15 years"
+        ]
       },
       {
-        title: '1.5 Định nghĩa PLC theo NEMA và Lịch sử Phát triển',
-        content:
-          'Hiệp hội các nhà sản xuất điện Hoa Kỳ (NEMA) định nghĩa: "Bộ điều khiển logic lập trình được (PLC) là một thiết bị điện tử kỹ thuật số, sử dụng bộ nhớ lập trình được để lưu trữ nội bộ các lệnh thực hiện các chức năng chuyên biệt như logic, tuần tự, thời gian, đếm và tính toán số học, nhằm điều khiển máy móc và quy trình thông qua các module ngõ vào/ra số hoặc tương tự". Ý tưởng ra đời vào năm 1968, khi các kỹ sư tại hãng xe General Motors (Hydramatic Division) đưa ra bản yêu cầu kỹ thuật gồm 10 tiêu chí: dễ lập trình, thay đổi công nghệ không cần đấu lại dây, nhỏ gọn hơn, rẻ hơn và tin cậy hơn tủ rơ-le. Sản phẩm đầu tiên mang tên Modicon 084 (do Dick Morley sáng lập) đã mở ra kỷ nguyên tự động hóa hiện đại.',
-        keyPoints: [
-          'Định nghĩa chuẩn NEMA: Thiết bị điện tử số, bộ nhớ lập trình, thực hiện logic/timer/counter/math, giao tiếp I/O',
-          'Năm 1968: General Motors đưa ra bản đề xuất thay thế tủ rơ-le trong ngành sản xuất ô tô',
-          'Chiếc PLC đầu tiên: Modicon 084 ra đời năm 1969',
-          'Thuật ngữ: PLC (Programmable Logic Controller) và PC (Programmable Controller — thuật ngữ Bắc Mỹ) có cùng ý nghĩa',
-          'Trong tài liệu kỹ thuật, ký hiệu "PLC" được ưu tiên để tránh nhầm lẫn với "Personal Computer" (Máy tính cá nhân)',
-        ],
+        "title": "1.5 Defining the PLC: NEMA Standards and Historical Origins",
+        "content": "The National Electrical Manufacturers Association (NEMA) defines a PLC as: \"A digitally operating electronic apparatus which uses a programmable memory for the internal storage of instructions for implementing specific functions such as logic, sequencing, timing, counting, and arithmetic, to control, through digital or analog input/output modules, various types of machines or processes.\" The concept originated in 1968, when manufacturing engineers at General Motors' Hydramatic Division issued a 10-point technical specification seeking a replacement for hardwired relay panels: easy programming without electrician retraining, logic revisions without panel rewiring, compact footprint, lower cost, and high reliability in harsh plant floor conditions. The resulting breakthrough—the Modicon 084 designed by Dick Morley—inaugurated the modern industrial automation era.",
+        "keyPoints": [
+          "NEMA Standard Definition: Digital apparatus, programmable internal memory, logic/timer/counter/math functions, modular digital/analog I/O interface",
+          "1968 GM Hydramatic Specification: 10 design criteria intended to eradicate relay panel downtime in automotive stamping and assembly plants",
+          "The First Commercial PLC: The Modicon 084 developed in 1969",
+          "Terminology: PLC (Programmable Logic Controller) and PC (Programmable Controller in North American literature) represent the identical apparatus",
+          "Technical Writing Standard: \"PLC\" is preferred globally to avoid confusion with \"Personal Computer\""
+        ]
       },
       {
-        title: '1.6 Cấu trúc Phần cứng Bên trong PLC',
-        content:
-          'Về bản chất, PLC là một máy tính công nghiệp chuyên dụng được bọc trong lớp vỏ nhựa công nghiệp chịu rung động và chống bụi. Cấu trúc gồm 5 khối chức năng chính: (1) Khối nguồn (Power Supply) biến đổi điện áp lưới 220VAC hoặc nhận nguồn 24VDC cấp cho toàn bộ vi mạch bên trong; (2) Khối vi xử lý (CPU Module) chứa bộ vi xử lý và các chip nhớ, điều phối toàn bộ hoạt động của hệ thống; (3) Khối ngõ vào (Input Module) nhận tín hiệu từ cảm biến và nút ấn, tích hợp mạch cách ly quang (Optocoupler) bảo vệ vi xử lý khỏi sốc điện áp; (4) Khối ngõ ra (Output Module) xuất lệnh đóng mở tải qua rơ-le hoặc transistor; (5) Hệ thống Bus liên kết (System Bus) gồm Address Bus, Data Bus và Control Bus truyền tín hiệu đồng bộ giữa các module.',
-        keyPoints: [
-          'Khối nguồn: Cung cấp điện áp ổn định 24VDC và 5VDC cho bo mạch vi xử lý; cách ly nhiễu nguồn',
-          'Khối CPU: Bộ não của PLC, điều hành việc đọc I/O, thực thi chương trình OB1 và xử lý ngắt',
-          'Khối ngõ vào (DI): Cách ly quang học (Optocoupler), lọc nhiễu RC phần cứng bảo vệ khỏi xung sét',
-          'Khối ngõ ra (DO): Relay (chịu tải AC/DC 2A, tần số thấp) hoặc Transistor (DC 0.5A, tần số cao phát xung PWM/PTO)',
-          'Hệ thống Bus nội bộ: Bus địa chỉ (chọn vị trí ô nhớ), Bus dữ liệu (mang giá trị), Bus điều khiển (đồng bộ nhịp xung)',
-        ],
+        "title": "1.6 Internal Hardware Architecture of a PLC",
+        "content": "At its core, a PLC is an industrial-hardened computer enclosed in an impact-resistant, dust-sealed, and vibration-damped chassis. Its anatomical architecture consists of 5 primary subsystems: (1) Power Supply Unit (PSU), converting 120/230VAC mains or regulating 24VDC to clean internal bus logic voltages (5VDC/3.3VDC); (2) Central Processing Unit (CPU Module), containing the industrial microprocessor, clock generators, and memory chips that govern all system operations; (3) Digital/Analog Input Section, interfacing field switches, encoders, and sensors through optical isolators (optocouplers) and RC filter networks that block transient voltage spikes; (4) Output Section, executing switching commands via electromechanical relays or power MOSFET transistors; (5) Internal System Bus, comprising the Address Bus, Data Bus, and Control Bus for synchronized inter-module backplane communication.",
+        "keyPoints": [
+          "Power Supply Unit: Provides isolated 24VDC/5VDC rails to internal logic cards; attenuates line noise and surges",
+          "CPU Module: System brain executing cyclic input sampling, OB1 user code evaluation, and interrupt service routines",
+          "Digital Input (DI) Modules: Feature optocouplers (500VAC isolation) and hardware RC filters to suppress contact bounce and inductive surges",
+          "Digital Output (DO) Modules: Relay contacts (2A AC/DC rating, low switching speed) or Transistor outputs (0.5A DC, high-speed switching for PWM/PTO motion)",
+          "Backplane Bus: Address Bus (pinpoints register offsets), Data Bus (transfers bit/word values), Control Bus (synchronizes read/write clocks)"
+        ]
       },
       {
-        title: '1.7 Cấu trúc Bộ nhớ và Đèn báo Trạng thái trên CPU S7-1200',
-        content:
-          'Bộ nhớ của PLC S7-1200 được phân chia theo mục đích sử dụng chức năng chứ không đơn thuần theo địa chỉ: Vùng chương trình (Program Area) lưu các khối lệnh OB/FC/FB; Vùng tham số (Parameter Area) lưu cấu hình phần cứng, địa chỉ IP và mật khẩu; Vùng dữ liệu (Data Area) lưu giá trị tạm thời, bộ đệm ngõ vào/ra (PII/PIQ), cờ nhớ M và các khối dữ liệu DB. Về mặt công nghệ vật lý gồm: Load Memory (bộ nhớ Flash lưu trữ project, không mất khi mất điện), Work Memory (RAM tốc độ cao để CPU chạy lệnh), và Retentive Memory (bộ nhớ lưu giữ giá trị quan trọng khi mất điện nhờ tụ điện dung lượng cao / NVRAM). Mặt trước CPU trang bị hệ thống đèn LED chẩn đoán giúp kỹ sư kiểm tra trạng thái tức thời của hệ thống.',
-        keyPoints: [
-          'Load Memory: Bộ nhớ Flash chứa toàn bộ mã nguồn, cấu hình và comment; có thể mở rộng bằng SIMATIC Memory Card',
-          'Work Memory: RAM tốc độ cao (~100 KB); CPU nạp các đoạn code thực thi từ Load Memory vào đây',
-          'Retentive Memory: Bộ nhớ duy trì (~10 KB) giữ nguyên giá trị cài đặt, bộ đếm sản phẩm khi cúp điện đột ngột',
-          'Đèn RUN/STOP: Xanh lá = Đang chạy bình thường; Vàng = CPU đang dừng (ngõ ra ngắt an toàn)',
-          'Đèn ERROR: Đỏ nhấp nháy = Có sự cố phần cứng, đứt dây cảm biến hoặc lỗi logic chia cho 0',
-          'Đèn MAINT: Vàng = Yêu cầu bảo trì, pin RTC yếu hoặc thẻ nhớ chưa tương thích',
-          'Đèn Ix.x và Qx.x: Báo trạng thái có điện áp vật lý 24V tại đầu cosse tương ứng (không phụ thuộc logic phần mềm)',
+        "title": "1.7 Memory Organization and Diagnostic LEDs on the S7-1200",
+        "content": "The memory of the Siemens S7-1200 CPU is structured functionally rather than as flat physical address space: Program Area stores compiled code blocks (OB, FC, FB); Parameter Area stores hardware configuration tables, IP addresses, and protection passwords; Data Area stores temporary calculations, I/O process image tables (PII/PIQ), bit memory markers (M), and Data Blocks (DB). Physically, memory consists of: Load Memory (non-volatile Flash retaining the complete project including symbolic tags and comments, expandable via SIMATIC Memory Card), Work Memory (high-speed internal volatile RAM where the CPU executes active code), and Retentive Memory (non-volatile NVRAM backed by supercapacitors that preserves critical tags across power cycles). Front-panel diagnostic LEDs provide immediate visual telemetry into the CPU operating state.",
+        "keyPoints": [
+          "Load Memory: Non-volatile Flash storing compiled code, hardware configurations, and symbolic tags; expandable via SIMATIC SD card",
+          "Work Memory: Ultra-fast volatile RAM (~100 KB); the CPU loads executable runtime blocks from Load Memory during startup",
+          "Retentive Memory: Non-volatile storage (~10 KB) maintaining production setpoints, batch recipe tags, and part counters across power interruptions",
+          "RUN/STOP LED: Solid Green = CPU executing cyclic scan; Solid Amber = CPU stopped with outputs held in safe de-energized state",
+          "ERROR LED: Flashing Red = Hardware diagnostic alarm, broken field sensor loop, or runtime math exception (e.g. division by zero)",
+          "MAINT LED: Solid Amber = Maintenance demanded (e.g. RTC battery exhausted or memory card service needed)",
+          "I/O Status LEDs (Ix.x, Qx.x): Indicate physical presence of 24VDC potential at the terminal screw (independent of software logic state)"
         ],
-        note: 'Đèn LED ngõ vào Ix.x phản ánh điện áp thực tế tại cọc đấu dây bên ngoài. Nếu đèn Ix.x sáng nhưng trong chương trình TIA Portal giá trị tag vẫn bằng 0, bạn biết ngay vấn đề nằm ở cấu hình phần cứng hoặc CPU đang ở chế độ STOP, chứ không phải do đứt dây ngoài hiện trường!',
+        "note": "The input LED Ix.x reflects physical electrical potential directly at the terminal strip. If an input LED is illuminated green but the corresponding tag in TIA Portal remains False (0), the fault is strictly in the software configuration or CPU operating mode—not an external field wiring break!"
       },
       {
-        title: '1.8 Vòng quét PLC (The Scan Cycle) và Vùng ảnh I/O',
-        content:
-          'PLC không thực thi chương trình một lần rồi dừng, mà lặp lại liên tục theo một chu trình khép kín gọi là Vòng quét (Scan Cycle). Một vòng quét tiêu chuẩn gồm 4 giai đoạn nối tiếp nhau: (1) Đọc trạng thái tất cả ngõ vào vật lý và ghi lại vào Vùng đệm ảnh ngõ vào PII (Process Image Input); (2) Thực thi logic chương trình từ lệnh đầu tiên đến lệnh cuối cùng theo thứ tự từ trên xuống dưới, chỉ đọc dữ liệu từ PII và ghi kết quả tạm tính vào PIQ; (3) Xử lý truyền thông (PROFINET / HMI) và tự chẩn đoán lỗi phần cứng; (4) Sao chép toàn bộ Vùng đệm ảnh ngõ ra PIQ (Process Image Output) ra các cọc ngõ ra vật lý điều khiển tải. Do chương trình chỉ đọc snapshot trong PII chứ không đọc trực tiếp đầu cosse, một xung tín hiệu quá ngắn (ngắn hơn chu kỳ quét) có thể bị CPU bỏ sót hoàn toàn.',
-        keyPoints: [
-          'Giai đoạn 1 (Input Scan): Chụp ảnh toàn bộ ngõ vào vật lý đưa vào vùng nhớ RAM PII',
-          'Giai đoạn 2 (Program Execution): CPU tính toán các Network trong OB1; logic nhìn thấy dữ liệu nhất quán trong suốt vòng quét',
-          'Giai đoạn 3 (Housekeeping & Comms): Kiểm tra tính toàn vẹn CPU, phục vụ gói tin TIA Portal và HMI',
-          'Giai đoạn 4 (Output Scan): Xuất đồng loạt dữ liệu từ PIQ ra rơ-le/transistor đầu ra',
-          'Hiện tượng "Last-Write Wins": Nếu trong cùng 1 vòng quét bạn gán cuộn hút Q0.0 ở Network 1 = TRUE, nhưng ở Network 5 gán Q0.0 = FALSE, ngõ ra vật lý cuối cùng sẽ là FALSE!',
-          'Lệnh ngắt hoặc I/O trực tiếp (Immediate I/O như ":P"): Cho phép đọc/ghi tức thời cọc vật lý, nhưng làm tăng thời gian chu kỳ quét',
+        "title": "1.8 The PLC Scan Cycle and Process Image Tables",
+        "content": "A PLC does not execute program code once and terminate; rather, it loops perpetually through a deterministic, real-time sequence known as the Scan Cycle. A standard scan cycle comprises 4 sequential phases: (1) Input Scan: The CPU polls all physical input terminals and snapshots their instantaneous states into the Process Image Input (PII) memory buffer; (2) Program Execution: The CPU evaluates user networks in OB1 top-to-bottom, reading exclusively from PII and storing intermediate results in local memory and the Process Image Output (PIQ); (3) Housekeeping & Diagnostics: The CPU performs internal self-tests and processes communication requests from TIA Portal and HMI panels; (4) Output Scan: The CPU writes the contents of PIQ simultaneously to the physical output hardware terminals. Because logic evaluates the PII snapshot rather than physical pins directly, transient input pulses narrower than the scan time can be completely missed by the CPU.",
+        "keyPoints": [
+          "Phase 1 (Input Scan): Transfers instantaneous states of all physical digital inputs into the PII RAM table",
+          "Phase 2 (Program Execution): The CPU evaluates OB1 networks sequentially; ensures data consistency across the entire rung execution",
+          "Phase 3 (Housekeeping & Comms): Services background self-tests, PROFINET network stacks, and HMI polling requests",
+          "Phase 4 (Output Scan): Transfers the contents of the PIQ image table to physical relay/transistor output terminals",
+          "\"Last-Write Wins\" Principle: If a digital coil %Q0.0 is written TRUE in Network 1, but overwritten FALSE in Network 5 within the same scan, the physical output will be DE-ENERGIZED!",
+          "Immediate I/O (e.g. %I0.0:P, %Q0.0:P): Bypasses image tables to access physical hardware pins immediately, but incurs CPU scan time penalties"
         ],
-        note: 'Thời gian quét (Scan Time) thông thường dao động từ 1ms đến 10ms tùy độ dài chương trình. Vì vậy, các ứng dụng đếm xung tốc độ cao từ Encoder (hàng chục kHz) bắt buộc phải sử dụng bộ đếm chuyên dụng HSC tích hợp phần cứng, không thể dùng bộ đếm phần mềm thông thường trong OB1.',
+        "note": "Typical PLC scan times range from 1ms to 10ms depending on code length. High-speed pulse trains from incremental encoders (tens of kHz) must be handled by dedicated on-chip High-Speed Counters (HSC), never by software counter instructions in OB1."
       },
       {
-        title: '1.9 Các Ngôn ngữ Lập trình Chuẩn IEC 61131-3 và Cấu trúc Khối',
-        content:
-          'Tiêu chuẩn quốc tế IEC 61131-3 quy chuẩn 5 ngôn ngữ lập trình cho PLC. Ba ngôn ngữ phổ biến nhất tại Việt Nam xuất phát từ 3 nền tảng kỹ thuật khác nhau: Ladder Diagram (LAD) mô phỏng sơ đồ tiếp điểm rơ-le dạng hình thang, rất quen thuộc với kỹ sư điện công nghiệp; Function Block Diagram (FBD) thể hiện chương trình dưới dạng các khối logic nối dây, phù hợp với kỹ sư điều khiển và điện tử; Structured Control Language (SCL / ST) là ngôn ngữ văn bản cấp cao dạng Pascal/C, cực kỳ mạnh mẽ trong việc xử lý thuật toán phức tạp, công thức toán học, mảng dữ liệu và vòng lặp. Cả 3 ngôn ngữ đều có thể kết hợp linh hoạt trong cùng một dự án TIA Portal. Phía trên ngôn ngữ là kiến trúc khối chương trình: Khối tổ chức OB (chạy theo chu kỳ hoặc sự kiện ngắt), Hàm FC (xử lý logic không lưu nhớ) và Khối hàm FB (xử lý thiết bị kèm khối dữ liệu thể hiện Instance DB).',
-        keyPoints: [
-          'LAD (Ladder Diagram): Ngôn ngữ trực quan dạng bậc thang; tối ưu cho mạch logic đóng cắt rơ-le, dễ chẩn đoán online',
-          'FBD (Function Block Diagram): Ngôn ngữ khối hàm logic; trực quan cho các bài toán xử lý tín hiệu và điều khiển an toàn',
-          'SCL (Structured Control Language): Ngôn ngữ văn bản có cấu trúc; tối ưu cho thuật toán tính toán toán học, vòng lặp FOR/WHILE và xử lý chuỗi',
-          'IL (Instruction List) & SFC (Sequential Function Chart): Hai ngôn ngữ còn lại trong chuẩn IEC; SFC rất mạnh cho quy trình tuần tự theo bước',
-          'Khối tổ chức OB1: Khối chương trình chính được CPU gọi lặp đi lặp lại trong mỗi chu kỳ quét',
-          'Khối FC và FB: Chia nhỏ chương trình thành các mô-đun độc lập, tái sử dụng mã nguồn cho nhiều động cơ/van giống nhau',
-        ],
-      },
+        "title": "1.9 IEC 61131-3 Programming Languages and Block Architecture",
+        "content": "The international standard IEC 61131-3 defines five standardized programming languages for industrial control systems. The three most prevalent in industry originate from distinct engineering backgrounds: Ladder Diagram (LAD) emulates relay contact ladder schematics, offering immediate familiarity to industrial electricians and technicians; Function Block Diagram (FBD) portrays program logic as interconnected functional blocks, favored in safety interlock and process control loops; Structured Control Language (SCL / ST) is a high-level Pascal/C-like text language, exceptionally powerful for complex mathematical formulas, data array sorting, recipe indexing, and nested iterative loops. All three languages coexist seamlessly within the same TIA Portal project. Above the language syntax is the program block hierarchy: Organization Blocks (OB, handling cyclic and interrupt-driven execution), Functions (FC, stateless modular subroutines), and Function Blocks (FB, stateful subroutines backed by dedicated Instance Data Blocks).",
+        "keyPoints": [
+          "LAD (Ladder Diagram): Graphical relay-ladder representation; ideal for discrete digital interlocks and straightforward online troubleshooting",
+          "FBD (Function Block Diagram): Graphical signal-flow block representation; ideal for analog signal conditioning and burner management systems",
+          "SCL (Structured Control Language): Textual structured syntax; optimal for complex mathematical algorithms, data table manipulation, and loop operations",
+          "IL (Instruction List) & SFC (Sequential Function Chart): The remaining IEC languages; SFC is particularly dominant for state-machine sequential processes",
+          "Main Organization Block (OB1): The top-level entry routine called cyclically by the operating system in every scan",
+          "FC vs FB Modular Architecture: Functions (FC) execute stateless logic; Function Blocks (FB) maintain static state memory within dedicated Instance DBs"
+        ]
+      }
     ],
-    review: [
-      'Nêu 5 thành phần cơ bản xuất hiện trong mọi hệ thống điều khiển tự động và cho một ví dụ thực tế tương ứng với từng thành phần.',
-      'Một bóng đèn chiếu sáng ngoài đường bật lúc 18h và tắt lúc 6h sáng hôm sau bằng bộ hẹn giờ timer. Đây là hệ điều khiển vòng hở hay vòng kín? Muốn chuyển thành hệ còn lại ta phải cải tiến như thế nào?',
-      'Tại sao việc chuyển đổi từ tủ điều khiển rơ-le nối dây cứng sang PLC lại giúp các nhà máy tiết kiệm hàng trăm giờ dừng máy khi thay đổi công nghệ sản xuất?',
-      'Nêu định nghĩa PLC theo tiêu chuẩn NEMA và giải thích lý do General Motors đưa ra 10 yêu cầu kỹ thuật khai sinh ra PLC vào năm 1968.',
-      'Giải thích sự khác biệt giữa 3 vùng nhớ Load Memory, Work Memory và Retentive Memory trên PLC S7-1200. Vùng nhớ nào sẽ bị xóa sạch khi ngắt nguồn điện?',
-      'Đèn LED RUN trên CPU sáng xanh nhưng một động cơ băng tải không hoạt động. Trước khi mở máy tính cắm cáp chẩn đoán, bạn có thể quan sát những đèn LED nào trên mặt trước CPU để khoanh vùng nguyên nhân?',
-      'Trình bày chi tiết 4 giai đoạn trong một Vòng quét PLC (Scan Cycle). Tại sao một tín hiệu ngõ vào có độ rộng xung chỉ 0.5ms có thể bị PLC bỏ sót nếu chu kỳ quét của CPU là 5ms?',
-      'So sánh ưu điểm và phạm vi ứng dụng của hai ngôn ngữ lập trình LAD (Ladder Diagram) và SCL (Structured Control Language) trong TIA Portal.',
-    ],
+    "review": [
+      "Identify the 5 core functional elements present in all automated control systems and provide an industrial example for each component.",
+      "A street lighting circuit is turned on at 18:00 and off at 06:00 using a 24-hour time clock. Classify this control topology as open-loop or closed-loop, and describe the engineering modifications required to convert it to the other topology.",
+      "Why does migrating from hardwired relay panels to a PLC architecture save manufacturing plants hundreds of production downtime hours when retooling a production line?",
+      "State the NEMA definition of a Programmable Logic Controller and explain the 1968 General Motors specification that catalyzed the invention of the PLC.",
+      "Contrast the functional roles of Load Memory, Work Memory, and Retentive Memory in a Siemens S7-1200 CPU. Which memory area is completely volatilized upon power loss?",
+      "The CPU RUN LED is illuminated solid green, yet an associated conveyor drive fails to run. Before opening an engineering laptop to connect a programming cable, what front-panel CPU status indicators can you inspect to isolate the fault?",
+      "Detail the 4 sequential phases of the PLC scan cycle. Why can an input pulse with a 0.5ms duration be missed by the CPU if the scan cycle time is 5ms?",
+      "Compare the technical advantages and ideal application domains of Ladder Diagram (LAD) and Structured Control Language (SCL) in TIA Portal."
+    ]
   },
 
   '02-s7-1200-tia-portal': {
-    overview: 'Bài học này đi sâu vào phần cứng PLC Siemens S7-1200/1500, cách lắp đặt trên thanh DIN, đấu dây nguồn 24VDC, đầu vào số (Digital Input), đầu ra số (Digital Output) và kết nối cổng PROFINET. TIA Portal (Totally Integrated Automation Portal) là phần mềm lập trình tích hợp của Siemens, hỗ trợ cấu hình phần cứng, lập trình PLC (STEP 7), thiết kế HMI (WinCC), cấu hình truyền động và mạng trong một giao diện thống nhất.',
-    objectives: [
-      'Nhận biết và mô tả được các thành phần phần cứng của PLC S7-1200',
-      'Lắp đặt PLC lên thanh DIN đúng kỹ thuật',
-      'Đấu dây nguồn 24VDC, đầu vào và đầu ra số đúng yêu cầu',
-      'Cấu hình địa chỉ IP cho cổng PROFINET',
-      'Cài đặt và kích hoạt TIA Portal V19',
-      'Tạo dự án mới, cấu hình CPU S7-1200',
-      'Viết chương trình Ladder cơ bản và nạp vào PLC',
-      'Sử dụng PLCSIM để mô phỏng và Watch Table để theo dõi',
+    "overview": "This lesson provides a comprehensive engineering walkthrough of Siemens SIMATIC S7-1200/1500 PLC hardware, TS35 DIN-rail mechanical mounting, 24VDC power distribution, discrete digital input (DI) and digital output (DO) field wiring (sinking vs sourcing), and PROFINET industrial Ethernet commissioning. TIA Portal (Totally Integrated Automation Portal) is Siemens' unified engineering environment uniting hardware configuration, PLC logic programming (STEP 7), HMI graphics development (WinCC), and drive network commissioning into a single cohesive interface.",
+    "objectives": [
+      "Identify and specify all physical hardware modules within the SIMATIC S7-1200 modular family",
+      "Mount and secure the S7-1200 CPU and expansion modules onto standard TS35 DIN rail complying with thermal clearance standards",
+      "Correctly wire 24VDC system power, discrete sinking/sourcing inputs, and relay/transistor outputs",
+      "Configure static IP addressing and subnet masks for the on-board PROFINET interface",
+      "Install, license, and navigate the TIA Portal V19 engineering environment",
+      "Create a new automation project and configure the exact CPU hardware catalog number (MLFB)",
+      "Develop baseline Ladder Diagram logic and download executable code blocks to the CPU",
+      "Perform virtual offline simulation using PLCSIM and monitor live tag states via Watch Tables"
     ],
-    sections: [
+    "sections": [
       {
-        title: '2.1 Thiết bị điều khiển lập trình S7-1200',
-        content: 'Hệ thống S7-1200 bao gồm: CPU (bộ xử lý trung tâm), Signal Module (SM mở rộng I/O), Communication Module (CM cho RS485/RS232), Signal Board (SB gắn trực tiếp lên CPU).',
-        keyPoints: [
-          'CPU tích hợp: bộ nhớ chương trình, bộ nhớ dữ liệu, I/O, PROFINET',
-          'Nguồn cấp cho CPU: 24VDC hoặc 85–264VAC tùy model',
-          'Signal Module gắn bên phải CPU, tối đa 8 module',
-          'Communication Module gắn bên trái CPU, tối đa 3 module',
-          'Signal Board gắn mặt trước CPU (2DI/2DO hoặc 1AI/1AO)',
-        ],
+        "title": "2.1 The S7-1200 Programmable Controller Hardware Family",
+        "content": "The modular SIMATIC S7-1200 system comprises: the Central Processing Unit (CPU), Signal Modules (SM for expanding digital/analog I/O count), Communication Modules (CM for serial RS485/RS232 or PROFIBUS networks), and Signal Boards (SB mounted directly into the front receptacle of the CPU).",
+        "keyPoints": [
+          "Integrated CPU: Incorporates microprocessor, execution work memory, load memory, discrete/analog I/O, and PROFINET port",
+          "CPU Power Options: Available in 24VDC or 85–264VAC line supply models",
+          "Signal Modules (SM): Mount sequentially to the RIGHT of the CPU, supporting up to 8 SM modules",
+          "Communication Modules (CM): Mount to the LEFT of the CPU, supporting up to 3 CM modules",
+          "Signal Board (SB): Inserts flush into the CPU front bezel (providing 2DI/2DO or 1AI/1AO without expanding rack width)"
+        ]
       },
       {
-        title: '2.2 Lắp đặt PLC lên thanh DIN',
-        content: 'Quy trình lắp đặt PLC S7-1200 lên thanh DIN chuẩn 35mm. Đảm bảo không gian thông gió và khoảng cách an toàn.',
-        keyPoints: [
-          'Cố định thanh DIN vào tủ điện, bắt vít mỗi 75mm',
-          'Móc CPU qua đầu trên thanh DIN, kéo kẹp dưới ra',
-          'Xoay CPU xuống vào vị trí trên thanh ray',
-          'Đẩy kẹp vào để chốt CPU vào thanh ray',
-          'Khoảng cách thông gió: ≥25mm trên và dưới CPU',
+        "title": "2.2 DIN Rail Mechanical Installation and Thermal Clearances",
+        "content": "Proper mechanical installation of the S7-1200 onto a standard 35mm DIN rail (EN 50022). Maintaining proper thermal ventilation clearances is vital for device longevity in industrial enclosures.",
+        "keyPoints": [
+          "Secure TS35 DIN rail to the enclosure backplate, anchoring screws every 75mm",
+          "Hook the top rear notch of the CPU over the upper DIN rail lip and pull down the lower DIN clip",
+          "Pivot the CPU flush against the rail and release the spring clip to lock securely",
+          "Maintain minimum thermal ventilation clearances: ≥25mm above and below the CPU and expansion modules",
+          "Enclosure ambient operating temperature rating: 0°C to 55°C horizontal mounting, 0°C to 45°C vertical"
         ],
-        note: 'Tất cả thiết bị phải được ngắt nguồn trước khi lắp đặt hoặc tháo rời.',
+        "note": "Always de-energize and lock out all upstream electrical power supplies before mounting or dismounting modules on the DIN rail."
       },
       {
-        title: '2.3 Đấu dây nguồn và đầu vào số',
-        content: 'Nguồn 24VDC cấp cho CPU tại terminals L+, M và Protective Earth. Đầu vào số (Digital Input) S7-1200 hoạt động theo kiểu Sink/Source tùy cấu hình.',
-        keyPoints: [
-          'Nguồn 24VDC: L+ (dương), M (âm/0V), PE (đất bảo vệ)',
-          'DI Sink: 0V chung, tín hiệu 24VDC vào terminal Ix.x để kích ON',
-          'DI Source: 24VDC chung, 0V vào terminal để kích ON',
-          'S7-1200 mặc định: DI kiểu Sink (IEC Type 1 Sink)',
-          'Bảo vệ đầu vào: điện áp ngược, lọc nhiễu RC',
-        ],
+        "title": "2.3 Power Supply and Digital Input (DI) Wiring Topologies",
+        "content": "24VDC power connects to the CPU at terminals L+, M, and Protective Earth (PE). The discrete digital inputs of the S7-1200 support Sinking or Sourcing topologies depending on common-terminal wiring.",
+        "keyPoints": [
+          "24VDC Supply: L+ (positive 24V), M (0V common return), PE (Protective Earth chassis ground)",
+          "Sinking Input (NPN sensor compatible): 0V (M) connected to common terminal 1M; external +24VDC signal triggers input ON",
+          "Sourcing Input (PNP sensor compatible): +24VDC connected to common terminal 1M; 0V signal triggers input ON",
+          "Siemens Default Standard: Configured as Sinking Input (IEC 61131-2 Type 1 Sink)",
+          "Input Conditioning: Integrated optical isolation (500VAC) and hardware RC debounce filtering"
+        ]
       },
       {
-        title: '2.4 Đấu dây đầu ra số',
-        content: 'Đầu ra số có 3 loại: Relay (AC/DC, tiếp điểm cơ), Transistor DC (PNP — Source, tốc độ cao), Triac (AC). CPU 1214C DC/DC/DC có đầu ra transistor.',
-        keyPoints: [
-          'Relay: Tải AC hoặc DC, dòng tối đa 2A/tiếp điểm',
-          'Transistor (DC): Tải DC 24V, dòng tối đa 0.5A, tần số đến 100kHz',
-          'Triac: Tải AC, không dùng được cho DC',
-          'Luôn gắn diode freewheeling với tải cuộn cảm (relay, solenoid)',
-          'CPU 1214C có 10 DO chia thành 2 nhóm nguồn độc lập',
-        ],
+        "title": "2.4 Digital Output (DO) Wiring Topologies",
+        "content": "Digital outputs are available in three distinct technologies: Electromechanical Relay (AC/DC loads), Solid-State DC Transistor (MOSFET sourcing, high switching speed), and Triac (AC switching). The CPU 1214C DC/DC/DC variant provides transistor outputs.",
+        "keyPoints": [
+          "Relay Outputs: Capable of switching AC (up to 250VAC) or DC (up to 30VDC), rated for 2.0A resistive load per point",
+          "Transistor Outputs (DC): 24VDC sourcing (PNP), 0.5A max continuous current, switching frequencies up to 100kHz for motion control",
+          "Triac Outputs: Solid-state AC switching with zero-crossing turn-off; unsuitable for DC loads",
+          "Inductive Load Protection: Always connect reverse-biased freewheeling flyback diodes across DC solenoids and relay coils",
+          "Output Grouping: The CPU 1214C provides 10 DO points divided into 2 isolated voltage groups (1L/2L)"
+        ]
       },
       {
-        title: '2.5 Địa chỉ I/O và mở rộng module',
-        content: 'Mỗi đầu vào/ra được xác định bằng địa chỉ byte.bit. CPU S7-1214C: I0.0–I0.7, I1.0–I1.5 (14DI); Q0.0–Q0.7, Q1.0–Q1.1 (10DO). Module mở rộng được địa chỉ theo thứ tự từ trái sang phải.',
-        keyPoints: [
-          'I0.0 đến I1.5: 14 đầu vào số tích hợp CPU 1214C',
-          'Q0.0 đến Q1.1: 10 đầu ra số tích hợp CPU 1214C',
-          'Module SM đầu tiên: I2.0... Q2.0...',
-          'Module tương tự: AIW0, AIW2, AQW0...',
-          'Địa chỉ không phụ thuộc vị trí vật lý mà phụ thuộc thứ tự module',
-        ],
+        "title": "2.5 I/O Addressing and Expansion Architecture",
+        "content": "Every discrete physical I/O point is assigned an absolute byte.bit identifier (e.g. %I0.0, %Q0.0). The CPU 1214C provides on-board addresses %I0.0–%I1.5 (14 DI) and %Q0.0–%Q1.1 (10 DO). Expansion modules receive consecutive addresses configured in TIA Portal.",
+        "keyPoints": [
+          "%I0.0 through %I1.5: 14 integrated digital input channels on CPU 1214C",
+          "%Q0.0 through %Q1.1: 10 integrated digital output channels on CPU 1214C",
+          "First expansion SM: Default addressing begins at byte %I2.0... and %Q2.0...",
+          "Analog Addressing: Words %AIW64, %AIW66 for inputs; %AQW64 for analog outputs",
+          "Symbolic Decoupling: Address allocation is governed by hardware configuration rather than physical rack slot number"
+        ]
       },
       {
-        title: '2.6 Cấu hình PROFINET và kết nối mạng',
-        content: 'CPU S7-1200 tích hợp sẵn cổng PROFINET (RJ45 - 10/100 Mbps). Đây là cổng dùng để lập trình từ TIA Portal, giao tiếp với HMI, và kết nối các thiết bị PROFINET IO.',
-        keyPoints: [
-          'Địa chỉ IP mặc định: 192.168.0.1, Subnet: 255.255.255.0',
-          'Dùng Direct Connection (crossover) hoặc qua switch Ethernet',
-          'Cáp mạng: Cat5e trở lên, tối đa 100m mỗi đoạn',
-          'PROFINET IO: Kết nối ET200SP, biến tần, robot qua mạng công nghiệp',
-          'Media Redundancy Protocol (MRP): Cấu hình vòng ring dự phòng',
-          'Tối đa 16 kết nối đồng thời (HMI, lập trình, S7 comm...)',
+        "title": "2.6 PROFINET Network Configuration and Topology",
+        "content": "The CPU S7-1200 integrates an RJ45 PROFINET interface (10/100 Mbps, Auto-Negotiation, Auto-MDI/X). This port serves engineering programming from TIA Portal, operator HMI communication, and real-time distributed PROFINET IO.",
+        "keyPoints": [
+          "Factory Default IP Address: 192.168.0.1, Subnet Mask: 255.255.255.0",
+          "Physical Cabling: Standard Cat5e shielded twisted-pair (STP) Ethernet, maximum 100m segment length",
+          "Direct Connection: Auto-MDI/X automatically detects straight-through or crossover patch cables",
+          "PROFINET IO Real-Time: Deterministic cyclic data exchange with remote ET200SP drops and VFD drives",
+          "Media Redundancy Protocol (MRP): Ring topology support for zero-downtime single-point cable breaks",
+          "Connection Budget: Supports up to 16 concurrent S7/HMI/Open-User communication sockets"
         ],
-        note: 'Khi kết nối trực tiếp PC-PLC không qua switch, cần dùng cáp crossover hoặc port tự nhận biết (Auto-MDI/X).',
+        "note": "When connecting directly between an engineering PC and the PLC without a network switch, ensure the PC network interface card is assigned a static IP address in the same subnet (e.g. 192.168.0.241)."
       },
       {
-        title: '2.7 Signal Board và module mở rộng đặc biệt',
-        content: 'Signal Board (SB) gắn trực tiếp vào mặt trước CPU, cung cấp thêm I/O mà không tốn slot module. Đây là lựa chọn tiết kiệm không gian cho ứng dụng nhỏ.',
-        keyPoints: [
-          'SB 1221: 4 Digital Input thêm — 200kHz input',
-          'SB 1222: 4 Digital Output thêm — 200kHz, dùng cho PWM',
-          'SB 1223: 2DI/2DO — kết hợp vào ra số tốc độ cao',
-          'SB 1231: 1 Analog Input (±10V hoặc 0-20mA), 12-bit',
-          'SB 1232: 1 Analog Output (±10V hoặc 0-20mA)',
-          'SB 1241: 1 cổng RS485 — dùng cho Modbus RTU hoặc USS',
-          'Mỗi CPU chỉ gắn được 1 Signal Board',
-        ],
+        "title": "2.7 Signal Boards and Specialized Modules",
+        "content": "A Signal Board (SB) inserts directly into the front faceplate of the CPU, expanding I/O capacity without increasing DIN rail width. This is an optimal, cost-effective solution for compact enclosures.",
+        "keyPoints": [
+          "SB 1221: 4 additional digital inputs supporting 200kHz high-speed counting",
+          "SB 1222: 4 additional digital outputs supporting 200kHz pulse trains for stepper/servo drives",
+          "SB 1223: Combination board providing 2DI (24VDC) and 2DO (24VDC)",
+          "SB 1231: 1 analog input channel (±10V, 0–20mA, or RTD PT100), 12-bit resolution",
+          "SB 1232: 1 analog output channel (±10V or 0–20mA, 12-bit)",
+          "CB 1241: RS485 communication board for Modbus RTU or USS drive control",
+          "Hardware Restriction: Each S7-1200 CPU can host exactly one Signal Board / Communication Board"
+        ]
       },
       {
-        title: '2.8 Quy tắc an toàn và nối đất',
-        content: 'An toàn điện là yêu cầu bắt buộc khi làm việc với tủ điện PLC. Cần tuân thủ nghiêm ngặt các quy định về cách điện, nối đất và bảo vệ.',
-        keyPoints: [
-          'LUÔN ngắt nguồn trước khi đấu dây — sử dụng khóa lockout/tagout',
-          'Nối đất bảo vệ (PE) cho CPU, tủ điện và tất cả thiết bị kim loại',
-          'Phân tách dây tín hiệu và dây động lực trong các máng cáp riêng',
-          'Dùng cầu chì bảo vệ đầu ra, chọn giá trị phù hợp dòng tải',
-          'Đầu dây phải dùng đầu cos/ferrule, không để dây trần vào terminal',
-          'Dán nhãn đầy đủ tất cả dây theo bản vẽ điện',
+        "title": "2.8 Electrical Safety, Noise Isolation, and Grounding Rules",
+        "content": "Rigorous electrical safety and grounding practices are mandatory in industrial control enclosures. Compliance with international standards ensures personnel safety and immunity against electromagnetic interference (EMI).",
+        "keyPoints": [
+          "ALWAYS isolate and verify zero-energy state before servicing wiring — follow Lockout/Tagout (LOTO) procedures",
+          "Bond Protective Earth (PE) directly from the facility grounding bar to the CPU, enclosure chassis, and DIN rail",
+          "Segregate low-voltage DC sensor cables from 400VAC motor power conductors in separate wire ducts by ≥100mm",
+          "Provide branch circuit fuse or miniature circuit breaker (MCB) protection sized to wire ampacity",
+          "Terminate all stranded wire ends using insulated ferrules (bootlace crimp pins) to prevent stray wire shorts",
+          "Affix permanent wire labels at both terminal ends matching the schematic drawing designations"
         ],
-        note: 'Tiêu chuẩn đấu dây tủ điện: IEC 60204-1 (Safety of Machinery) và NFPA 79.',
+        "note": "Industrial control panel wiring must strictly adhere to IEC 60204-1 (Safety of Machinery - Electrical Equipment of Machines) and NFPA 79 standards."
       },
       {
-        title: '3.1 Giới thiệu TIA Portal',
-        content: 'TIA Portal V19 là phiên bản mới nhất hỗ trợ S7-1200, S7-1500, S7-300/400, WinCC Comfort/Advanced, SINAMICS drives. Giao diện chia thành Portal View (tổng quan) và Project View (làm việc chi tiết).',
-        keyPoints: [
-          'Yêu cầu hệ thống: Windows 10/11 64-bit, RAM ≥8GB (khuyến nghị 16GB)',
-          'Dung lượng cài đặt: ~25GB bao gồm STEP 7, WinCC, PLCSIM',
-          'License: STEP 7 Professional, WinCC Advanced (riêng biệt)',
-          'Trial 21 ngày có thể tải từ trang Siemens Support',
-        ],
+        "title": "3.1 Introduction to the TIA Portal Engineering Suite",
+        "content": "TIA Portal V19 is Siemens' unified engineering framework supporting S7-1200, S7-1500, S7-300/400, WinCC Comfort/Unified, and SINAMICS motion drives. The user interface features Portal View (task-oriented) and Project View (hierarchical object navigation).",
+        "keyPoints": [
+          "Recommended System Specifications: 64-bit Windows 10/11, Quad-core processor, ≥16GB RAM, SSD storage",
+          "Installation Footprint: Approximately 25GB disk space for STEP 7 Professional, WinCC Advanced, and PLCSIM",
+          "Licensing Architecture: Automation License Manager (ALM) manages floating and node-locked licenses",
+          "21-Day Trial License: Freely downloadable from the Siemens Industry Online Support (SIOS) portal"
+        ]
       },
       {
-        title: '3.2 Tạo dự án và cấu hình phần cứng',
-        content: 'Quy trình: Tạo project mới → Thêm thiết bị (Add Device) → Chọn CPU từ catalog → Cấu hình IP → Thêm Signal Module nếu cần.',
-        keyPoints: [
-          'Chọn đúng Order Number của CPU (ví dụ: 6ES7 214-1AG40-0XB0)',
-          'Cấu hình IP: 192.168.0.1, Subnet: 255.255.255.0 (mặc định)',
-          'Có thể dùng "Detect" để tự động tìm CPU kết nối',
-          'Tag Table: tạo tên biến (ví dụ: "Motor_Start" thay cho %I0.0)',
-          'Compile hardware trước khi download',
-        ],
+        "title": "3.2 Project Creation and Hardware Configuration Workflow",
+        "content": "Engineering workflow: Create new project → Add new device → Select exact CPU catalog model and firmware revision → Parameterize IP address → Append Signal Modules on the virtual rack.",
+        "keyPoints": [
+          "Verify the complete MLFB Article Number on the CPU physical label (e.g. 6ES7 214-1AG40-0XB0)",
+          "Select the matching firmware version (e.g. V4.6); mismatched firmware can reject block downloads",
+          "Hardware Auto-Detection: Use \"Detect unspecific CPU\" to discover and upload connected network hardware",
+          "PLC Tag Table: Define meaningful symbolic identifiers (e.g. \"PB_Start_Motor\" instead of %I0.0)",
+          "Compile Hardware (Ctrl+B) to validate backplane power budgets and addressing boundaries"
+        ]
       },
       {
-        title: '3.3 Cấu trúc chương trình PLC',
-        content: 'Chương trình PLC gồm các khối: OB (Organization Block), FC (Function), FB (Function Block), DB (Data Block). OB1 là khối chính được PLC gọi mỗi chu kỳ quét.',
-        keyPoints: [
-          'OB1 (Main): Chương trình chính, thực thi mỗi scan cycle',
-          'OB100: Startup — chạy một lần khi PLC chuyển sang RUN',
-          'OB30-38: Cyclic interrupt — chạy định kỳ theo thời gian',
-          'FC: Hàm không có bộ nhớ riêng (stateless)',
-          'FB + Instance DB: Hàm có bộ nhớ riêng (stateful)',
-          'Global DB: Lưu trữ dữ liệu dùng chung toàn chương trình',
-        ],
+        "title": "3.3 PLC Program Block Architecture: OB, FC, FB, and DB",
+        "content": "The modular program architecture comprises: Organization Blocks (OB, operating system interface), Functions (FC, stateless routines), Function Blocks (FB, stateful routines with Instance DB), and Data Blocks (DB, global shared memory).",
+        "keyPoints": [
+          "Main OB (OB1): Executed cyclically by the CPU operating system in continuous loop",
+          "Startup OB (OB100): Executed exactly once upon CPU transition from STOP to RUN mode",
+          "Cyclic Interrupt OB (OB30–OB38): Executed at precise, user-configured time intervals (e.g. 100ms PID loops)",
+          "Functions (FC): Modular logic blocks without internal memory; intermediate tags reside in volatile temporary stack",
+          "Function Blocks (FB): Stateful logic blocks backed by dedicated Instance Data Blocks (Instance DB)",
+          "Global Data Blocks (DB): Project-wide structured memory tables accessible by all program blocks"
+        ]
       },
       {
-        title: '3.4 Biên dịch và nạp chương trình',
-        content: 'Sau khi viết chương trình: Compile (Ctrl+B) → Kiểm tra lỗi → Download to Device → Go Online để theo dõi.',
-        keyPoints: [
-          'Compile: kiểm tra lỗi cú pháp và kiểu dữ liệu',
-          'Download: nạp cả hardware config + chương trình vào CPU',
-          'Go Online: kết nối giám sát, thấy trạng thái thực của PLC',
-          'Program Status: hiển thị trạng thái ON/OFF của từng contact/coil',
-          'Watch Table: theo dõi và ghi giá trị biến bất kỳ',
+        "title": "3.4 Program Compilation, Downloading, and Online Monitoring",
+        "content": "Following ladder development: Compile Software (Ctrl+Shift+B) → Resolve syntax errors → Download to Device (Ctrl+D) → Go Online to monitor real-time rung execution.",
+        "keyPoints": [
+          "Compilation: Checks data type consistency, symbolic addressing validity, and instruction syntax",
+          "Download to Device: Transfers hardware configuration tables and compiled user blocks to CPU Load Memory",
+          "Go Online: Establishes active telemetry link to the CPU, visually displaying real-time power flow",
+          "Program Status (Glasses Icon): Illuminates energized rungs in green dashed lines showing live boolean states",
+          "Watch Table: Real-time tabular monitoring and manual variable forcing for field commissioning"
         ],
-        note: 'Đặt CPU về STOP trước khi download nếu có thiết bị ngoại vi đang hoạt động để tránh sự cố.',
+        "note": "Switch the CPU to STOP before downloading hardware configuration changes to prevent unpredictable machinery motion."
       },
       {
-        title: '3.5 PLCSIM — Mô phỏng không cần phần cứng',
-        content: 'PLCSIM tạo một CPU ảo trên máy tính, cho phép test chương trình mà không cần PLC thật. Hỗ trợ cả S7-1200 và S7-1500.',
-        keyPoints: [
-          'Khởi động PLCSIM: Start Simulation trước khi Download',
-          'Download chương trình vào CPU ảo như PLC thật',
-          'Dùng Watch Table để bật/tắt đầu vào thủ công (%I)',
-          'Force Table: ép giá trị đầu ra ngay cả khi chương trình không kích',
-          'PLCSIM Advanced: hỗ trợ S7-1500, có API để tích hợp với phần mềm khác',
-        ],
+        "title": "3.5 PLCSIM — Hardware-Free Virtual Simulation",
+        "content": "S7-PLCSIM creates a fully virtualized CPU instance within your PC operating system, enabling comprehensive logic testing and offline commissioning without physical PLC hardware.",
+        "keyPoints": [
+          "Launch PLCSIM: Click \"Start Simulation\" in TIA Portal; the virtual CPU emulator boots automatically",
+          "Download code and hardware to the virtual PLC identical to physical target hardware",
+          "Simulate Digital Inputs (%I): Toggle input bits manually via SIM tables or integrated Watch Tables",
+          "Force Tables: Force specific physical inputs/outputs to evaluate interlocking behavior",
+          "Supported Platforms: Fully simulates S7-1200 and S7-1500 instruction sets, timers, counters, and math"
+        ]
       },
       {
-        title: '3.6 PLCSIM Advanced — mô phỏng không cần PLC thật',
-        content: 'PLCSIM Advanced là công cụ mạnh mẽ mô phỏng PLC ảo cho phép debug offline. Hỗ trợ giao tiếp qua Ethernet ảo (virtual Ethernet) và TCP/IP để kiểm tra các tính năng truyền thông.',
-        keyPoints: [
-          'Tạo PLC ảo hoạt động như một PLC thật trên mạng',
-          'Mô phỏng cả các giao thức truyền thông như PROFINET',
-          'Cung cấp API để tích hợp với các phần mềm mô phỏng 3D',
-          'Hỗ trợ debug chương trình S7-1500 nâng cao',
-          'Tiết kiệm thời gian và chi phí phần cứng trong giai đoạn phát triển',
-        ],
+        "title": "3.6 PLCSIM Advanced — Networked Virtual PLC Emulation",
+        "content": "PLCSIM Advanced extends simulation capabilities with a virtual Ethernet runtime, enabling multi-PLC networked testing, HMI communication, and Co-Simulation with digital twin software.",
+        "keyPoints": [
+          "Creates virtual PLC nodes accessible via real TCP/IP network adapters on your host machine",
+          "Simulates complex industrial protocols including PROFINET IO and Open User Communication",
+          "API Interfacing: Seamless integration with 3D physics engines (NX MCD, SIMIT, Factory I/O)",
+          "Enables multi-instance simulation: Run multiple communicating virtual CPUs concurrently",
+          "Accelerates virtual commissioning, reducing physical on-site commissioning time by up to 60%"
+        ]
       },
       {
-        title: '3.7 Watch Table & Force Table — theo dõi và ép giá trị biến',
-        content: 'Hai công cụ quan trọng trong TIA Portal dùng để debug và giám sát khi online với PLC. Watch Table dùng để xem giá trị biến, còn Force Table cho phép ép giá trị I/O bất chấp chương trình PLC.',
-        keyPoints: [
-          'Watch Table: hiển thị giá trị thời gian thực của các tag PLC',
-          'Modify giá trị biến tạm thời trong Watch Table để thử nghiệm',
-          'Force Table: ghi đè vĩnh viễn trạng thái đầu vào/ra ngoại vi',
-          'Đèn báo FORCE sáng màu vàng trên PLC khi có biến bị ép giá trị',
-          'Nên cẩn trọng khi dùng Force Table để tránh hư hỏng phần cứng',
+        "title": "3.7 Watch Tables and Force Tables: Online Monitoring and Override",
+        "content": "Two indispensable diagnostic tools within TIA Portal. Watch Tables monitor and modify variables within program memory; Force Tables permanently override physical peripheral I/O regardless of user program logic.",
+        "keyPoints": [
+          "Watch Table: Monitors live tag states and allows temporary single-scan value modification",
+          "Modify Value: Injects test values into memory tags without modifying compiled ladder code",
+          "Force Table: Forces peripheral inputs and outputs (%I:P, %Q:P) at the operating system hardware layer",
+          "FORCE Status LED: Illuminates solid amber on the CPU faceplate whenever any I/O point is forced",
+          "Safety Caution: Forcing physical outputs will actuate valves and motors on live machinery without interlocks"
         ],
-        note: 'Luôn nhớ Stop Force trước khi bàn giao hệ thống, nếu không PLC sẽ luôn giữ giá trị bị ép.',
+        "note": "Always verify and clear all active force assignments (\"Stop Forcing\") before handing over an operating system."
       },
       {
-        title: '3.8 Cross-reference và tìm lỗi — tìm chỗ dùng biến, lỗi biên dịch',
-        content: 'Chức năng Cross-reference (tham chiếu chéo) giúp theo dõi một biến được đọc hay ghi ở những network nào trong chương trình, hỗ trợ nhanh chóng tìm ra nguyên nhân lỗi logic.',
-        keyPoints: [
-          'Nhấn F11 hoặc chuột phải chọn Cross-references để xem',
-          'Hiển thị rõ vị trí biến được dùng làm tiếp điểm (Read) hay cuộn coil (Write)',
-          'Giúp tìm lỗi "coil trùng" (nhiều nơi cùng ghi vào một biến)',
-          'Công cụ Go To cho phép nhảy trực tiếp đến vị trí lỗi biên dịch',
-          'Kết hợp với Diagnostic Buffer để phân tích nguyên nhân PLC bị Stop',
-        ],
+        "title": "3.8 Cross-References and Diagnostic Navigation",
+        "content": "The Cross-Reference utility tracks every occurrence of an address, tag, or block across the entire project, pinpointing read/write locations and rapidly isolating duplicate coil assignments.",
+        "keyPoints": [
+          "Access via F11 or right-click any tag → \"Cross-references\"",
+          "Clearly indicates whether an address is accessed as a Read contact or a Write coil/assignment",
+          "Rapidly identifies \"Duplicate Coil\" defects (multiple rungs attempting to write to the identical %Q bit)",
+          "The \"Go To\" navigation feature jumps directly to compiler error locations with a single click",
+          "Correlates with the CPU Diagnostic Buffer to locate runtime block execution faults"
+        ]
       },
       {
-        title: '3.9 Tag Table và kiểu dữ liệu — đặt tên biến, symbolic addressing',
-        content: 'Sử dụng địa chỉ tượng trưng (symbolic addressing) thay vì địa chỉ tuyệt đối (absolute) để code dễ đọc và bảo trì hơn. Tag Table là nơi quản lý tất cả các biến toàn cục.',
-        keyPoints: [
-          'Tạo Default Tag Table để khai báo các biến I/O vật lý',
-          'Kiểu dữ liệu cơ bản: Bool, Int, Real, Word',
-          'Tự động cập nhật tên biến khắp chương trình khi đổi tên trong Tag Table',
-          'Hỗ trợ Import/Export danh sách tag sang Excel',
-          'Sử dụng tiền tố nhất quán để dễ phân biệt (ví dụ: I_Start, Q_Motor)',
-        ],
+        "title": "3.9 Tag Tables and Symbolic Addressing Best Practices",
+        "content": "Employing descriptive symbolic identifiers (tags) in place of raw absolute addresses (%I0.0, %M10.2) is fundamental to professional, maintainable automation software engineering.",
+        "keyPoints": [
+          "Default Tag Table: Centralized database managing all physical discrete and analog I/O mappings",
+          "Supported Data Types: Bool, Byte, Int, DInt, Real, Word, DWord, Time, String",
+          "Global Refactoring: Renaming a tag in the Tag Table automatically updates all occurrences project-wide",
+          "Excel Integration: Full bi-directional Import/Export capability via .xlsx and .csv files",
+          "Standardized Naming Conventions: Use consistent prefixes (e.g. DI_Estop_Active, DO_Conveyor_Run, AI_Oven_Temp)"
+        ]
       },
       {
-        title: '3.10 Backup và restore dự án — xuất file .zap19, quản lý version',
-        content: 'Archive (lưu trữ) dự án TIA Portal để chia sẻ hoặc backup, giảm dung lượng so với việc copy nguyên thư mục project. File tạo ra có đuôi .zap.',
-        keyPoints: [
-          'Sử dụng tính năng Archive để nén dự án thành file .zap19',
-          'Chức năng Retrieve để giải nén và mở lại dự án đã archive',
-          'Luôn đi kèm với thói quen upload từ PLC về để đồng bộ hóa',
-          'Giúp quản lý các phiên bản phần mềm (Version Control)',
-          'Nên lưu trữ Firmware cùng với file dự án để tiện thay thế phần cứng',
-        ],
-      },
+        "title": "3.10 Project Archiving, Backup (.zap19), and Version Control",
+        "content": "Creating compressed project archives (.zap format) encapsulates all engineering source code, hardware profiles, and HMI screens into a single portable container for backup and distribution.",
+        "keyPoints": [
+          "Project Archive: Compresses the multi-gigabyte project folder into a clean, portable .zap19 archive file",
+          "Project Retrieve: Decompresses and reconstructs archived project structures intact",
+          "Software Upload from Station: Reads compiled blocks and hardware configurations directly from a live CPU",
+          "Version Management: Establish clear alphanumeric revision tags (e.g. Project_PackagingLine_V1_2_20261021)",
+          "Firmware Archiving: Always document and archive installed module firmware revisions alongside project files"
+        ]
+      }
     ],
-    review: [
-      'Liệt kê các thành phần chính của hệ thống PLC S7-1200.',
-      'Trình bày quy trình lắp đặt CPU S7-1200 lên thanh DIN.',
-      'CPU 1214C DC/DC/DC có ý nghĩa gì với 3 chữ DC?',
-      'Tại sao phải gắn diode freewheeling khi điều khiển tải cảm?',
-      'Vẽ sơ đồ đấu dây cho 1 nút nhấn thường hở kết nối với I0.0.',
-      'Signal Board khác Signal Module ở điểm nào? Nêu ví dụ ứng dụng SB 1232.',
-      'Địa chỉ IP mặc định của CPU S7-1200 là bao nhiêu? Cách thay đổi?',
-      'Nêu các bước tạo một dự án mới trong TIA Portal.',
-      'Sự khác nhau giữa FC và FB là gì?',
-      'Tại sao cần Compile trước khi Download?',
-      'PLCSIM có hỗ trợ mô phỏng S7-1200 không? Sử dụng như thế nào?',
-      'Watch Table dùng để làm gì? Cách thêm biến vào Watch Table?',
-      'Tính năng PLCSIM Advanced mang lại lợi ích gì so với PLCSIM thường?',
-      'Tại sao phải cẩn thận khi sử dụng Force Table trong môi trường thực tế?',
-      'File .zap trong TIA Portal là gì và cách tạo ra nó như thế nào?',
-    ],
+    "review": [
+      "List the primary hardware modules that constitute a complete SIMATIC S7-1200 modular PLC system.",
+      "Detail the step-by-step mechanical mounting procedure for snapping an S7-1200 CPU onto a standard TS35 DIN rail.",
+      "What do the three \"DC\" designations signify in the catalog model CPU 1214C DC/DC/DC?",
+      "Why is it critical to install a freewheeling flyback diode across inductive DC solenoid loads controlled by transistor outputs?",
+      "Draw the electrical schematic for wiring a normally open (NO) pushbutton switch to digital input %I0.0 in a Sinking configuration.",
+      "How does a Signal Board (SB) differ from a Signal Module (SM)? Provide an industrial application example for an SB 1232.",
+      "What is the factory default IP address of an unconfigured Siemens S7-1200 CPU, and how is it modified in TIA Portal?",
+      "Enumerate the sequential steps required to configure a new S7-1200 CPU project from scratch in TIA Portal V19.",
+      "Explain the architectural distinction between a Function (FC) and a Function Block (FB). Under what conditions is an FB required?",
+      "Why must a software project be fully compiled before executing a download to the target CPU?",
+      "Can PLCSIM simulate an S7-1200 CPU? Describe the steps to launch an offline logic simulation.",
+      "What is the operational purpose of a Watch Table, and how are symbolic tags added to it for online monitoring?",
+      "What advanced technical capabilities does PLCSIM Advanced offer compared to standard PLCSIM?",
+      "Why must automation engineers exercise extreme caution when applying Force Tables on live production machinery?",
+      "What is a Siemens .zap archive file, and how is it created in TIA Portal?"
+    ]
   },
 
   '03-binary-operations': {
-    overview: 'Lập trình bit logic (Ladder Diagram) là nền tảng của lập trình PLC. Bài này bao gồm các lệnh cơ bản: tiếp điểm thường hở (NO), thường đóng (NC), cuộn coil, Set/Reset, các mạch khởi động-dừng, tự giữ và liên động. Timer và Counter là các khối chức năng cơ bản để tạo độ trễ thời gian và đếm sự kiện trong hệ thống điều khiển tự động hóa. S7-1200 hỗ trợ chuẩn IEC timers/counters với kiểu dữ liệu Time và preset tùy ý.',
-    objectives: [
-      'Lập trình được các phép toán logic AND, OR, NOT trên LAD',
-      'Xây dựng mạch khởi động-dừng (Start-Stop) và mạch tự giữ',
-      'Sử dụng lệnh Set (S) và Reset (R) đúng mục đích',
-      'Thiết kế mạch liên động (Interlock) cho động cơ thuận-nghịch',
-      'Sử dụng được ba loại timer: TON, TOF, TP',
-      'Phân biệt và lựa chọn đúng loại timer cho từng ứng dụng',
-      'Sử dụng counter CTU, CTD, CTUD để đếm sự kiện',
-      'Thiết kế mạch điều khiển tuần tự sử dụng timer',
+    "overview": "Discrete bit logic programming in Ladder Diagram (LAD) forms the foundational bedrock of industrial automation. This lesson examines fundamental ladder instructions: normally open (NO) contacts, normally closed (NC) contacts, output coils, Set/Reset latches, start-stop seal-in circuits, and hardware/software interlocks. Timers (TON, TOF, TP) and counters (CTU, CTD, CTUD) provide precision time-delay generation and event counting according to IEC 61131-3 standards.",
+    "objectives": [
+      "Program combinational logic expressions (AND, OR, NOT) using Ladder Diagram contacts and branches",
+      "Construct industrial motor Start-Stop control circuits utilizing self-holding seal-in branches",
+      "Apply latch Set (S) and unlatch Reset (R) instructions correctly for memory retention",
+      "Design bidirectional motor interlock circuits incorporating electrical and software interlocks",
+      "Deploy and parameterize the three standard IEC timer blocks: TON, TOF, and TP",
+      "Select and size appropriate timer types for specific industrial delay applications",
+      "Implement CTU, CTD, and CTUD counter blocks for batch tracking and production counting",
+      "Design sequential step-based state control circuits driven by timer cascades"
     ],
-    sections: [
+    "sections": [
       {
-        title: '4.1 OB1 và chu kỳ quét',
-        content: 'Mọi chương trình điều khiển viết trong OB1 được PLC thực thi lặp lại liên tục. Mỗi Network (rung thang) là một biểu thức logic độc lập. PLC đọc từ Network 1 xuống cuối rồi quay lại.',
-        keyPoints: [
-          'Network: đơn vị logic cơ bản trong LAD, tương đương một "rung thang"',
-          'Điện chạy từ thanh dọc trái (L+) sang phải (M)',
-          'Contact: điều kiện (đầu vào, bit nhớ M)',
-          'Coil: kết quả (đầu ra Q, bit nhớ M)',
-        ],
+        "title": "4.1 OB1 and Cyclic Program Execution",
+        "content": "All user control algorithms programmed within Main Organization Block 1 (OB1) are executed cyclically by the PLC operating system. Each Network (rung) represents an independent boolean logic expression, evaluated sequentially top-to-bottom and left-to-right.",
+        "keyPoints": [
+          "Network: The atomic logic unit in LAD, representing a discrete rung between power rails",
+          "Power Flow: Conceptual electrical power flows from the left power rail (L+) toward the right neutral rail (M)",
+          "Contacts: Represent operational preconditions (field digital inputs, memory bit markers %M)",
+          "Coils: Represent execution results (physical digital outputs %Q, internal flags %M, DB bits)"
+        ]
       },
       {
-        title: '4.2 Tiếp điểm NO, NC và Coil',
-        content: 'Tiếp điểm thường hở (NO — Normally Open): dẫn điện khi bit tương ứng = 1. Tiếp điểm thường đóng (NC — Normally Closed): dẫn điện khi bit tương ứng = 0. Cuộn coil: gán giá trị 1 cho bit khi có điện.',
-        keyPoints: [
-          'NO contact (—| |—): dẫn khi bit = 1',
-          'NC contact (—|/|—): dẫn khi bit = 0',
-          'Output coil (—( )—): gán bit = 1 khi có điện, = 0 khi mất điện',
-          'Không dùng cùng một địa chỉ đầu ra cho nhiều coil (coil trùng)',
+        "title": "4.2 Normally Open (NO), Normally Closed (NC) Contacts, and Output Coils",
+        "content": "A Normally Open (NO) contact passes conceptual power when its referenced bit equals 1 (TRUE). A Normally Closed (NC) contact passes power when its referenced bit equals 0 (FALSE). An output coil assigns the rung power flow state (1 or 0) directly to its target bit address.",
+        "keyPoints": [
+          "NO Contact (—| |—): Conducts power when addressed bit = 1",
+          "NC Contact (—|/|—): Conducts power when addressed bit = 0 (inverts logical state)",
+          "Standard Output Coil (—( )—): Writes 1 to bit when rung is energized; writes 0 when rung is de-energized",
+          "Duplicate Coil Warning: Never assign the same physical output address to multiple standard coils across different networks"
         ],
-        note: 'Tiếp điểm NC trong LAD KHÔNG đồng nghĩa với tiếp điểm thường đóng trong thực tế. NC trong LAD đảo logic (NOT) tín hiệu tương ứng.',
+        "note": "An NC contact in software ladder logic does NOT denote a physically normally-closed switch in the field. Software NC performs a logical NOT operation on the sampled state of the addressed bit."
       },
       {
-        title: '4.3 Logic AND, OR, NOT',
-        content: 'AND: nối tiếp các tiếp điểm — tất cả phải ON. OR: song song các tiếp điểm — chỉ cần một ON. NOT: tiếp điểm NC đảo tín hiệu.',
-        keyPoints: [
-          'AND = nối tiếp contacts: I0.0 AND I0.1 → Q0.0',
-          'OR = song song contacts: I0.0 OR I0.1 → Q0.0',
-          'NOT = tiếp điểm NC: NOT I0.0 → Q0.0',
-          'Kết hợp: (I0.0 AND I0.1) OR I0.2 → Q0.0',
-        ],
+        "title": "4.3 Combinational Boolean Logic: AND, OR, and NOT",
+        "content": "Series contacts create logical AND relationships (all preconditions must conduct). Parallel branches create logical OR relationships (any branch conducts). NC contacts execute boolean inversion (NOT).",
+        "keyPoints": [
+          "AND Logic = Series contacts: %I0.0 AND %I0.1 must both be TRUE to energize output %Q0.0",
+          "OR Logic = Parallel contacts: %I0.0 OR %I0.1 energizes output %Q0.0",
+          "NOT Logic = NC contact: Inverts the incoming bit status",
+          "Complex Expressions: Nested parallel branches implement expressions such as (%I0.0 AND %I0.1) OR %I0.2 → %Q0.0"
+        ]
       },
       {
-        title: '4.4 Mạch Start-Stop và tự giữ',
-        content: 'Mạch khởi động-dừng là mạch nền tảng nhất trong điều khiển động cơ. Nút Start thường hở (NO), nút Stop thường đóng (NC).',
-        keyPoints: [
-          'Start (I0.0 NO) song song với tiếp điểm tự giữ (Q0.0 NO)',
-          'Stop (I0.1 NC) nối tiếp với nhóm trên',
-          'Q0.0 = (Start OR Q0.0) AND NOT Stop',
-          'Ưu tiên Stop: nếu nhấn cả Start và Stop → Motor dừng',
-          'Có thể dùng Set/Reset thay cho mạch tự giữ',
-        ],
+        "title": "4.4 Motor Start-Stop Circuit and Seal-In Latching",
+        "content": "The classic Start-Stop seal-in circuit is the most fundamental circuit in motor control. A momentary normally-open Start pushbutton is connected in parallel with an auxiliary contact of the motor output coil to maintain power after the button is released.",
+        "keyPoints": [
+          "Momentary Start button (%I0.0 NO) placed in parallel with motor auxiliary contact (%Q0.0 NO)",
+          "Stop button (%I0.1 NC) placed in series with the parallel combination to break the holding circuit",
+          "Boolean Formula: %Q0.0 := (Start OR %Q0.0) AND NOT Stop",
+          "Stop-Dominant Principle: If both Start and Stop are depressed simultaneously, the Stop contact overrides and de-energizes %Q0.0",
+          "Hardware Failsafe: Field Stop pushbuttons are wired mechanically Normally Closed (NC) to open the circuit upon wire breakage"
+        ]
       },
       {
-        title: '4.5 Lệnh Set (S) và Reset (R)',
-        content: 'Set: gán bit = 1 và giữ nguyên dù mất điện (latch). Reset: gán bit = 0. Khác với coil thường: coil mất điện → bit = 0, Set/Reset giữ trạng thái.',
-        keyPoints: [
-          'S instruction: đặt bit = 1, giữ cho đến khi Reset',
-          'R instruction: đặt bit = 0',
-          'SR: Set ưu tiên (Set thắng khi cả S và R đều ON)',
-          'RS: Reset ưu tiên (Reset thắng khi cả S và R đều ON)',
-          'Dùng Set/Reset cho đầu ra cần nhớ trạng thái (valve, motor latch)',
-        ],
+        "title": "4.5 Latch Set (S) and Unlatch Reset (R) Instructions",
+        "content": "The Set (S) coil latches an addressed bit to 1 (TRUE) upon power flow and maintains that state even after rung power flow ceases. The Reset (R) coil unlatches the addressed bit back to 0 (FALSE).",
+        "keyPoints": [
+          "Set (S) Instruction: Writes 1 to bit; state persists indefinitely until cleared by an explicit Reset",
+          "Reset (R) Instruction: Writes 0 to bit; clears any prior Set condition",
+          "SR Flip-Flop: Set-dominant bistable block (Set wins if both S and R inputs are simultaneously energized)",
+          "RS Flip-Flop: Reset-dominant bistable block (Reset wins if both S and R inputs are simultaneously energized)",
+          "Application: Ideal for operational modes, alarm holding states, and valve positioning where memory retention is required"
+        ]
       },
       {
-        title: '4.6 Mạch liên động (Interlock)',
-        content: 'Mạch liên động ngăn không cho hai đầu ra mâu thuẫn cùng ON (ví dụ: động cơ thuận và nghịch). Dùng tiếp điểm NC của đầu ra này ngăn đầu ra kia.',
-        keyPoints: [
-          'Q0.0 (Thuận): tiếp điểm NC của Q0.1 ngăn kích ON khi Nghịch đang chạy',
-          'Q0.1 (Nghịch): tiếp điểm NC của Q0.0 ngăn kích ON khi Thuận đang chạy',
-          'Interlock điện: dùng tiếp điểm thật của contactor (phần cứng)',
-          'Nên dùng cả interlock phần mềm (PLC) lẫn phần cứng',
+        "title": "4.6 Electrical and Software Interlocking Circuits",
+        "content": "Interlock circuits prevent mutually destructive field outputs from activating concurrently (e.g. forward and reverse contactors on a three-phase motor, which would cause a phase-to-phase dead short).",
+        "keyPoints": [
+          "Forward Contactor (%Q0.0): Rung contains an NC contact of Reverse (%Q0.1) to inhibit forward motion if reverse is active",
+          "Reverse Contactor (%Q0.1): Rung contains an NC contact of Forward (%Q0.0) to inhibit reverse motion if forward is active",
+          "Software Interlock: Prevents concurrent energization inside the PLC scan cycle",
+          "Hardware Interlock: Auxiliary mechanical contacts on physical contactors wired in series with opposite coils in the field panel"
         ],
-        note: 'Chỉ dùng interlock phần mềm là không an toàn. Luôn có thêm interlock phần cứng (tiếp điểm phụ của contactor) trong mạch thực tế.',
+        "note": "Software interlocking alone is insufficient for personnel safety and equipment protection. Always implement physical mechanical/electrical contactor interlocks in the field panel."
       },
       {
-        title: '4.7 Lệnh SET/RESET (SR/RS Flip-Flop) — khóa và nhả khóa trạng thái',
-        content: 'Khối SR (Set ưu tiên) và RS (Reset ưu tiên) được sử dụng để duy trì trạng thái của một bit nhớ hoặc đầu ra vật lý. Rất hữu ích khi cần chốt tín hiệu từ nút nhấn nhả.',
-        keyPoints: [
-          'SR Flip-Flop: Set ưu tiên nếu cả hai ngõ vào S và R đều ON',
-          'RS Flip-Flop: Reset ưu tiên nếu cả hai ngõ vào S và R đều ON',
-          'Giải quyết dễ dàng các mạch tự giữ phức tạp',
-          'Dùng cho các cảnh báo, trạng thái lỗi cần duy trì cho đến khi xác nhận',
-          'Có thể kết hợp nhiều điều kiện logic đầu vào S và R',
-        ],
+        "title": "4.7 Bistable Latch Blocks: SR and RS Flip-Flops",
+        "content": "The SR (Set dominant) and RS (Reset dominant) function blocks encapsulate latching behavior into standardized function blocks with explicit dominance handling when simultaneous Set and Reset signals occur.",
+        "keyPoints": [
+          "SR Flip-Flop: Set input overrides if both S and R1 inputs are active simultaneously",
+          "RS Flip-Flop: Reset input overrides if both R and S1 inputs are active simultaneously (standard safety practice)",
+          "Simplifies multi-condition latch logic without sprawling parallel seal-in rungs",
+          "Ideal for alarm latches requiring mandatory operator manual acknowledgment before clearing",
+          "Assigns state directly to dedicated %M markers or Data Block boolean tags"
+        ]
       },
       {
-        title: '4.8 Phát hiện cạnh lên/xuống (P_TRIG, N_TRIG) — phát hiện sự kiện một lần',
-        content: 'Lệnh P_TRIG (Positive edge) và N_TRIG (Negative edge) phát hiện sự thay đổi trạng thái tín hiệu từ OFF sang ON hoặc ON sang OFF. Output chỉ ON trong một chu kỳ quét (scan cycle).',
-        keyPoints: [
-          'P_TRIG: Xung cạnh lên, rất hay dùng khi nhấn nút',
-          'N_TRIG: Xung cạnh xuống, hữu ích khi nhả nút hoặc cảm biến vừa hết vật',
-          'Tránh việc một tín hiệu kích liên tục gây lặp lệnh nhiều lần',
-          'Đặc biệt quan trọng khi sử dụng chung với lệnh đếm hoặc tính toán',
-          'Cần cấp một bit nhớ (M) hoặc DB để lưu trạng thái cạnh trước đó',
-        ],
+        "title": "4.8 Edge Detection Instructions: P_TRIG and N_TRIG (One-Shots)",
+        "content": "Edge detection instructions detect transitions in signal states: P_TRIG (Positive / rising edge, 0→1) and N_TRIG (Negative / falling edge, 1→0). Output conducts for exactly one PLC scan cycle.",
+        "keyPoints": [
+          "P_TRIG: Detects rising edge (0→1); commonly triggered upon pushbutton depression or sensor entry",
+          "N_TRIG: Detects falling edge (1→0); triggered upon pushbutton release or part exit from sensor beam",
+          "Prevents continuous repetitive instruction execution during sustained high signals",
+          "Mandatory precursor for counter incrementing, FIFO queue shifting, and math accumulation rungs",
+          "Requires an edge memory bit (%M or DB boolean) to store the previous scan cycle status"
+        ]
       },
       {
-        title: '4.9 Bộ đếm CTU, CTD, CTUD — đếm lên, đếm xuống, đặt lại',
-        content: 'Các khối đếm trong LAD giúp theo dõi số lượng sự kiện như số sản phẩm, số lần bơm chạy. TIA Portal cung cấp CTU (Đếm lên), CTD (Đếm xuống) và CTUD (Cả hai).',
-        keyPoints: [
-          'CTU (Count Up): CV tăng mỗi khi có cạnh lên ở chân CU',
-          'CTD (Count Down): CV giảm mỗi khi có cạnh lên ở chân CD',
-          'CTUD: Kết hợp cả đếm lên và xuống trong cùng một khối',
-          'Chân R (Reset) đưa CV về 0 với đếm lên',
-          'Biến PV (Preset Value) là giá trị ngưỡng để đầu ra Q bằng 1',
-        ],
+        "title": "4.9 IEC Counter Function Blocks: CTU, CTD, and CTUD",
+        "content": "IEC counter blocks track discrete physical events, such as parts produced on a conveyor or pump run cycles. TIA Portal implements Count Up (CTU), Count Down (CTD), and Bidirectional (CTUD) blocks.",
+        "keyPoints": [
+          "CTU (Count Up): Increments Current Value (CV) by 1 upon each rising edge at CU; output Q turns TRUE when CV ≥ PV",
+          "CTD (Count Down): Decrements CV by 1 upon each rising edge at CD; output Q turns TRUE when CV ≤ 0",
+          "CTUD: Combines both up and down count inputs into a single block with individual Q outputs",
+          "Reset (R): Instantly resets the internal count register CV to 0 on CTU blocks",
+          "Preset Value (PV): The calibrated target count threshold defining when output Q energizes"
+        ]
       },
       {
-        title: '4.10 So sánh và toán học cơ bản — CMP, ADD, SUB, MUL, DIV trong LAD',
-        content: 'Ngoài logic bit, LAD còn hỗ trợ gọi các khối hàm toán học và so sánh trực tiếp. Điều này giúp kiểm tra các giá trị của bộ đếm, thời gian, analog.',
-        keyPoints: [
-          'Các lệnh so sánh: ==, <>, >, <, >=, <= trả về TRUE/FALSE',
-          'ADD (cộng), SUB (trừ), MUL (nhân), DIV (chia) cho tính toán',
-          'Đầu ra khối toán học (ENO) có thể nối nối tiếp với logic khác',
-          'Cho phép sử dụng nhiều kiểu dữ liệu (Int, Real, Time)',
-          'Giúp LAD trở thành ngôn ngữ mạnh mẽ không kém SCL với bài toán đơn giản',
-        ],
+        "title": "4.10 In-Line Mathematical and Comparison Instructions in LAD",
+        "content": "Ladder Diagram allows embedding math and comparison blocks directly into graphical rungs. This combines boolean discrete conditions with quantitative numerical decision logic.",
+        "keyPoints": [
+          "Comparison Blocks: ==, <>, >, <, >=, <= evaluate two operands and pass power flow when TRUE",
+          "Math Blocks: ADD (+), SUB (−), MUL (×), DIV (÷) execute arithmetic inline",
+          "Enable Output (ENO): Propagates power flow to downstream rung elements if arithmetic completes without overflow",
+          "Multi-Type Flexibility: Operates on Int, DInt, Real, and Time data types",
+          "Enhances LAD capability, allowing ladder programs to perform calculation tasks without forcing a shift to SCL"
+        ]
       },
       {
-        title: '4.11 MOVE và chuyển đổi kiểu dữ liệu — MOVE, CONV, ROUND, TRUNC',
-        content: 'Lệnh MOVE dùng để truyền dữ liệu giữa các thanh ghi (Word, DWord, Real). Lệnh CONV dùng để chuyển đổi kiểu, ROUND làm tròn và TRUNC cắt bỏ phần thập phân.',
-        keyPoints: [
-          'MOVE: chép giá trị ngõ vào IN sang ngõ ra OUT',
-          'Sử dụng nhiều để gán giá trị mặc định cho biến',
-          'CONV: Chuyển đổi an toàn (ví dụ INT sang REAL)',
-          'ROUND: Làm tròn số thực gần nhất thành số nguyên',
-          'TRUNC: Bỏ toàn bộ phần sau dấu phẩy của số thực',
-        ],
+        "title": "4.11 Data Transfer and Conversion: MOVE, CONV, ROUND, and TRUNC",
+        "content": "The MOVE instruction transfers data between registers and variables. CONV converts between data types, ROUND rounds floating-point reals to the nearest integer, and TRUNC truncates fractional digits.",
+        "keyPoints": [
+          "MOVE: Copies data from input IN directly to output OUT",
+          "Commonly used to load recipe parameters and initialize operational setpoints",
+          "CONV: Executes safe data type conversions (e.g. converting 16-bit INT to 32-bit REAL)",
+          "ROUND: Rounds floating-point REAL numbers to the nearest whole integer",
+          "TRUNC: Discards fractional digits entirely, converting REAL to integer without rounding"
+        ]
       },
       {
-        title: '4.12 Bài tập thực hành: Mạch điều khiển đèn giao thông',
-        content: 'Ứng dụng tổng hợp các lệnh Timer, So sánh, SET/RESET và Logic cơ bản để thiết kế mạch điều khiển đèn giao thông ngã tư.',
-        keyPoints: [
-          'Phân tích giản đồ thời gian cho Đỏ, Vàng, Xanh ở hai hướng',
-          'Sử dụng Timer TON để đếm chu kỳ tổng',
-          'Dùng lệnh So sánh (>=, <=) thời gian hiện tại của Timer để bật tắt đèn',
-          'Kết hợp nút Start/Stop bằng lệnh SET/RESET',
-          'Cân nhắc dùng mảng hoặc các thanh ghi để lưu thời lượng từng đèn',
-        ],
+        "title": "4.12 Practical Application: Intersection Traffic Light Controller",
+        "content": "Synthesizes timers, comparison blocks, Set/Reset instructions, and discrete ladder logic to design an automated 4-way intersection traffic signal sequence with pedestrian crossing intervals.",
+        "keyPoints": [
+          "Construct timing diagrams mapping Green, Yellow, and Red phases across North-South and East-West corridors",
+          "Deploy a master TON timer to establish the total repeatable cycle duration (e.g. 60 seconds)",
+          "Use comparison blocks (>=, <=) evaluating current timer elapsed time (ET) to energize phase outputs",
+          "Integrate Master Start/Stop commands using RS latch flip-flops",
+          "Implement flashing yellow emergency mode via a system clock memory byte"
+        ]
       },
       {
-        title: '5.1 Timer TON — On-Delay',
-        content: 'TON (Timer On-Delay): Đầu ra Q lên 1 sau khoảng thời gian PT kể từ khi đầu vào IN = 1. Nếu IN mất trước khi đủ PT, timer reset về 0.',
-        keyPoints: [
-          'IN: tín hiệu kích (cần giữ liên tục)',
-          'PT: Preset Time — thời gian đặt (kiểu TIME, ví dụ: T#5s)',
-          'Q: đầu ra, lên 1 khi ET >= PT',
-          'ET: Elapsed Time — thời gian đã trôi qua',
-          'Nếu IN=0 trước khi hết PT: ET reset về 0, Q = 0',
-          'Ứng dụng: Trễ bật đèn, delay khởi động motor',
+        "title": "5.1 TON Timer — On-Delay Timing",
+        "content": "TON (Timer On-Delay): Output Q turns ON after a preset time delay (PT) has elapsed following input IN becoming TRUE. If input IN drops to FALSE before PT expires, the timer resets elapsed time to zero.",
+        "keyPoints": [
+          "IN: Trigger input signal (must remain continuously TRUE throughout the timing interval)",
+          "PT: Preset Time interval specified in TIME format (e.g. T#5s, T#500ms)",
+          "Q: Output contact; transitions to TRUE when Elapsed Time (ET) ≥ Preset Time (PT)",
+          "ET: Elapsed Time accumulator tracking milliseconds elapsed since IN turned TRUE",
+          "Early Drop Reset: If IN goes FALSE prior to reaching PT, ET resets to 0ms and Q remains FALSE",
+          "Applications: Motor start delays, lube pressure establishment timers, sensor debounce delays"
         ],
-        note: 'S7-1200 dùng IEC Timer — là FB, cần Instance DB. Mỗi lần gọi timer cần một Instance DB khác nhau.',
+        "note": "S7-1200 timers are IEC-compliant Function Blocks (FBs) requiring dedicated Instance Data Blocks. Every timer instance must have a unique Instance DB."
       },
       {
-        title: '5.2 Timer TOF — Off-Delay',
-        content: 'TOF (Timer Off-Delay): Đầu ra Q lên 1 ngay khi IN = 1. Khi IN về 0, Q giữ 1 thêm thời gian PT rồi mới về 0.',
-        keyPoints: [
-          'Q = 1 ngay khi IN = 1',
-          'Khi IN = 0: timer bắt đầu đếm',
-          'Sau PT giây: Q về 0',
-          'Nếu IN = 1 trở lại trước khi hết PT: timer reset, Q vẫn = 1',
-          'Ứng dụng: Quạt làm mát chạy thêm sau khi tắt máy, đèn hành lang',
-        ],
+        "title": "5.2 TOF Timer — Off-Delay Timing",
+        "content": "TOF (Timer Off-Delay): Output Q turns ON immediately when input IN becomes TRUE. When input IN drops to FALSE, output Q remains ON for the preset time duration (PT) before de-energizing.",
+        "keyPoints": [
+          "Output Q transitions to TRUE immediately when IN becomes TRUE",
+          "Timing countdown commences precisely when input IN drops from TRUE to FALSE",
+          "Output Q de-energizes to FALSE once elapsed time ET reaches PT",
+          "Retrigger: If IN goes TRUE again during the timing countdown, the timer resets and Q remains TRUE",
+          "Applications: Cabinet cooling fan post-run cooldown, delayed lighting shutdown, conveyor clearout intervals"
+        ]
       },
       {
-        title: '5.3 Timer TP — Pulse',
-        content: 'TP (Timer Pulse): Khi IN chuyển từ 0→1, Q lên 1 trong đúng thời gian PT rồi về 0, bất kể IN như thế nào.',
-        keyPoints: [
-          'Q = 1 trong đúng PT giây kể từ cạnh lên của IN',
-          'Trong khi Q = 1, tín hiệu IN không ảnh hưởng',
-          'Sau PT: Q về 0, có thể kích lại bằng cạnh lên mới của IN',
-          'Tạo xung độ rộng cố định bất kể thời gian nhấn nút',
-          'Ứng dụng: Tạo xung đơn, bơm định lượng',
-        ],
+        "title": "5.3 TP Timer — Pulse Generation",
+        "content": "TP (Timer Pulse): When input IN transitions from FALSE to TRUE, output Q turns ON for exactly the preset duration PT, regardless of whether input IN remains held or drops immediately.",
+        "keyPoints": [
+          "Output Q energizes for exactly duration PT upon rising edge of input IN",
+          "Input variations during the active pulse are completely ignored by the block",
+          "Output Q de-energizes once PT expires, requiring a fresh rising edge at IN to trigger again",
+          "Generates deterministic pulse widths regardless of operator button-press duration",
+          "Applications: Pneumatic reject cylinders, lubrication dosing squirts, horn audible sirens"
+        ]
       },
       {
-        title: '5.4 Counter CTU, CTD, CTUD',
-        content: 'Counter đếm số lần xuất hiện cạnh lên (rising edge) tín hiệu. CTU: đếm lên, CTD: đếm xuống, CTUD: đếm lên/xuống.',
-        keyPoints: [
-          'CTU: CU (Count Up input), R (Reset), PV (Preset Value), Q (= 1 khi CV >= PV), CV (Current Value)',
-          'CTD: CD (Count Down), LD (Load preset), PV, Q (= 1 khi CV <= 0), CV',
-          'CTUD: Kết hợp CTU và CTD trong một khối',
-          'CV là INT (−32768 đến 32767), PV thường đặt dương',
-          'Ứng dụng: Đếm sản phẩm, kiểm soát số mẻ sản xuất',
-        ],
+        "title": "5.4 Counter Architecture and Counting Logic",
+        "content": "Counter blocks increment or decrement on rising-edge signal transitions. CTU counts up, CTD counts down, and CTUD handles bidirectional tracking.",
+        "keyPoints": [
+          "CTU: CU (Count Up input), R (Reset), PV (Preset Value), Q (Output active when CV ≥ PV), CV (Current Count)",
+          "CTD: CD (Count Down input), LD (Load Preset), PV, Q (Output active when CV ≤ 0), CV",
+          "CTUD: Combines both CU and CD inputs with separate QU and QD outputs",
+          "Count Register (CV): 16-bit signed integer INT (−32768 to +32767)",
+          "Applications: Conveyor item counting, batch packaging control, maintenance duty tracking"
+        ]
       },
       {
-        title: '5.5 R_TRIG và F_TRIG — Phát hiện cạnh',
-        content: 'R_TRIG: phát xung 1 chu kỳ tại cạnh lên (0→1). F_TRIG: phát xung 1 chu kỳ tại cạnh xuống (1→0). Dùng để đếm hoặc trigger khi tín hiệu thay đổi.',
-        keyPoints: [
-          'R_TRIG CLK: đầu vào, Q: xung đầu ra 1 scan tại cạnh lên',
-          'F_TRIG CLK: đầu vào, Q: xung đầu ra 1 scan tại cạnh xuống',
-          'Dùng trước CTU để tránh đếm nhiều lần khi giữ nút',
-          'Ứng dụng: Đếm sản phẩm qua cảm biến quang',
-        ],
+        "title": "5.5 Edge Detection Instructions: R_TRIG and F_TRIG",
+        "content": "R_TRIG generates a single-scan pulse on a rising edge (0→1). F_TRIG generates a single-scan pulse on a falling edge (1→0). Essential for conditioning inputs to counters and accumulators.",
+        "keyPoints": [
+          "R_TRIG: Output Q conducts for exactly one scan upon rising edge at input CLK",
+          "F_TRIG: Output Q conducts for exactly one scan upon falling edge at input CLK",
+          "Placed before counter blocks to guarantee exactly one count increment per button press",
+          "Applications: Optical part sensor edge detection, recipe step advance buttons"
+        ]
       },
       {
-        title: '5.6 Ví dụ: Điều khiển đèn giao thông',
-        content: 'Dùng timer TON để tạo trình tự: Xanh 30s → Vàng 3s → Đỏ 25s → lặp lại. Sử dụng bit nhớ và timer tuần tự.',
-        keyPoints: [
-          'Bước 1 (Xanh): TON_1 PT=30s, khi Q=1 → bước 2',
-          'Bước 2 (Vàng): TON_2 PT=3s, khi Q=1 → bước 3',
-          'Bước 3 (Đỏ): TON_3 PT=25s, khi Q=1 → reset về bước 1',
-          'Dùng bit nhớ M để xác định đang ở bước nào',
-          'Reset timer bằng cách tắt tín hiệu IN',
-        ],
-      },
+        "title": "5.6 Sequential Step Control Using Timers",
+        "content": "Deploying cascaded timers to engineer predictable multi-stage sequences: Green (30s) → Yellow (3s) → Red (25s) → Loop. Utilizing bit markers to cleanly manage step transitions.",
+        "keyPoints": [
+          "Step 1 (Green Phase): TON_1 timing PT=30s; when Q=1, transitions sequence to Step 2",
+          "Step 2 (Yellow Phase): TON_2 timing PT=3s; when Q=1, transitions sequence to Step 3",
+          "Step 3 (Red Phase): TON_3 timing PT=25s; when Q=1, loops sequence back to Step 1",
+          "Memory Bit Markers (%M): Isolate and indicate active step states",
+          "Timer Reset: Automatically clears when upstream precondition drops to FALSE"
+        ]
+      }
     ],
-    review: [
-      'Vẽ LAD mạch Start-Stop cho một động cơ.',
-      'Sự khác nhau giữa Output Coil và lệnh Set là gì?',
-      'Mạch liên động (Interlock) dùng để làm gì? Vẽ ví dụ cho động cơ thuận-nghịch.',
-      'Tại sao nên dùng cả interlock phần mềm lẫn phần cứng?',
-      'I0.0 là tiếp điểm NC trong LAD — khi I0.0 = 1 (nút nhấn được nhấn), tiếp điểm đó dẫn hay không dẫn?',
-      'Khi nào nên dùng SR Flip-Flop thay vì RS Flip-Flop?',
-      'P_TRIG có tác dụng gì và tại sao lại cần bit nhớ đi kèm?',
-      'Trình bày cách kết hợp lệnh Timer và So sánh để điều khiển nhiều đèn.',
-      'Vẽ timing diagram cho TON, TOF, TP với cùng một tín hiệu đầu vào.',
-      'Tại sao cần R_TRIG trước CTU khi đếm bằng nút nhấn?',
-      'Lập trình đèn nhấp nháy 1Hz (0.5s ON, 0.5s OFF) dùng timer.',
-      'CTU đang đếm CV = 5, PV = 10. Nếu Reset = 1 thì CV = ?',
-      'Thiết kế mạch điều khiển 2 băng tải: Băng tải 2 khởi động sau Băng tải 1 là 5 giây.',
-    ],
+    "review": [
+      "Draw the Ladder Diagram for a classic motor Start-Stop seal-in control circuit.",
+      "Explain the operational difference between a standard Output Coil and a Set (S) Latch instruction.",
+      "What is the purpose of an interlocking circuit? Draw an interlock example for a reversing motor starter.",
+      "Why should industrial systems implement both software and hardware interlocking on reversing contactors?",
+      "If %I0.0 is addressed by an NC contact in LAD, does that contact conduct power when the physical field input receives 24VDC?",
+      "Under what operational conditions should an engineer select an RS Flip-Flop over an SR Flip-Flop?",
+      "What is the functional purpose of a P_TRIG instruction, and why does it require an associated edge memory bit?",
+      "Explain how comparison instructions (CMP) are combined with timer elapsed time (ET) to control multi-phase lighting.",
+      "Sketch timing diagrams for TON, TOF, and TP blocks responding to an identical 3-second input pulse with PT = 5s.",
+      "Why is it necessary to insert an R_TRIG one-shot before a CTU block when counting manual pushbutton presses?",
+      "Write a ladder rung to generate a 1Hz flasher (0.5s ON, 0.5s OFF) using TON timer blocks.",
+      "A CTU counter has accumulated CV = 5 with PV = 10. If input Reset transitions to TRUE, what is the new value of CV?",
+      "Design a two-conveyor sequencing circuit where Conveyor 2 automatically starts 5 seconds after Conveyor 1 starts."
+    ]
   },
 
   '04-numeric-operations': {
-    overview: 'Kiểu dữ liệu số là nền tảng để xử lý thông tin trong PLC. Bài này bao gồm các kiểu dữ liệu cơ bản (BOOL, INT, REAL...), lệnh MOVE, các phép toán số học, so sánh, chuyển đổi kiểu và giới hạn giá trị trên S7-1200.',
-    objectives: [
-      'Phân biệt các kiểu dữ liệu số trong TIA Portal (BOOL, BYTE, INT, DINT, REAL)',
-      'Sử dụng lệnh MOVE để truyền dữ liệu giữa các biến',
-      'Thực hiện các phép toán số học: cộng, trừ, nhân, chia, MOD',
-      'Dùng COMPARE để so sánh giá trị và đưa ra quyết định logic',
-      'Chuyển đổi kiểu dữ liệu và giới hạn giá trị với CONVERT, LIMIT',
+    "overview": "Numerical data structures and arithmetic manipulation form the core computational framework of modern PLCs. This lesson details fundamental IEC 61131-3 data types (BOOL, BYTE, INT, DINT, REAL, DWORD, STRING, TIME), the MOVE instruction, fixed-point and floating-point mathematics, magnitude comparisons, type conversions, and overflow handling on the S7-1200.",
+    "objectives": [
+      "Differentiate between IEC data types in TIA Portal (BOOL, BYTE, WORD, INT, DINT, REAL)",
+      "Deploy the MOVE instruction to transfer numerical values between memory registers",
+      "Execute arithmetic operations: addition, subtraction, multiplication, division, and modulo (MOD)",
+      "Utilize magnitude comparison blocks to execute conditional logic decisions",
+      "Perform data type conversions and output clamping using CONVERT and LIMIT blocks"
     ],
-    sections: [
+    "sections": [
       {
-        title: '6.1 Các kiểu dữ liệu cơ bản',
-        content: 'TIA Portal hỗ trợ đầy đủ các kiểu dữ liệu theo chuẩn IEC 61131-3. Chọn đúng kiểu dữ liệu giúp tiết kiệm bộ nhớ và tránh lỗi tràn số.',
-        keyPoints: [
-          'BOOL (1 bit): TRUE/FALSE — dùng cho tín hiệu ON/OFF',
-          'BYTE (8 bit): 0–255 — dùng cho mã lệnh, trạng thái nhóm',
-          'WORD (16 bit): 0–65535 — dùng cho thanh ghi nguyên',
-          'DWORD (32 bit): 0–4294967295 — dùng cho HSC count, thời gian',
-          'INT (16 bit có dấu): −32768 đến 32767',
-          'DINT (32 bit có dấu): −2147483648 đến 2147483647',
-          'REAL (32 bit): số thực dấu phẩy động — dùng cho analog, PID',
-          'TIME: T#0ms đến T#24d20h31m23s647ms — dùng cho timer',
-          'STRING: chuỗi ký tự tối đa 254 ký tự',
-        ],
+        "title": "6.1 Fundamental Data Types and Memory Sizing",
+        "content": "TIA Portal fully implements standard data types conforming to IEC 61131-3. Selecting appropriate data types optimizes memory consumption and prevents catastrophic numerical overflow errors.",
+        "keyPoints": [
+          "BOOL (1 bit): TRUE or FALSE — used for discrete binary states",
+          "BYTE (8 bits): Unsigned integer 0 to 255 — used for character codes and status masks",
+          "WORD (16 bits): Unsigned integer 0 to 65535 — used for raw registers and bit fields",
+          "DWORD (32 bits): Unsigned integer 0 to 4,294,967,295 — used for high-speed counter values and timestamps",
+          "INT (16 bits signed): −32,768 to +32,767 — standard signed integer",
+          "DINT (32 bits signed): −2,147,483,648 to +2,147,483,647 — double-length integer",
+          "REAL (32 bits IEEE 754): Single-precision floating-point number — used for analog scaling and PID mathematics",
+          "TIME (32 bits signed ms): T#0ms to T#24d20h31m23s647ms — standardized timer duration format",
+          "STRING: ASCII character array supporting up to 254 characters"
+        ]
       },
       {
-        title: '6.2 Lệnh MOVE — Truyền dữ liệu',
-        content: 'MOVE sao chép giá trị từ IN sang OUT. Hai biến phải cùng kiểu dữ liệu hoặc tương thích. MOVE thực thi mỗi scan nên cẩn thận khi dùng với biến trạng thái.',
-        keyPoints: [
-          'MOVE: OUT := IN — gán giá trị tức thì',
-          'MOVE_BLK: sao chép mảng (block of memory)',
-          'UMOVE_BLK: sao chép mảng không bị interrupt',
-          'Có thể MOVE từ INT sang DINT (mở rộng kiểu) nhưng cần CONVERT ngược lại',
-          'Lệnh FILL_BLK: điền cùng một giá trị vào toàn bộ mảng',
-        ],
+        "title": "6.2 The MOVE and Memory Block Transfer Instructions",
+        "content": "The MOVE instruction transfers data from input IN to destination OUT. Operands must share identical or compatible data types. Because MOVE executes every scan, conditional gating is essential when managing setpoint updates.",
+        "keyPoints": [
+          "MOVE: OUT := IN — copies value into target memory register",
+          "MOVE_BLK: Copies a contiguous block of array elements from source to destination",
+          "UMOVE_BLK: Uninterruptible memory block transfer protected against process interrupts",
+          "Automatic widening: Moving an INT into a DINT is performed automatically without data loss",
+          "FILL_BLK: Initializes an entire array by populating all elements with an identical initial value"
+        ]
       },
       {
-        title: '6.3 Phép toán số học',
-        content: 'S7-1200 hỗ trợ đầy đủ các phép toán số học với cả INT, DINT và REAL. Lưu ý về tràn số khi cộng/nhân hai INT lớn.',
-        keyPoints: [
-          'ADD: cộng — OUT := IN1 + IN2',
-          'SUB: trừ — OUT := IN1 − IN2',
-          'MUL: nhân — OUT := IN1 × IN2',
-          'DIV: chia — OUT := IN1 ÷ IN2 (phần nguyên với INT)',
-          'MOD: lấy phần dư — OUT := IN1 MOD IN2',
-          'Tràn số: INT × INT có thể dùng DINT để tránh mất dữ liệu',
-          'REAL: chính xác đến 7 chữ số có nghĩa',
+        "title": "6.3 Arithmetic Operations: Addition, Subtraction, Multiplication, Division, and Modulo",
+        "content": "The S7-1200 executes arithmetic operations across INT, DINT, and REAL operands. Engineers must account for integer truncation and register overflow when multiplying large values.",
+        "keyPoints": [
+          "ADD: Addition — OUT := IN1 + IN2",
+          "SUB: Subtraction — OUT := IN1 − IN2",
+          "MUL: Multiplication — OUT := IN1 × IN2",
+          "DIV: Division — OUT := IN1 ÷ IN2 (integer division truncates fractional remainders)",
+          "MOD: Modulo — OUT := IN1 MOD IN2 (extracts integer division remainder)",
+          "Overflow Mitigation: Convert INT operands to DINT or REAL before multiplication to prevent sign inversion",
+          "Floating-Point Precision: REAL calculations provide 7 significant decimal digits of accuracy"
         ],
-        note: 'Khi chia INT cho INT, kết quả là INT (làm tròn về 0). Ví dụ: 7 DIV 2 = 3, không phải 3.5. Dùng REAL nếu cần kết quả thập phân.',
+        "note": "When dividing integer operands (INT ÷ INT), the result is strictly an integer truncated toward zero (e.g. 7 DIV 2 = 3, not 3.5). Convert operands to REAL if fractional precision is required."
       },
       {
-        title: '6.4 So sánh và điều kiện',
-        content: 'Các lệnh COMPARE kiểm tra quan hệ giữa hai giá trị, trả về BOOL (TRUE/FALSE). Kết hợp với contacts trong LAD để tạo điều kiện điều khiển.',
-        keyPoints: [
-          'CMP ==: bằng nhau',
-          'CMP <>: khác nhau',
-          'CMP >: lớn hơn',
-          'CMP <: nhỏ hơn',
-          'CMP >=: lớn hơn hoặc bằng',
-          'CMP <=: nhỏ hơn hoặc bằng',
-          'Ví dụ: Nếu nhiệt độ > 80°C thì bật cảnh báo',
-        ],
+        "title": "6.4 Magnitude Comparison and Conditional Branches",
+        "content": "Comparison instructions evaluate numerical relationships between two values, outputting boolean TRUE/FALSE power flow to downstream ladder contacts.",
+        "keyPoints": [
+          "CMP ==: Equal to",
+          "CMP <>: Not equal to",
+          "CMP >: Greater than",
+          "CMP <: Less than",
+          "CMP >=: Greater than or equal to",
+          "CMP <=: Less than or equal to",
+          "Application Example: If Measured_Temperature > 80.0°C, energize high-temperature warning coil"
+        ]
       },
       {
-        title: '6.5 Chuyển đổi kiểu và giới hạn',
-        content: 'CONVERT chuyển đổi giữa các kiểu số. LIMIT giới hạn giá trị trong khoảng MIN–MAX. Rất hữu ích khi xử lý tín hiệu analog.',
-        keyPoints: [
-          'INT_TO_REAL: chuyển INT thành REAL để tính toán thập phân',
-          'REAL_TO_INT: làm tròn REAL về INT (round, không truncate)',
-          'DINT_TO_INT: cẩn thận tràn số nếu DINT > 32767',
-          'LIMIT: OUT := LIMIT(MN, IN, MX) — nếu IN < MN thì OUT = MN; nếu IN > MX thì OUT = MX',
-          'ABS: giá trị tuyệt đối — loại bỏ dấu âm',
-          'MIN / MAX: trả về giá trị nhỏ nhất / lớn nhất trong hai đầu vào',
-        ],
+        "title": "6.5 Type Conversion and Clamping with CONVERT and LIMIT",
+        "content": "CONVERT handles transformations between numeric formats. LIMIT bounds values between calibrated minimum and maximum thresholds, preventing downstream actuator saturation.",
+        "keyPoints": [
+          "INT_TO_REAL: Transforms 16-bit integer values to floating-point REAL format for decimal arithmetic",
+          "REAL_TO_INT: Converts REAL values to integers using standard rounding rules",
+          "DINT_TO_INT: Narrowing conversion; will truncate high-order bits if value exceeds 32,767",
+          "LIMIT: OUT := LIMIT(MIN, IN, MAX) — clamps values strictly between MIN and MAX",
+          "ABS: Absolute value function — strips sign to return non-negative magnitude",
+          "MIN / MAX: Extracts lowest or highest value between input operands"
+        ]
       },
       {
-        title: '6.6 Kiểu dữ liệu DWORD và LWORD — bit masking, thao tác bit',
-        content: 'DWORD (32-bit) và LWORD (64-bit) là các kiểu dữ liệu dạng bit string, dùng để lưu trữ trạng thái của nhiều bit hoặc giá trị nguyên thủy chưa định kiểu.',
-        keyPoints: [
-          'Dùng cho các phép toán logic trên bit: AND, OR, XOR, NOT',
-          'Bit masking (Mặt nạ bit): Dùng AND để tách hoặc xóa các bit, OR để set các bit',
-          'Thích hợp lưu trữ mã lỗi tổng hợp, hoặc truyền trạng thái nhiều cờ (flags) cùng lúc',
-          'Có thể truy cập từng bit bằng cú pháp TagName.%X0',
-          'Cần phân biệt với DINT/LINT (kiểu số nguyên có dấu)',
-        ],
+        "title": "6.6 Bit String Manipulation: DWORD, LWORD, and Bit Masking",
+        "content": "DWORD (32-bit) and LWORD (64-bit) represent unformatted bit patterns utilized for bitwise masking, machine status aggregation, and raw communication frame parsing.",
+        "keyPoints": [
+          "Bitwise Boolean Operations: AND, OR, XOR, NOT operations executed across parallel bit registers",
+          "Bit Masking: Use bitwise AND to isolate or clear specific bits; use OR to force specific flag bits TRUE",
+          "Ideal for packaging complex multi-station error codes into a single telemetry word",
+          "Bit Slicing Syntax: Access individual bits directly via tag name syntax (e.g. StatusWord.%X0)",
+          "Distinction: Distinct from signed integers (DINT/LINT); bit strings carry no arithmetic sign bit"
+        ]
       },
       {
-        title: '6.7 Kiểu chuỗi STRING — khai báo, ghép chuỗi, so sánh chuỗi',
-        content: 'Kiểu STRING dùng để lưu trữ văn bản (ASCII). Một STRING chiếm số byte bằng độ dài khai báo cộng thêm 2 byte (lưu độ dài tối đa và độ dài thực).',
-        keyPoints: [
-          'Khai báo độ dài tối đa: STRING[20] chiếm 22 bytes',
-          'CONCAT: Ghép nối hai chuỗi với nhau',
-          'So sánh chuỗi bằng các lệnh như ==, <, > dựa trên bảng mã ASCII',
-          'RIGHT, LEFT, MID: Trích xuất chuỗi con',
-          'Thường dùng gửi thông báo qua màn hình HMI, in tem nhãn, hay quét mã vạch',
-        ],
+        "title": "6.7 Text String Processing: STRING Declarations and String Functions",
+        "content": "The STRING data type stores ASCII text strings. A declared STRING occupies memory equal to its defined character capacity plus a 2-byte header encoding maximum and current length.",
+        "keyPoints": [
+          "Memory Header: A STRING[20] variable occupies 22 bytes in memory (2 header bytes + 20 data bytes)",
+          "CONCAT: Concatenates two string variables into a unified string output",
+          "String Comparison: Evaluates equality (==) and lexicographical ordering (<, >) based on ASCII codes",
+          "Substring Extraction: LEFT, RIGHT, and MID instructions extract designated character segments",
+          "Applications: Displaying dynamic operator messages on HMI panels, barcode scanner parsing, label printing"
+        ]
       },
       {
-        title: '6.8 Kiểu thời gian TIME, DATE, TOD — dùng trong timer, so sánh ngày giờ',
-        content: 'PLC hỗ trợ nhiều kiểu thời gian chuẩn IEC. Kiểu TIME cho bộ định thời, DATE và TOD cho quản lý thời gian thực (RTC).',
-        keyPoints: [
-          'TIME: Khoảng thời gian, định dạng T#14d_1h_5m, kiểu cơ bản là DINT (ms)',
-          'DATE: Lưu ngày tháng năm (ví dụ D#2026-08-28)',
-          'TOD (Time_Of_Day): Thời gian trong một ngày (ví dụ TOD#23:55:00)',
-          'Có thể thực hiện phép cộng trừ với kiểu TIME (VD: T#2s + T#3s = T#5s)',
-          'Dùng DTL (Date and Time Long) để lưu trữ chi tiết từ năm đến nanosecond',
-        ],
+        "title": "6.8 Real-Time Date and Time Formats: TIME, DATE, TOD, and DTL",
+        "content": "The S7-1200 implements standardized IEC time and date structures. TIME defines durations; DATE, TOD, and DTL manage real-time clock (RTC) synchronization and shift scheduling.",
+        "keyPoints": [
+          "TIME: Duration format (e.g. T#14d_1h_5m), internally stored as a 32-bit signed integer in milliseconds",
+          "DATE: Calendar date format (e.g. D#2026-10-21)",
+          "TOD (Time_Of_Day): Clock time within a 24-hour cycle (e.g. TOD#23:55:00.000)",
+          "Duration Arithmetic: TIME values support direct addition and subtraction (e.g. T#2s + T#3s = T#5s)",
+          "DTL Structure: 12-byte comprehensive date and time container resolving down to nanosecond precision"
+        ]
       },
       {
-        title: '6.9 Chuyển đổi kiểu dữ liệu nâng cao — CONV, BCD_TO_INT',
-        content: 'Bên cạnh chuyển đổi Int/Real, hệ thống cũ thường dùng mã BCD (Binary-Coded Decimal) cho các switch xoay thập phân hoặc màn hình số LED 7 đoạn.',
-        keyPoints: [
-          'Lệnh CONV hỗ trợ chuyển đổi nhiều dạng khác nhau',
-          'Mã BCD biểu diễn mỗi chữ số thập phân bằng 4 bit',
-          'BCD_TO_INT: Chuyển đầu vào mã BCD sang số INT để tính toán',
-          'INT_TO_BCD: Chuyển số INT ra mã BCD để hiển thị lên LED',
-          'Nếu chuyển đổi kiểu có kích thước nhỏ hơn (DINT -> INT), phải coi chừng mất dữ liệu',
-        ],
+        "title": "6.9 Advanced Data Conversions: CONV and BCD Decoding",
+        "content": "Beyond standard Int/Real conversions, legacy machines frequently utilize Binary-Coded Decimal (BCD) thumbwheel switches and 7-segment digital displays.",
+        "keyPoints": [
+          "The universal CONV instruction adapts across diverse numeric formats based on selected types",
+          "BCD Encoding: Represents each decimal digit (0–9) using a dedicated 4-bit nibble",
+          "BCD_TO_INT: Decodes thumbwheel switch inputs into standard integers for PLC math",
+          "INT_TO_BCD: Encodes internal integer registers into BCD format for hardware display driving",
+          "Data Truncation Alert: Always verify destination register capacity when performing narrowing conversions"
+        ]
       },
       {
-        title: '6.10 Số âm và bù hai — biểu diễn số âm, tràn số',
-        content: 'PLC biểu diễn số nguyên có dấu (INT, DINT) dưới dạng bù hai (Two\'s complement). Bit cao nhất (MSB) đóng vai trò là bit dấu (0 là dương, 1 là âm).',
-        keyPoints: [
-          'INT lưu được giá trị từ -32768 đến 32767',
-          'Cách tạo bù hai: Đảo bit của số dương và cộng thêm 1',
-          'Tràn số (Overflow): 32767 + 1 = -32768, gây lỗi nghiêm trọng nếu không xử lý',
-          'Dùng ENO của lệnh tính toán hoặc bit trạng thái OV (Overflow) để phát hiện tràn',
-          'Nếu tính toán giá trị lớn, ưu tiên dùng DINT hoặc REAL',
-        ],
+        "title": "6.10 Two's Complement Representation and Arithmetic Overflow",
+        "content": "The S7-1200 represents signed integers (INT, DINT) using two's complement binary notation. The Most Significant Bit (MSB) serves as the sign flag (0 = positive, 1 = negative).",
+        "keyPoints": [
+          "16-Bit INT Range: −32,768 to +32,767",
+          "Two's Complement Formulation: Invert all bits and add 1 to the result",
+          "Arithmetic Overflow: Adding 1 to +32,767 results in −32,768, creating severe operational faults if unmanaged",
+          "Overflow Detection: Monitor the instruction ENO output or CPU status flags (OV, OS) to trap overflow exceptions",
+          "Safe Practice: Utilize 32-bit DINT or REAL variables for accumulators and totalizers prone to high magnitudes"
+        ]
       },
       {
-        title: '6.11 Thực hành: Tính toán và hiển thị giá trị trên HMI',
-        content: 'Lập trình tính toán lưu lượng bơm nước dựa trên tín hiệu Analog và hiển thị kết quả làm tròn, kèm theo cảnh báo trên màn hình HMI.',
-        keyPoints: [
-          'Chuyển đổi tín hiệu ngõ vào (INT) sang giá trị lưu lượng thực (REAL)',
-          'Tính lưu lượng tổng (tích lũy) theo thời gian',
-          'Sử dụng lệnh CMP để so sánh nếu lưu lượng vượt ngưỡng',
-          'Dùng hàm ROUND để hiển thị số nguyên trên giao diện HMI',
-          'Tạo một chuỗi cảnh báo bằng STRING để hiển thị lên bảng tin HMI',
-        ],
-      },
+        "title": "6.11 Practical Laboratory: Flow Totalization and HMI Numeric Display",
+        "content": "Integrates numerical data operations to calculate instantaneous liquid flow rates, totalize cumulative volumetric consumption, and format clean rounded values for HMI visualization.",
+        "keyPoints": [
+          "Scale raw analog input counts (INT) into calibrated flow velocity in m³/h (REAL)",
+          "Totalize cumulative volume by integrating flow samples over discrete timer intervals",
+          "Deploy comparison blocks (CMP) to trigger high-consumption alarm thresholds",
+          "Apply the ROUND instruction to convert floating-point totals into clean integers for HMI displays",
+          "Format dynamic text alarm strings using STRING concatenation for operator dispatch"
+        ]
+      }
     ],
-    review: [
-      'REAL và INT khác nhau như thế nào? Khi nào dùng REAL?',
-      'Tại sao 7 DIV 2 = 3 chứ không phải 3.5 với kiểu INT?',
-      'Viết chương trình LAD: nếu nhiệt độ (MW10, kiểu INT) > 80 thì bật Q0.0.',
-      'LIMIT(0, MW20, 100) — nếu MW20 = 150 thì kết quả là bao nhiêu?',
-      'Muốn tính diện tích hình chữ nhật (chiều dài × chiều rộng) với kết quả thập phân, cần làm gì trước khi nhân?',
-      'Phép toán AND bit trên DWORD thường được sử dụng trong trường hợp nào?',
-      'Kiểu STRING chiếm bao nhiêu byte bộ nhớ thực tế so với độ dài khai báo?',
-      'Tại sao biến INT bị tràn số (overflow) lại trở thành số âm?',
-    ],
+    "review": [
+      "What are the fundamental differences between REAL and INT data types, and when is REAL mandatory?",
+      "Why does integer division 7 DIV 2 yield 3 instead of 3.5 in PLC programming?",
+      "Write a ladder rung: If measured oven temperature (MW10, INT) > 80°C, energize output %Q0.0.",
+      "Evaluate: LIMIT(0, MW20, 100) when MW20 holds a value of 150. What is the resulting output?",
+      "To compute rectangular surface area (Length × Width) yielding decimal precision, what conversion must be executed prior to multiplication?",
+      "Describe an industrial application where bitwise AND masking on a DWORD register is technically necessary.",
+      "How many bytes of physical PLC memory are occupied by a declared STRING[20] variable?",
+      "Why does an integer register overflow when incrementing past +32,767, suddenly becoming −32,768?"
+    ]
   },
 
   '05-analog-signals': {
-    overview: 'Tín hiệu Analog (tương tự) là tín hiệu liên tục dùng để đo lường các đại lượng vật lý như nhiệt độ, áp suất, lưu lượng, mức. S7-1200 xử lý AI qua hàm NORM_X và SCALE_X để chuyển đổi giá trị thô thành đơn vị kỹ thuật.',
-    objectives: [
-      'Giải thích tín hiệu 4–20mA và 0–10V trong công nghiệp',
-      'Cấu hình AI/AO module và đấu dây cảm biến',
-      'Dùng NORM_X và SCALE_X để chuyển đổi giá trị',
-      'Xây dựng mạch cảnh báo Hi/Lo cho tín hiệu analog',
-      'Lọc nhiễu tín hiệu bằng thuật toán Moving Average',
+    "overview": "Industrial analog signals represent continuous physical variables such as temperature, pressure, fluid flow, and tank level. The S7-1200 processes analog inputs through the NORM_X and SCALE_X instructions, converting 12-bit to 16-bit unipolar digitized raw counts (0–27648) into real-world calibrated engineering units.",
+    "objectives": [
+      "Explain industrial 4–20mA current loop and 0–10V voltage signal standards",
+      "Configure analog input (AI) and output (AO) modules and correctly wire 2-wire, 3-wire, and 4-wire transmitters",
+      "Deploy NORM_X and SCALE_X instructions to scale raw counts into engineering units",
+      "Implement High/Low alarm limits with hysteresis deadbands on analog variables",
+      "Filter raw sensor noise utilizing moving average digital filter algorithms"
     ],
-    sections: [
+    "sections": [
       {
-        title: '9.1 Tín hiệu Analog trong công nghiệp',
-        content: 'Hai chuẩn tín hiệu analog phổ biến nhất: 4–20mA (dòng điện, chống nhiễu tốt, phát hiện đứt dây) và 0–10V (điện áp, kết nối đơn giản hơn). S7-1200 AI module chuyển tín hiệu vật lý thành giá trị số 0–27648.',
-        keyPoints: [
-          '4mA = 0% (giá trị thấp nhất) → 20mA = 100% (giá trị cao nhất)',
-          '0V = 0% → 10V = 100%',
-          '4–20mA ưu việt hơn: phát hiện đứt dây (dưới 4mA = lỗi), chống nhiễu tốt hơn',
-          'Raw value trong CPU: 0–27648 tương ứng 0%–100%',
-          'Giá trị 27648 = 20mA = 10V = 100% thang đo',
-          'Giá trị âm (−32768 đến 0): vùng dưới mức, báo hiệu cảm biến lỗi',
-        ],
+        "title": "9.1 Analog Signals in Industrial Automation",
+        "content": "The two prevailing industrial analog signal standards are 4–20mA (current loop: noise-immune, long transmission distances, broken-wire detection) and 0–10V (voltage: straightforward bench testing, vulnerable to line resistance drops). S7-1200 analog modules convert physical signals into standardized raw integer counts ranging from 0 to 27648.",
+        "keyPoints": [
+          "Current Loop Standard: 4mA corresponds to 0% span; 20mA corresponds to 100% span",
+          "Voltage Standard: 0V corresponds to 0% span; 10V corresponds to 100% span",
+          "Superiority of 4–20mA: Live zero allows immediate detection of severed field wiring (<3.6mA signifies wire break)",
+          "Standard Raw Count: 0 to 27648 corresponds to 0% to 100% nominal measuring span",
+          "Full Scale: 27648 counts = 20mA or 10V input",
+          "Underflow Region (<0 counts down to −32768): Indicates open circuit, reverse polarity, or sensor failure"
+        ]
       },
       {
-        title: '9.2 Cấu hình module AI và đấu dây cảm biến',
-        content: 'Module AI (Analog Input) SM 1231 hỗ trợ 4–8 kênh đầu vào. Cần cấu hình đúng loại tín hiệu (Current/Voltage) và dải đo trong TIA Portal.',
-        keyPoints: [
-          'Cấu hình: Device Configuration → Signal Module → Channel → Input type',
-          'Chọn: ±10V, 0–10V, ±5V, 0–20mA, 4–20mA, ±20mA',
-          'Cảm biến 2 dây (2-wire): nguồn cấp qua mạch cảm biến và module',
-          'Cảm biến 3 dây (3-wire): có nguồn riêng, dây đo và dây chung',
-          'Cảm biến 4 dây (4-wire): nguồn riêng, dây đo hoàn toàn độc lập',
-          'PT100/PT1000: dùng module AI đặc biệt hỗ trợ RTD',
-        ],
+        "title": "9.2 Analog Input Module Configuration and Transmitter Wiring",
+        "content": "The SM 1231 Analog Input module supports 4 or 8 channels. Parameterizing the input type (Current or Voltage) and range in TIA Portal must match the physical field transmitter topology.",
+        "keyPoints": [
+          "Configuration in TIA Portal: Device Configuration → Signal Module → Channel Properties → Measurement Type",
+          "Select Range: ±10V, 0–10V, ±5V, 0–20mA, 4–20mA",
+          "2-Wire Transmitter (Loop-Powered): Sensor draws operating power directly from the 4–20mA current loop",
+          "3-Wire Transmitter: Shares common power ground, with separate DC supply and active signal lines",
+          "4-Wire Transmitter: External line power supply; current output loop is completely isolated",
+          "RTD Interfacing: Specialized SM 1231 RTD modules interface directly with PT100/PT1000 sensors without external transmitters"
+        ]
       },
       {
-        title: '9.3 NORM_X và SCALE_X — Chuyển đổi giá trị',
-        content: 'NORM_X chuẩn hóa raw value về khoảng 0.0–1.0. SCALE_X chuyển đổi từ 0.0–1.0 ra đơn vị kỹ thuật. Kết hợp hai lệnh này để ra đơn vị công nghiệp (°C, bar, m³/h).',
-        keyPoints: [
-          'NORM_X: Value := (IN − MIN) / (MAX − MIN) → ra REAL 0.0–1.0',
-          'SCALE_X: OUT := MIN + Value × (MAX − MIN) → ra đơn vị kỹ thuật',
-          'Ví dụ PT100 (−50°C đến +150°C): NORM_X(0, AIW64, 27648) → SCALE_X(−50.0, norm, 150.0)',
-          'Ví dụ áp suất (0–10 bar): NORM_X(5530, AIW64, 27648) → SCALE_X(0.0, norm, 10.0)',
-          'Giá trị 5530 tương ứng 4mA (20% của 27648)',
-          'Hàm tắt: dùng CALCULATE hoặc công thức trực tiếp trong SCL',
+        "title": "9.3 NORM_X and SCALE_X — Two-Step Engineering Unit Scaling",
+        "content": "NORM_X normalizes raw integer counts (0–27648) into an unscaled floating-point ratio between 0.0 and 1.0. SCALE_X scales that normalized ratio into physical engineering units (°C, bar, m³/h).",
+        "keyPoints": [
+          "NORM_X: Normalized_Value := (Raw_Input − MIN) / (MAX − MIN) → yields REAL 0.0 to 1.0",
+          "SCALE_X: Engineering_Value := MIN + (Normalized_Value × (MAX − MIN)) → yields calibrated real value",
+          "Example: PT100 RTD (−50°C to +150°C): NORM_X(0, %AIW64, 27648) → SCALE_X(−50.0, norm, 150.0)",
+          "Example: 4–20mA Pressure (0 to 10 bar): NORM_X(5530, %AIW64, 27648) → SCALE_X(0.0, norm, 10.0)",
+          "Offset Calibration: 5530 counts corresponds to 4mA (20% of 27648)",
+          "Inline Optimization: Scaling formulas can be implemented directly within a single line of SCL code"
         ],
-        note: 'Với tín hiệu 4–20mA: giá trị MIN của NORM_X = 5530 (không phải 0), vì 4mA = 0% nhưng 0mA ≠ 0 raw.',
+        "note": "When scaling unconditioned 4–20mA signals on a unipolar 0–20mA module, set the MIN parameter of NORM_X to 5530 (4mA), NOT zero."
       },
       {
-        title: '9.4 Lọc nhiễu và xử lý tín hiệu',
-        content: 'Tín hiệu analog hay bị nhiễu gây dao động không ổn định. Moving Average (trung bình trượt) là kỹ thuật lọc phổ biến nhất trong PLC.',
-        keyPoints: [
-          'Moving Average N mẫu: tính trung bình của N giá trị gần nhất',
-          'N lớn hơn → lọc tốt hơn nhưng phản hồi chậm hơn',
-          'Thực hiện bằng Array + FOR loop trong SCL hoặc FC',
-          'Deadband: chỉ cập nhật giá trị khi thay đổi > threshold (tránh dao động nhỏ)',
-          'Alarm Hi: cảnh báo khi vượt ngưỡng cao (ví dụ nhiệt độ > 90°C)',
-          'Alarm Lo: cảnh báo khi xuống ngưỡng thấp (ví dụ mức < 10%)',
-          'Deadband alarm: alarm bật ở 90°C, tắt ở 85°C (tránh alarm chớp nháy)',
-        ],
+        "title": "9.4 Digital Noise Filtering and Signal Conditioning",
+        "content": "Analog signals in plant environments are susceptible to electromagnetic interference (EMI) from VFDs and large contactors. Moving average digital filtering smooths sensor noise to stabilize control loops.",
+        "keyPoints": [
+          "Moving Average Algorithm: Computes the arithmetic mean across the N most recent periodic samples",
+          "Filter Trade-Off: Higher sample sizes (N) deliver smoother signals but introduce phase lag into fast control loops",
+          "Implementation: SCL array buffer shifting executed cyclically within an interrupt OB",
+          "Deadband Filtering: Updates process variables only when signal changes exceed a calibrated threshold",
+          "High Alarm (Hi): Activates warning when PV exceeds high threshold (e.g. Temperature > 90.0°C)",
+          "Alarm Hysteresis: Alarm trips at 90.0°C and resets at 86.0°C, preventing rapid alarm chattering around the setpoint"
+        ]
       },
       {
-        title: '9.5 Đầu ra Analog (AO) và ứng dụng',
-        content: 'AO module (SM 1232) phát tín hiệu 0–20mA, 4–20mA hoặc 0–10V để điều khiển biến tần, van tỷ lệ, bộ gia nhiệt.',
-        keyPoints: [
-          'Ghi AO: viết giá trị 0–27648 vào AQW0 (hoặc địa chỉ module)',
-          'Dùng SCALE_X ngược: chuyển đơn vị kỹ thuật → raw value 0–27648',
-          'Điều khiển biến tần: 0Hz = 0mA, 50Hz = 20mA',
-          'Van tỷ lệ: 0% mở = 4mA, 100% mở = 20mA',
-          'Kết hợp với PID: Output của PID_Compact (0–100%) → Scale → AO',
-        ],
+        "title": "9.5 Analog Output (AO) Modules and Actuator Driving",
+        "content": "The SM 1232 Analog Output module generates ±10V, 0–20mA, or 4–20mA signals to command variable frequency drives (VFDs), proportional valves, and SCR power controllers.",
+        "keyPoints": [
+          "Writing to AO: Write integer counts (0–27648) to output word %AQW64",
+          "Reverse Scaling: Use reverse SCALE_X and NORM_X to convert engineering values into 0–27648 counts",
+          "VFD Frequency Reference: 0Hz corresponds to 4mA (5530 counts); 50Hz corresponds to 20mA (27648 counts)",
+          "Control Valve Positioning: 0% stroke = 4mA, 100% stroke = 20mA",
+          "PID Loop Integration: Output of PID_Compact (0.0–100.0%) scaled directly to %AQW channel register"
+        ]
       },
       {
-        title: '9.6 Module mở rộng analog SM 1231/1232',
-        content: 'Module SM 1231 xử lý AI và SM 1232 xử lý AO giúp PLC giao tiếp hiệu quả. Thông số kỹ thuật quan trọng bao gồm độ phân giải bit và cách ly quang.',
-        keyPoints: [
-          'SM 1231 cung cấp 4 hoặc 8 đầu vào Analog (Voltage hoặc Current)',
-          'SM 1232 cung cấp 2 hoặc 4 đầu ra Analog để điều khiển',
-          'Độ phân giải thường từ 12-bit đến 16-bit (quyết định độ mịn của số đo)',
-          'Chẩn đoán lỗi như đứt dây (Wire break) hoặc vượt dải (Overflow)',
-          'Cần cấp nguồn 24VDC riêng biệt cho module',
-        ],
+        "title": "9.6 Signal Modules SM 1231 and SM 1232 Technical Specifications",
+        "content": "SM 1231 (AI) and SM 1232 (AO) provide high-resolution analog interfacing. Critical engineering parameters include ADC resolution, conversion speed, and optical isolation ratings.",
+        "keyPoints": [
+          "SM 1231: Available in 4-channel or 8-channel differential input configurations (Voltage or Current)",
+          "SM 1232: Available in 2-channel or 4-channel analog output configurations",
+          "Resolution: 12-bit to 16-bit analog-to-digital conversion yielding high measurement granularity",
+          "Hardware Diagnostics: Automatic detection of wire breaks, channel short-circuits, and input overrange",
+          "Dedicated Power Rails: Requires clean 24VDC field power distributed to module L+/M terminals"
+        ]
       },
       {
-        title: '9.7 Lọc nhiễu bằng cấu hình phần cứng module',
-        content: 'Tín hiệu điện thực tế dễ bị nhiễu sóng hoặc dao động. TIA Portal cung cấp cả tùy chọn phần cứng và kỹ thuật phần mềm (như averaging) để ổn định số liệu.',
-        keyPoints: [
-          'Hardware filter: Chỉnh trong TIA Portal với chu kỳ lọc (Weak, Medium, Strong)',
-          'Averaging phần mềm: Lấy trung bình cộng của n mẫu gần nhất',
-          'Thời gian trích mẫu càng lớn, tín hiệu càng ổn định nhưng đáp ứng chậm',
-          'Giúp tránh kích hoạt sai các alarm ngưỡng',
-          'Sử dụng thuật toán Moving Average để mượt mà đường xu hướng (Trend)',
-        ],
+        "title": "9.7 Hardware Filtering and Moving Average Smoothing",
+        "content": "Plant floor noise suppression combines hardware RC integration on the module with digital filtering in software to deliver stable, repeatable measurements.",
+        "keyPoints": [
+          "Hardware Integration Filter: Configurable in TIA Portal with integration times (None, Weak, Medium, Strong)",
+          "Software Averaging: Calculates rolling mean over N successive scan samples",
+          "Noise Immunity: Prevents false trips on high-limit safety interlocks",
+          "Trend Smoothing: Eliminates high-frequency noise spikes on operator SCADA trend screens"
+        ]
       },
       {
-        title: '9.8 Cảm biến nhiệt độ PT100/PT1000',
-        content: 'PT100/PT1000 là cảm biến RTD (Resistance Temperature Detector) thay đổi điện trở theo nhiệt độ. Đây là cảm biến độ chính xác cao phổ biến nhất.',
-        keyPoints: [
-          'Module RTD tự động dịch raw data thành giá trị nhiệt x 10 (VD: 253 = 25.3 °C)',
-          'Không cần dùng lệnh SCALE_X, NORM_X với các cấu hình RTD chuẩn',
-          'Kết nối 3 dây phổ biến, bù sai số điện trở dây dẫn',
-          'PT100 có điện trở 100 ohm tại 0 °C',
-          'PT1000 có điện trở 1000 ohm tại 0 °C, ít bị ảnh hưởng bởi đường dây',
-        ],
+        "title": "9.8 Resistance Temperature Detectors: PT100 and PT1000 RTD Interfacing",
+        "content": "PT100 and PT1000 RTD sensors measure temperature via positive temperature coefficient platinum resistance. They represent the industry standard for precision thermal monitoring.",
+        "keyPoints": [
+          "Dedicated RTD Module: Automatically linearizes resistance, outputting temperature × 10 (e.g. 253 counts = 25.3°C)",
+          "Direct Temperature Reading: Bypasses manual NORM_X / SCALE_X arithmetic",
+          "3-Wire Wiring Topology: Compensates for lead wire resistance using a third sensing conductor",
+          "PT100 Specification: Exactly 100.0 Ω resistance at 0.0°C (0.385 Ω/°C sensitivity)",
+          "PT1000 Specification: 1000.0 Ω at 0.0°C; offers superior lead-length noise immunity over long cable runs"
+        ]
       },
       {
-        title: '9.9 Cảm biến 4-20mA và 0-10V',
-        content: 'Hiểu cặn kẽ sự khác nhau giúp chọn đúng chuẩn tín hiệu cho nhà máy. 4-20mA chuẩn dòng thường vượt trội trong mọi ứng dụng phức tạp.',
-        keyPoints: [
-          '0-10V dễ bị sụt áp nếu cáp quá dài',
-          '4-20mA không bị ảnh hưởng sụt áp, tín hiệu dòng truyền đi xa an toàn',
-          '0mA phân biệt rõ với 4mA (đứt cáp so với tín hiệu thấp nhất)',
-          'Thiết bị 4-20mA có thể được cấp nguồn trực tiếp qua vòng dòng (Loop powered)',
-          '4-20mA kháng nhiễu EMI từ động cơ biến tần tốt hơn',
-        ],
+        "title": "9.9 Technical Comparison: 4–20mA Current Loops versus 0–10V Voltage Signals",
+        "content": "Understanding physical signal characteristics enables automation engineers to select optimal instrumentation for noisy, sprawling plant installations.",
+        "keyPoints": [
+          "0–10V Vulnerability: Voltage signals suffer IR drop across long cable runs; susceptible to induced EMI",
+          "4–20mA Immunity: Current loop delivers identical current regardless of lead resistance; highly immune to EMI",
+          "Failsafe Broken-Wire Detection: A severed cable drops current to 0mA, immediately triggering open-circuit alarms",
+          "Loop-Powered Convenience: Allows 2-wire field transmitters to be powered directly from the signaling loop",
+          "Industrial Recommendation: Standardize on 4–20mA for all field wiring exceeding 10 meters in distance"
+        ]
       },
       {
-        title: '9.10 Đầu ra analog điều khiển biến tần',
-        content: 'Một vòng lặp tiêu chuẩn là PLC xuất tần số setpoint tới biến tần qua AO, từ đó biến tần chạy tốc độ tương ứng.',
-        keyPoints: [
-          'Biến tần đọc tín hiệu 0-10V (hoặc 4-20mA) để hiểu % tốc độ',
-          'PLC dùng SCALE_X ngược để đổi từ Setpoint (VD: 25Hz) về 0-27648',
-          'Đẩy giá trị raw ra %AQW. Biến tần phải được cài macro Analog',
-          'Nếu cần độ chính xác, phải bù trừ điện áp rơi trên cáp điều khiển',
-          'Sử dụng chung với PID để duy trì áp suất nước của bơm ổn định',
-        ],
+        "title": "9.10 Analog Output Control of Variable Frequency Drives (VFDs)",
+        "content": "A classic automation control loop: The PLC outputs an analog speed setpoint to a VFD via 0–10V or 4–20mA, driving the motor at the proportional operational frequency.",
+        "keyPoints": [
+          "VFD Analog Input: Configured to interpret 4–20mA as 0.0Hz to 50.0Hz (or 60.0Hz)",
+          "PLC Scaling Logic: Reverse SCALE_X converts frequency setpoints into 5530–27648 counts",
+          "Drive Macro Configuration: VFD parameter settings must be calibrated to match the analog terminal scaling",
+          "Shield Termination: Analog cable shields must be grounded at the PLC cabinet end only to prevent ground loops",
+          "Closed-Loop Velocity Regulation: Combines analog speed output with PID feedback to maintain constant conveyor speed"
+        ]
       },
       {
-        title: '9.11 Bài tập thực hành: Điều khiển nhiệt độ lò bằng PID đơn giản',
-        content: 'Tích hợp tín hiệu analog vào bài toán giữ nhiệt: đọc nhiệt từ RTD, tính toán lệnh PID, xuất lệnh qua PWM (hoặc AO) đến thanh điện trở.',
-        keyPoints: [
-          'Input PID là nhiệt độ thực tế lấy từ cảm biến PT100',
-          'Setpoint PID do người dùng thiết lập trên HMI',
-          'Output PID (0-100%) quy đổi thành tỷ lệ băm xung PWM',
-          'Sử dụng PID_Compact và tiến hành Auto-Tuning để lấy Kp, Ti, Td',
-          'Thiết lập tính năng cảnh báo chênh lệch nhiệt (Alarm)',
-        ],
-      },
+        "title": "9.11 Practical Laboratory: Closed-Loop Thermal Control via PID and Analog Outputs",
+        "content": "Synthesizes analog signal processing into a complete thermal control system: reading temperatures via RTD, computing PID corrective commands, and modulating heater power.",
+        "keyPoints": [
+          "Analog Input: Real-time temperature measurement feedback from PT100 RTD sensor",
+          "Operator Setpoint: User-adjustable target setpoint entered via HMI touchscreen",
+          "PID Controller: PID_Compact evaluates error e(t) and outputs manipulated variable (0–100%)",
+          "Power Actuation: Output drives a solid-state relay (SSR) via PWM or analog SCR controller",
+          "Commissioning: Execute pre-tuning and fine-tuning to achieve rapid settling without thermal overshoot"
+        ]
+      }
     ],
-    review: [
-      'Tại sao 4–20mA được dùng nhiều hơn 0–10V trong công nghiệp?',
-      'Cảm biến nhiệt độ PT100 đo −50°C đến 150°C, AI raw = 13824. Nhiệt độ thực là bao nhiêu?',
-      'Viết công thức NORM_X và SCALE_X cho cảm biến áp suất 0–10 bar, tín hiệu 4–20mA.',
-      'Moving Average 8 mẫu — cần bao nhiêu scan cycle để đáp ứng với thay đổi đột ngột?',
-      'AO điều khiển biến tần 0–50Hz qua 4–20mA. Cần phát 35Hz thì raw value là bao nhiêu?',
-      'Cảm biến PT100 khi đọc vào module RTD của PLC sẽ cho ra raw data theo định dạng gì?',
-      'Ưu điểm của truyền tín hiệu 4-20mA so với 0-10V trong khoảng cách xa?',
-      'Nêu ví dụ dùng kỹ thuật Moving Average lọc nhiễu analog.',
-    ],
+    "review": [
+      "Why is 4–20mA preferred over 0–10V for long-distance analog signal transmission in industrial plants?",
+      "A PT100 RTD sensor measures −50°C to +150°C. If raw input %AIW64 reads 13824 counts, calculate the actual physical temperature in °C.",
+      "Write the NORM_X and SCALE_X ladder parameters to scale a 4–20mA pressure transmitter measuring 0 to 10 bar.",
+      "If an 8-sample moving average filter is applied, how many sample cycles elapse before a sudden step change is fully reflected in the filtered output?",
+      "An analog output controls a 0–50Hz VFD via 4–20mA. To command a motor frequency of 35Hz, what raw integer count must be written to %AQW64?",
+      "When reading a PT100 sensor through a dedicated Siemens SM 1231 RTD module, what raw integer format does the module return?",
+      "Explain how a 4–20mA current loop detects a severed field wire compared to a 0–10V voltage circuit.",
+      "Describe how alarm hysteresis (deadband) prevents relay chattering on analog temperature monitoring circuits."
+    ]
   },
 
   '08-advanced-instructions': {
-    overview: 'Lập trình nâng cao tập trung vào tổ chức chương trình theo module: FC (Function), FB (Function Block), Instance DB, Arrays và các lệnh nâng cao như SHL/SHR, CASE, SCL. Mục tiêu là viết chương trình có cấu trúc, dễ bảo trì và tái sử dụng.',
-    objectives: [
-      'Tạo và gọi FC, FB từ OB1',
-      'Hiểu Instance DB và sự khác biệt với Global DB',
-      'Khai báo và truy cập mảng (Array)',
-      'Sử dụng lệnh dịch bit SHL/SHR, ROL/ROR',
-      'Viết code SCL với IF/THEN/ELSE, FOR loop, CASE',
+    "overview": "Advanced PLC software engineering focuses on modular program architecture: Functions (FC), Function Blocks (FB), Instance Data Blocks, Array indexing, shift/rotate registers, and Structured Control Language (SCL). The goal is architecting standardized, maintainable, and reusable automation code.",
+    "objectives": [
+      "Create and invoke Functions (FC) and Function Blocks (FB) from Main OB1",
+      "Understand the architecture of Instance DBs and contrast them with Global DBs",
+      "Declare, manipulate, and iterate through single and multi-dimensional Arrays",
+      "Implement bitwise shift (SHL/SHR) and rotate (ROL/ROR) instructions for sequential tracking",
+      "Develop structured algorithms in SCL using IF/THEN/ELSE, FOR loops, and CASE statements"
     ],
-    sections: [
+    "sections": [
       {
-        title: '7.1 FC — Function (Hàm không có bộ nhớ)',
-        content: 'FC (Function) là khối chương trình không có bộ nhớ riêng (stateless). Mỗi lần gọi FC, các biến tạm thời (temp) bị xóa. FC phù hợp để tính toán công thức, chuyển đổi giá trị — những tác vụ không cần nhớ trạng thái giữa các lần gọi.',
-        keyPoints: [
-          'FC không có Static memory — chỉ có Input, Output, InOut, Temp, Return',
-          'Gọi FC: FC1(input1 := %MW0, output1 => %MW2)',
-          'FC có thể trả về một giá trị qua Return value',
-          'Có thể gọi FC từ OB, FB hoặc FC khác',
-          'Ưu điểm: Tái sử dụng code, gọn gàng, dễ debug',
-          'Ví dụ: FC tính nhiệt độ từ raw AI value, FC kiểm tra alarm',
-        ],
+        "title": "7.1 Functions (FC) — Stateless Logic Subroutines",
+        "content": "A Function (FC) is a stateless logic routine that does not possess dedicated internal static memory. Upon block completion, all temporary (TEMP) local stack variables are de-allocated. FCs are ideal for mathematical calculations, unit conversions, and stateless logical transformations.",
+        "keyPoints": [
+          "No Static Memory: Interface contains Input, Output, InOut, Temp, and Return declarations",
+          "Invocation: Called from OB, FB, or peer FC blocks with parameter passing",
+          "Return Value: Can return a calculation result directly through its block return identifier",
+          "Reusability: Write once, instantiate repeatedly across different process areas",
+          "Application Examples: Analog scaling routines, temperature conversion formulas, alarm summary checks"
+        ]
       },
       {
-        title: '7.2 FB — Function Block (Hàm có bộ nhớ)',
-        content: 'FB (Function Block) khác FC ở chỗ có Static memory — giá trị được giữ nguyên giữa các lần gọi. Mỗi lần gọi FB cần một Instance DB để lưu trữ dữ liệu riêng cho từng instance.',
-        keyPoints: [
-          'FB có thêm vùng Static: biến được giữ giữa các scan cycle',
-          'Instance DB: tự động tạo khi gọi FB, lưu giá trị static',
-          'Mỗi motor/pump/valve nên dùng một FB, mỗi đối tượng là một instance',
-          'Multi-instance: FB A có thể chứa FB B bên trong (lồng nhau)',
-          'Ví dụ: FB Motor_Control có static: Running (BOOL), RunTime (TIME)',
+        "title": "7.2 Function Blocks (FB) — Stateful Subroutines with Instance Memory",
+        "content": "A Function Block (FB) differs fundamentally from an FC by incorporating Static (STAT) memory that persists across successive scan cycles. Every invocation of an FB requires an associated Instance Data Block (Instance DB) to store its unique state.",
+        "keyPoints": [
+          "Static Memory (STAT): Variables retain their values indefinitely across scan cycles",
+          "Instance Data Block: Dedicated DB automatically generated upon FB invocation to store instance state",
+          "Object-Oriented Philosophy: Encapsulates recurring equipment (e.g. standard FB for motor starters, valves)",
+          "Multi-Instance Architecture: An enclosing parent FB can embed child FBs within a single shared Instance DB",
+          "Application Example: FB Motor_Control maintaining internal tags: Running (BOOL), TotalRunHours (REAL)"
         ],
-        note: 'Không thể truy cập Instance DB của FB từ bên ngoài FB đó. Dùng Output variables để đưa dữ liệu ra ngoài.',
+        "note": "Never write directly to the internal static tags of an Instance DB from outside its governing FB. Pass variables cleanly through the block interface parameters."
       },
       {
-        title: '7.3 Arrays — Mảng dữ liệu',
-        content: 'Array là tập hợp nhiều phần tử cùng kiểu dữ liệu, truy cập qua chỉ số (index). Mảng rất hữu ích để lưu trữ tập hợp giá trị như nhiệt độ nhiều kênh, setpoint theo ca, dữ liệu recipe.',
-        keyPoints: [
-          'Khai báo: Array[0..9] of INT — mảng 10 phần tử INT',
-          'Truy cập: myArray[3] — phần tử thứ 4 (index bắt đầu từ 0)',
-          'Dùng biến INT làm index để truy cập động trong vòng lặp',
-          'FOR loop + Array: duyệt qua tất cả phần tử',
-          'Mảng 2 chiều: Array[0..2, 0..3] of REAL',
-          'Ứng dụng: lưu 8 setpoint theo giờ, 10 giá trị lịch sử nhiệt độ',
-        ],
+        "title": "7.3 Arrays — Structured Data Collections",
+        "content": "An Array is an indexed collection of identical data types accessed via numerical subscript indexes. Arrays are essential for batch tracking, multi-channel temperature monitoring, recipe storage, and shift data history.",
+        "keyPoints": [
+          "Declaration Syntax: Array[0..9] of INT defines a 10-element array of integers",
+          "Indexing Syntax: MyArray[3] references the fourth element (zero-based indexing)",
+          "Dynamic Indexing: Use variable integer tags as indexes within iterative loops",
+          "SCL Integration: FOR loops iterate cleanly across array bounds (e.g. FOR i := 0 TO 9 DO)",
+          "Multidimensional Arrays: Array[0..2, 0..3] of REAL models 2D coordinate matrices",
+          "Applications: Shift production history, recipe setpoint tables, multi-zone thermal logging"
+        ]
       },
       {
-        title: '7.4 Lệnh dịch bit SHL/SHR và ROL/ROR',
-        content: 'Các lệnh shift và rotate dịch chuyển các bit trong một word. Dùng để tạo chuỗi bật tắt tuần tự, xử lý mã nhị phân, điều khiển băng tải nhiều vị trí.',
-        keyPoints: [
-          'SHL (Shift Left): dịch trái N bit, bit phải điền 0',
-          'SHR (Shift Right): dịch phải N bit, bit trái điền 0 (hoặc dấu với INT)',
-          'ROL (Rotate Left): dịch trái, bit tràn quay về bên phải',
-          'ROR (Rotate Right): dịch phải, bit tràn quay về bên trái',
-          'Ứng dụng: Rotating shift pattern cho 8 đèn tín hiệu',
-          'Dùng với AND/OR để đặt/xóa bit cụ thể trong một WORD',
-        ],
+        "title": "7.4 Bit Shift (SHL/SHR) and Rotate (ROL/ROR) Instructions",
+        "content": "Shift and rotate instructions shift bit patterns within WORD or DWORD registers. They are widely utilized for item position tracking on conveyor lines, rotating beacon sequences, and binary protocol encoding.",
+        "keyPoints": [
+          "SHL (Shift Left): Shifts bits left by N positions; vacant lower bits are filled with zeros",
+          "SHR (Shift Right): Shifts bits right by N positions; vacant upper bits are filled with zeros",
+          "ROL (Rotate Left): Shifts bits left; overflowing high-order bits wrap around into the lowest bit positions",
+          "ROR (Rotate Right): Shifts bits right; overflowing low-order bits wrap around into the highest bit positions",
+          "Conveyor Tracking: Shifts a binary \"part present\" flag along a register synchronously with conveyor pulse clocks",
+          "Bit Manipulation: Combined with AND/OR masks to manipulate packed status words"
+        ]
       },
       {
-        title: '7.5 Lập trình SCL — Ngôn ngữ cấu trúc',
-        content: 'SCL (Structured Control Language) tương tự Pascal/C, dùng để viết logic phức tạp gọn hơn LAD. TIA Portal hỗ trợ SCL trong cả FC và FB.',
-        keyPoints: [
-          'IF condition THEN ... ELSIF ... ELSE ... END_IF;',
-          'CASE variable OF 1: ...; 2: ...; ELSE ...; END_CASE;',
-          'FOR i := 0 TO 9 DO ... END_FOR;',
-          'WHILE condition DO ... END_WHILE;',
-          'REPEAT ... UNTIL condition; END_REPEAT;',
-          'SCL và LAD có thể dùng cùng trong một project',
-          'SCL tốt cho: tính toán phức tạp, xử lý mảng, thuật toán',
+        "title": "7.5 Structured Control Language (SCL / IEC Structured Text)",
+        "content": "SCL is a high-level, textual programming language based on Pascal and C. It allows complex mathematical algorithms, data table manipulation, and sorting routines to be expressed far more concisely than Ladder Diagram.",
+        "keyPoints": [
+          "Conditional Branching: IF ... THEN ... ELSIF ... ELSE ... END_IF;",
+          "State Machine Selection: CASE variable OF 1: ...; 2: ...; ELSE ...; END_CASE;",
+          "Iterative Loops: FOR i := 0 TO 9 DO ... END_FOR;",
+          "Conditional Loops: WHILE condition DO ... END_WHILE;",
+          "Seamless Coexistence: LAD and SCL blocks operate harmoniously within the identical project",
+          "Optimal Domain: Complex mathematics, array sorting, string parsing, recipe management"
         ],
-        note: 'SCL không thay thế LAD — chúng bổ sung cho nhau. LAD tốt cho logic on/off đơn giản, SCL tốt cho tính toán và xử lý dữ liệu phức tạp.',
+        "note": "SCL does not replace LAD; they complement each other. LAD remains optimal for discrete digital safety interlocks and field troubleshooting; SCL excels at data algorithms and mathematical computing."
       },
       {
-        title: '7.6 Tham số IN, OUT, IN_OUT, TEMP trong FC/FB',
-        content: 'Truyền tham số đóng vai trò quan trọng trong việc module hóa. Tham số giúp tách biệt logic khỏi các địa chỉ tĩnh, tăng khả năng tái sử dụng của khối code.',
-        keyPoints: [
-          'IN: Dữ liệu đưa vào khối, chỉ đọc, không thay đổi giá trị gốc',
-          'OUT: Kết quả trả về từ khối, ghi đè biến được gán bên ngoài',
-          'IN_OUT: Đọc và ghi đồng thời, tham chiếu đến vùng nhớ bên ngoài',
-          'TEMP: Biến tạm lưu trữ dữ liệu trung gian, mất đi sau mỗi chu kỳ gọi',
-          'Lưu ý khởi tạo TEMP trước khi sử dụng để tránh dữ liệu rác',
-        ],
+        "title": "7.6 Block Parameter Passing: IN, OUT, IN_OUT, and Local TEMP Variables",
+        "content": "Rigorous parameter management decouples algorithmic logic from absolute addresses, maximizing code modularity and preventing unintended cross-talk between program routines.",
+        "keyPoints": [
+          "IN (Input): Read-only data passed into the block; original external tag remains unmodified",
+          "OUT (Output): Write-only result calculated by the block; updates external tag upon block termination",
+          "IN_OUT (In/Out): Read/write parameter passed by reference; allows in-place variable modification",
+          "TEMP (Temporary): Local scratchpad memory allocated on the CPU stack; de-allocated upon block exit",
+          "Initialization Rule: Always initialize TEMP variables prior to reading to avoid uninitialized garbage values"
+        ]
       },
       {
-        title: '7.7 Multi-instance FB',
-        content: 'Multi-instance cho phép một FB lồng và gọi nhiều FB khác, lưu chung trạng thái tĩnh trong một Instance DB duy nhất. Việc này giúp tổ chức bộ nhớ ngăn nắp và tiết kiệm block data.',
-        keyPoints: [
-          'Giảm bớt sự lộn xộn từ việc tạo quá nhiều Data Block riêng lẻ',
-          'Dễ dàng đóng gói hệ thống nhỏ vào một khối lớn duy nhất',
-          'Tối ưu hóa quản lý Instance DB trong các thư viện',
-          'Có thể truy cập trực tiếp các biến lồng nhau bằng dấu chấm (.)',
-          'Phù hợp khi làm các template máy có nhiều cụm giống nhau',
-        ],
+        "title": "7.7 Multi-Instance Function Block Architecture",
+        "content": "Multi-instance architecture allows a parent Function Block to embed multiple child Function Blocks, consolidating all static variables into a single unified Instance Data Block.",
+        "keyPoints": [
+          "Drastically reduces Data Block proliferation across large project trees",
+          "Encapsulates complex machinery subsystems into clean, self-contained composite blocks",
+          "Simplifies library packaging and version-controlled distribution",
+          "Enables dot-notation addressing for nested internal structures (e.g. MasterFB.Pump1.Running)",
+          "Ideal for standardized machine templates featuring repetitive multi-head actuator stations"
+        ]
       },
       {
-        title: '7.8 Global DB vs Instance DB',
-        content: 'Data Block (DB) có hai loại chính với phạm vi sử dụng khác nhau. Global DB chia sẻ chung cho toàn project, trong khi Instance DB gắn chặt với bộ nhớ tĩnh của một FB.',
-        keyPoints: [
-          'Global DB: Truy cập tự do từ bất cứ block nào như OB, FC, FB',
-          'Dùng Global DB để cấu hình hệ thống, lưu recipe, HMI tags',
-          'Instance DB: Quản lý riêng bới một FB, lưu state nội bộ',
-          'Cần hạn chế truy cập trực tiếp Instance DB từ bên ngoài FB',
-          'Cả 2 loại DB có thể cấu hình retentive để giữ dữ liệu',
-        ],
+        "title": "7.8 Global Data Blocks versus Instance Data Blocks",
+        "content": "Data Blocks (DBs) provide structured data storage in PLC memory. Global DBs are universally accessible across all blocks; Instance DBs are strictly bound to a single parent FB.",
+        "keyPoints": [
+          "Global DB: Universally read and written by any Organization Block, FC, or FB across the project",
+          "Use Global DBs for plant-wide setpoints, recipe tables, SCADA tags, and system operating modes",
+          "Instance DB: Bound exclusively to an associated Function Block to preserve internal private state",
+          "Encapsulation Rule: Restrict external read/write access to Instance DBs to preserve data integrity",
+          "Both DB types support Retentive memory configuration to survive power interruptions"
+        ]
       },
       {
-        title: '7.9 Retain variables',
-        content: 'Retain variables cho phép giá trị các biến không bị mất khi PLC khởi động lại hoặc ngắt nguồn. TIA Portal cho phép cấu hình tính năng này trên từng biến trong DB.',
-        keyPoints: [
-          'Sử dụng vùng nhớ NVRAM (Non-Volatile RAM) để lưu trữ',
-          'Cần thiết cho cài đặt hệ thống, dữ liệu đếm, thông số hiệu chuẩn',
-          'Tick vào cột Retain trong Data Block để kích hoạt',
-          'Retain memory có giới hạn, không lạm dụng lưu trữ quá nhiều',
-          'Đối với Instance DB, có thể thiết lập retain cho toàn bộ hoặc từng bit (tùy CPU)',
-        ],
+        "title": "7.9 Retentive Variables and Non-Volatile Memory Preservation",
+        "content": "Retentive variable configuration guarantees that critical process setpoints, batch recipe tags, and machine calibration parameters persist intact across CPU power cycles and restarts.",
+        "keyPoints": [
+          "Utilizes hardware non-volatile NVRAM backed by onboard supercapacitors",
+          "Essential for cumulative runtime counters, batch totalizers, and machine home positions",
+          "Configured easily by checking the \"Retain\" column checkbox in Data Block interface editors",
+          "Retentive capacity is hardware-bounded; allocate retentive memory deliberately for critical tags only",
+          "Instance DBs inherit retentive properties from the parent FB variable declarations"
+        ]
       },
       {
-        title: '7.10 Thư viện (Library)',
-        content: 'Thư viện trong TIA Portal giúp đóng gói mã nguồn, Data Type, HMI Faceplate để tái sử dụng ở nhiều dự án. Cải thiện đáng kể hiệu suất thiết kế tiêu chuẩn.',
-        keyPoints: [
-          'Project library: dùng trong phạm vi một project hiện tại',
-          'Global library: dùng độc lập, chia sẻ giữa nhiều project khác nhau',
-          'Version control: quản lý các phiên bản cập nhật của khối hàm',
-          'Gói cả UDT (User Data Type) và Faceplate thành cụm thư viện',
-          'Dễ dàng kéo thả các thành phần đã kiểm thử vào dự án mới',
-        ],
+        "title": "7.10 Project and Global Engineering Libraries",
+        "content": "TIA Portal libraries package tested Function Blocks, User Data Types (UDTs), and HMI Faceplates into reusable modules, dramatically accelerating standardized engineering.",
+        "keyPoints": [
+          "Project Library: Manages reusable blocks local to the current active project",
+          "Global Library: Independent, standalone library file shared across different enterprise projects",
+          "Version Control: Enforces formal semantic version tracking for library blocks",
+          "Unified Packaging: Packages PLC code, UDT structures, and WinCC HMI Faceplates together",
+          "Accelerates commissioning by allowing pre-tested, standardized equipment blocks to be dropped onto new rungs"
+        ]
       },
       {
-        title: '7.11 Structured programming',
-        content: 'Tổ chức chương trình cấu trúc (Structured programming) giúp kiểm soát mã nguồn phức tạp. Chia bài toán lớn thành nhiều task nhỏ và xử lý thông qua việc phân bổ vào FC, FB hợp lý.',
-        keyPoints: [
-          'OB1 hoạt động như một scheduler gọi tuần tự các khối hàm',
-          'Tránh viết toàn bộ logic dài và lộn xộn trong OB1',
-          'Chia chương trình theo cụm trạm hoặc chức năng (bơm, van, PID, Alarm)',
-          'Tăng tính minh bạch, dễ tìm lỗi và bảo trì',
-          'Cho phép nhiều kỹ sư làm việc song song trên các module',
-        ],
-      },
+        "title": "7.11 Structured Programming and Modular Hierarchy",
+        "content": "Structured programming decomposes complex automated machinery into decoupled, manageable subsystems. Main OB1 acts as a top-level dispatcher calling dedicated modular functions.",
+        "keyPoints": [
+          "OB1 functions as a clean sequence dispatcher calling structured FC and FB blocks",
+          "Avoid monolithic rungs: decompose sprawling logic into discrete functional units",
+          "Organize code hierarchically by process area (e.g. Raw Material Handling, Heating, Packaging)",
+          "Enhances diagnostic transparency, isolating faults quickly during production stoppages",
+          "Enables concurrent multi-engineer development across standardized block interfaces"
+        ]
+      }
     ],
-    review: [
-      'Sự khác nhau giữa FC và FB là gì? Khi nào nên dùng FB thay FC?',
-      'Instance DB là gì? Nó được tạo khi nào?',
-      'Khai báo mảng 5 giá trị REAL tên "Temperature". Viết SCL đọc giá trị trung bình.',
-      'SHL(W#16#0001, 3) = ? (dịch trái 3 bit)',
-      'Viết SCL: nếu mode = 1 → chạy bơm A; mode = 2 → chạy bơm B; mode = 3 → chạy cả hai.',
-      'Tham số IN, OUT, IN_OUT khác nhau ở điểm nào?',
-      'Lợi ích chính của Multi-instance FB là gì?',
-      'Nêu điểm khác biệt về truy cập dữ liệu giữa Global DB và Instance DB.',
-    ],
+    "review": [
+      "Detail the fundamental technical differences between an FC and an FB. Under what criteria is an FB mandatory?",
+      "What is an Instance Data Block, and when is it generated during the TIA Portal engineering workflow?",
+      "Declare an SCL array of 5 REAL values named \"Zone_Temperatures\" and write an SCL code snippet to compute their arithmetic mean.",
+      "Evaluate the result of: SHL(W#16#0001, 3). Provide the output in hexadecimal notation.",
+      "Write an SCL CASE statement: If mode = 1, run Pump A; if mode = 2, run Pump B; if mode = 3, run both pumps simultaneously.",
+      "Contrast the operational behaviors of IN, OUT, and IN_OUT block interface parameters.",
+      "What is the primary architectural advantage of utilizing Multi-Instance Function Blocks?",
+      "Explain the scope and access distinctions between a Global Data Block and an Instance Data Block."
+    ]
   },
 
   '09-high-speed-counting': {
-    overview: 'High-Speed Counter (HSC) đọc tín hiệu xung tốc độ cao từ encoder. PWM (Pulse Width Modulation) tạo xung để điều khiển tốc độ. PTO (Pulse Train Output) kết hợp với Motion Control để điều khiển động cơ bước/servo chính xác.',
-    objectives: [
-      'Cấu hình HSC để đọc encoder tốc độ cao',
-      'Đọc giá trị đếm HSC trong chương trình PLC',
-      'Cấu hình và dùng PWM để điều khiển duty cycle',
-      'Tạo PTO và sử dụng Motion Control (MC_MoveAbsolute, MC_MoveRelative)',
+    "overview": "High-Speed Counters (HSC) capture high-frequency encoder pulse trains independently of CPU scan time. Pulse Width Modulation (PWM) modulates duty cycle for variable power delivery. Pulse Train Output (PTO) interfaces with stepper and servo drives through PLCopen Motion Control.",
+    "objectives": [
+      "Configure High-Speed Counter (HSC) channels to decode optical incremental encoders",
+      "Read and manipulate high-speed counter values programmatically within ladder code",
+      "Configure and modulate Pulse Width Modulation (PWM) duty cycles for variable loads",
+      "Implement Pulse Train Output (PTO) and commission PLCopen Motion Control blocks (MC_Power, MC_MoveAbsolute)"
     ],
-    sections: [
+    "sections": [
       {
-        title: '8.1 High-Speed Counter (HSC)',
-        content: 'HSC (High-Speed Counter) là phần cứng đếm xung tốc độ cao trong CPU S7-1200 — không bị giới hạn bởi chu kỳ quét. CPU 1214C có 6 HSC, tốc độ đến 100kHz (Single Phase) hoặc 80kHz (A/B Phase).',
-        keyPoints: [
-          'HSC đếm độc lập với scan cycle — không bỏ sót xung',
-          'Đầu vào: Ia.0 (HSC1), Ia.2 (HSC2), Ia.4 (HSC3)... (cố định trên CPU)',
-          '3 chế độ: Single Phase (1 đầu vào), A/B Phase (encoder 2 kênh), Pulse/Direction',
-          'A/B Phase (Quadrature): phân biệt chiều quay, đếm chính xác hơn 4 lần',
-          'Giá trị đếm (CV): DINT, từ −2147483648 đến +2147483647',
-          'Preset Value (PV): giá trị đặt để reset hoặc interrupt khi đạt tới',
+        "title": "8.1 High-Speed Counter (HSC) Hardware Architecture",
+        "content": "High-Speed Counters (HSC) are dedicated on-chip hardware counters integrated within the S7-1200 microprocessor that accumulate pulse frequencies up to 100kHz asynchronously from the OB1 scan cycle.",
+        "keyPoints": [
+          "Hardware-Driven: Operates independently of CPU scan time, guaranteeing zero missed pulses",
+          "Dedicated Physical Pins: Inputs %I0.0 (HSC1), %I0.2 (HSC2), %I0.4 (HSC3)... reserved for counter channels",
+          "3 Operating Modes: Single Phase (single pulse stream), A/B Phase (quadrature encoder), Pulse + Direction",
+          "Quadrature A/B Decoding (4x): Evaluates phase relationship between channels A and B to resolve direction and quadruple resolution",
+          "Count Register (CV): 32-bit signed DINT spanning −2,147,483,648 to +2,147,483,647",
+          "Preset Value (PV): Reference target count that triggers hardware interrupts or automatic counter resets"
         ],
-        note: 'Khi cấu hình HSC trong TIA Portal, các đầu vào tương ứng sẽ bị "khóa" và không dùng được cho DI thông thường.',
+        "note": "When an HSC channel is enabled in TIA Portal, its associated physical digital input pins are dedicated to the hardware counter and cannot be read as standard discrete DI inputs."
       },
       {
-        title: '8.2 Cấu hình HSC trong TIA Portal',
-        content: 'Cấu hình HSC trong Device Configuration → CPU Properties → High Speed Counters. Khai báo biến địa chỉ để đọc giá trị CV trong chương trình.',
-        keyPoints: [
-          'Bước 1: Device Configuration → Properties → High Speed Counters → Enable HSC1',
-          'Bước 2: Chọn Function: Count, Frequency, Period, Velocity',
-          'Bước 3: Chọn counting mode: Single, A/B, Pulse+Dir',
-          'Bước 4: Đặt địa chỉ cho CV (Current Value) — thường dùng ID vùng',
-          'Bước 5: Compile hardware và nạp xuống CPU',
-          'Đọc giá trị: CTRL_HSC instruction hoặc đọc trực tiếp địa chỉ ID',
-        ],
+        "title": "8.2 HSC Channel Configuration in TIA Portal",
+        "content": "HSC channels are configured in Device Configuration → CPU Properties → High Speed Counters. Parameters define counting modes, hardware identifiers, and interrupt assignments.",
+        "keyPoints": [
+          "Step 1: Open CPU Properties → High Speed Counters → Check \"Enable this high-speed counter\"",
+          "Step 2: Select Operational Function: Counting, Frequency measurement, or Period duration",
+          "Step 3: Define Counting Mode: Single phase, A/B phase quadrature, or Pulse/Direction",
+          "Step 4: Note the Hardware Identifier and input address register (e.g. %ID1000)",
+          "Step 5: Compile hardware configuration and download to target CPU",
+          "Reading Value: Access %ID register directly or manage dynamically via the CTRL_HSC instruction"
+        ]
       },
       {
-        title: '8.3 PWM — Điều khiển Pulse Width Modulation',
-        content: 'PWM tạo tín hiệu xung vuông với tần số cố định nhưng duty cycle thay đổi từ 0–100%. Dùng để điều khiển độ sáng đèn LED, tốc độ quạt DC, van tỷ lệ.',
-        keyPoints: [
-          'PWM tần số: thiết lập cố định từ 1Hz đến 100kHz',
-          'Duty cycle: 0% (tắt hoàn toàn) → 100% (bật liên tục)',
-          'Cấu hình: Device Configuration → Pulse Generators (PTO/PWM) → Enable PWM',
-          'Điều khiển duty cycle từ chương trình qua vùng Q hoặc CTRL_PWM',
-          'Ứng dụng: điều khiển tốc độ quạt làm mát theo nhiệt độ',
-          'Lưu ý: đầu ra PWM phải là đầu ra transistor DC, không dùng relay',
-        ],
+        "title": "8.3 Pulse Width Modulation (PWM) Control",
+        "content": "PWM generates a continuous rectangular wave with a fixed frequency and variable duty cycle (0% to 100%). It is widely applied for heating power modulation, DC motor velocity control, and proportional valve positioning.",
+        "keyPoints": [
+          "Fixed Frequency: Configurable from 1Hz up to 100kHz",
+          "Variable Duty Cycle: 0% (fully de-energized) to 100% (continuously energized)",
+          "Hardware Setup: Device Configuration → Pulse Generators (PTO/PWM) → Enable PWM mode",
+          "Control Interface: Modulate duty cycle dynamically via output word registers or the CTRL_PWM block",
+          "Transistor Output Requirement: PWM channels mandate solid-state DC transistor outputs (CPU DC/DC/DC)"
+        ]
       },
       {
-        title: '8.4 PTO và Motion Control cơ bản',
-        content: 'PTO (Pulse Train Output) phát xung tần số thay đổi để điều khiển động cơ bước hoặc servo qua driver. S7-1200 tích hợp Motion Control theo chuẩn PLCopen.',
-        keyPoints: [
-          'MC_Power: cấp phép (Enable) và khởi tạo trục',
-          'MC_Home: thực hiện homing (về vị trí gốc)',
-          'MC_MoveAbsolute: di chuyển đến vị trí tuyệt đối (mm, vòng)',
-          'MC_MoveRelative: di chuyển tương đối so với vị trí hiện tại',
-          'MC_MoveVelocity: chạy với tốc độ không đổi',
-          'MC_Halt: dừng trơn (decelerate to stop)',
-          'MC_Stop: dừng khẩn (emergency stop)',
-          'Axis Technology Object: cấu hình cơ học, giới hạn vị trí, tốc độ',
+        "title": "8.4 Pulse Train Output (PTO) and PLCopen Motion Control",
+        "content": "PTO outputs variable-frequency pulse trains to command stepper and servo drive amplifiers. The S7-1200 integrates Motion Control Technology Objects conforming to international PLCopen standards.",
+        "keyPoints": [
+          "MC_Power: Enables the drive amplifier and initializes the motion axis",
+          "MC_Home: Executes homing sequences to calibrate machine zero datum",
+          "MC_MoveAbsolute: Commands motion to a specific absolute engineering coordinate (mm, degrees)",
+          "MC_MoveRelative: Commands relative positioning travel from the current position",
+          "MC_MoveVelocity: Commands continuous velocity jog rotation",
+          "MC_Halt / MC_Stop: Decelerates axis to a controlled stop or executes emergency stop abort",
+          "Axis Technology Object: Parameterizes mechanical gear ratios, lead-screw pitches, and acceleration limits"
         ],
-        note: 'Đầu ra PTO trên S7-1200 là Q0.0 (PTO1) và Q0.1 (PTO2). Không dùng hai đầu ra này cho mục đích khác khi đã cấu hình PTO.',
+        "note": "On S7-1200 CPUs, PTO channels utilize on-board outputs %Q0.0 (PTO1) and %Q0.1 (PTO2). These physical outputs cannot be used for standard coils when PTO is active."
       },
       {
-        title: '8.5 Chọn chế độ đếm và ngắt cho HSC',
-        content: 'Cấu hình chi tiết HSC yêu cầu thao tác trong phần cứng CPU, khai báo loại đếm, số kênh và kích hoạt interrupt nếu cần.',
-        keyPoints: [
-          'Kích hoạt HSC tương ứng trong CPU Properties',
-          'Chọn chế độ (Counting mode, Phase type) khớp với encoder thực tế',
-          'Chỉ định địa chỉ bắt đầu của vùng I/O (Hardware Identifier)',
-          'Cài đặt Initial counter value hoặc Reference value nếu cần',
-          'Có thể gán Hardware interrupt khi đạt Reference value',
-        ],
+        "title": "8.5 Counting Modes, Quadrature A/B Phase, and Hardware Interrupts",
+        "content": "Selecting optimal counter decoding modes matches sensor physical dynamics, while hardware interrupts allow immediate response upon reaching target production thresholds.",
+        "keyPoints": [
+          "Configure Phase Decoding to match encoder electrical outputs (Single-ended or Differential)",
+          "Reference Value: Set target count thresholds that trigger OB40 hardware interrupt routines",
+          "Zero Latency: Interrupt routines execute immediately, bypassing the normal scan cycle delay",
+          "Direction Inversion: Invert direction flags programmatically without swapping physical sensor wires"
+        ]
       },
       {
-        title: '8.6 Đọc giá trị HSC trong chương trình',
-        content: 'Đọc và ghi giá trị HSC thông qua hàm CTRL_HSC hoặc trực tiếp bằng địa chỉ vùng ID trong chương trình vòng lặp chính.',
-        keyPoints: [
-          'Đọc trực tiếp qua địa chỉ %ID (VD: %ID1000) chứa giá trị bộ đếm hiện tại',
-          'Khối lệnh CTRL_HSC điều khiển việc reset, set reference',
-          'Tham số EN để khởi động thao tác điều khiển HSC',
-          'Cấp giá trị NEW_CV và DIR để thiết lập thông số mới',
-          'Phải gọi thường xuyên trong OB1 để theo dõi lỗi hoặc update thông số',
-        ],
+        "title": "8.6 Programmatic Interfacing via the CTRL_HSC Instruction Block",
+        "content": "The CTRL_HSC instruction allows user code to dynamically modify counter parameters, reload reference setpoints, and reset current counts during runtime.",
+        "keyPoints": [
+          "Direct Register Read: Current counter value is continuously available at double-word address %ID (e.g. %ID1000)",
+          "CTRL_HSC Instruction: Executes runtime control commands (resetting, changing direction, updating target values)",
+          "Parameter NEW_CV: Injects a new starting count value into the hardware register",
+          "Parameter DIR: Commands counting direction dynamically from software logic",
+          "Diagnostic Feedback: Status and error flags report hardware counter health to the user program"
+        ]
       },
       {
-        title: '8.7 Cấu hình PWM/PTO trong TIA Portal',
-        content: 'Các đầu ra Pulse Generator (PWM hoặc PTO) được cấu hình trên TIA để quyết định kênh nào sinh xung tốc độ cao.',
-        keyPoints: [
-          'Kích hoạt Pulse Generator trong Device Configuration (ví dụ PTO1/PWM1)',
-          'Chỉ định Signal type là PWM (đổi Duty cycle) hoặc PTO (đổi tần số)',
-          'Chỉ định Output format, như Pulse A, Direction B',
-          'Cấp Hardware Identifier riêng cho từng kênh Pulse',
-          'Xung PWM cần chân ra dạng Solid-state (Transistor) trên CPU DC/DC/DC',
-        ],
+        "title": "8.7 Pulse Generator Configuration in TIA Portal",
+        "content": "Configuring on-board Pulse Generators (PTO/PWM) dictates physical output channel assignments, signal formats, and hardware identifiers.",
+        "keyPoints": [
+          "Enable Pulse Generators in CPU Properties (e.g. Pulse 1, Pulse 2)",
+          "Select Signal Type: PWM (duty cycle modulation) or PTO (frequency modulation)",
+          "Output Format: Assign pulse stream (Pulse A) and direction output (Direction B)",
+          "Hardware Identifier: Dedicated hardware ID links software blocks to physical channels",
+          "Requires fast solid-state transistor outputs on the CPU mainboard"
+        ]
       },
       {
-        title: '8.8 Điều khiển tốc độ động cơ bằng PWM',
-        content: 'Sử dụng biến đổi độ rộng xung (Duty cycle) từ 0-100% để tăng giảm dòng trung bình, từ đó điều chỉnh tốc độ động cơ DC hoặc van tuyến tính.',
-        keyPoints: [
-          'Hàm CTRL_PWM nhận yêu cầu bật/tắt luồng xung',
-          'Ghi giá trị Duty cycle trực tiếp vào vùng địa chỉ QW tương ứng',
-          'Tần số PWM thường cố định, chỉ thay đổi Duty cycle',
-          'Phù hợp điều khiển tải tuyến tính, bộ gia nhiệt',
-          'Dùng kết hợp với relay bán dẫn (SSR) hoặc mạch khuếch đại dòng',
-        ],
+        "title": "8.8 Motor Speed and Heater Control via Dynamic PWM Duty Cycles",
+        "content": "Modulating duty cycle proportionally varies average DC voltage delivered to resistive heaters or DC motor armatures.",
+        "keyPoints": [
+          "The CTRL_PWM instruction enables or disables the pulse output stream programmatically",
+          "Write duty cycle values (0–1000 corresponding to 0.0%–100.0%) directly to output word %QW registers",
+          "High Switching Frequency: Eliminates audible acoustic hum and mechanical vibration",
+          "Power Interfacing: Drives solid-state relays (SSRs) or MOSFET H-bridge amplifiers",
+          "Closed-Loop Integration: Serves as the manipulated variable output for PID temperature loops"
+        ]
       },
       {
-        title: '8.9 Trục Axis và các lệnh MC_ trong Motion Control',
-        content: 'Motion Control trong TIA sử dụng cấu trúc Axis Object để quản lý động cơ, che giấu các thao tác tính xung phức tạp.',
-        keyPoints: [
-          'Tạo Technology Object: Axis (Trục quay hoặc tuyến tính)',
-          'Cấu hình thông số cơ khí: Xung/vòng (Pulses/rev), mm/vòng',
-          'Sử dụng các khối MC_Power để bật hệ thống truyền động',
-          'Dùng MC_MoveAbsolute và MC_MoveRelative để điều khiển tọa độ',
-          'Dùng bảng Commissioning để tinh chỉnh và chạy thử trước khi lập trình',
-        ],
+        "title": "8.9 Motion Control Axis Technology Objects and Commissioning",
+        "content": "Axis Technology Objects encapsulate drive kinematics, mechanical gear ratios, and safety limit switches into a unified engineering interface.",
+        "keyPoints": [
+          "Create Technology Object: Axis (Linear or Rotary kinematics)",
+          "Mechanical Parameterization: Pulses per revolution, millimeters traveled per motor rotation",
+          "Dynamic Limits: Maximum velocity, maximum acceleration, jerk limitation (S-curve smoothing)",
+          "Integrated Commissioning Panel: Manual jogging, homing, and positioning tests prior to writing code",
+          "Safety Limits: Software travel boundaries and hardware overtravel limit switch assignments"
+        ]
       },
       {
-        title: '8.10 Bài tập: Đo tốc độ motor bằng encoder và HSC',
-        content: 'Sử dụng encoder gắn trên trục motor và đếm xung trả về bằng HSC để suy ra tốc độ quay thực tế (vòng/phút hoặc RPM).',
-        keyPoints: [
-          'Sử dụng Timer định kỳ (VD: OB30 ngắt 100ms) để tính khoảng thời gian',
-          'Lấy số xung hiện tại trừ số xung chu kỳ trước (Delta pulses)',
-          'Tính RPM = (Delta pulses / Xung mỗi vòng) * (60s / Thời gian ngắt)',
-          'Cần dùng kiểu DINT và REAL để tránh tràn số',
-          'Kết quả RPM có thể làm input đưa vào bộ PID điều khiển',
-        ],
-      },
+        "title": "8.10 Practical Application: Real-Time Motor RPM Measurement via Encoder",
+        "content": "Measures rotational motor speed by counting incremental encoder pulses over precise cyclic interrupt time windows.",
+        "keyPoints": [
+          "Execute calculation inside a cyclic interrupt block (OB30 configured to exactly 100ms)",
+          "Delta Pulses Calculation: Delta_Pulses := Current_Count − Previous_Count",
+          "Velocity Formula: RPM := (Delta_Pulses / Pulses_Per_Rev) × (60.0 / Sample_Period_Seconds)",
+          "High Precision: Utilize DINT and REAL types to eliminate round-off errors at high velocities",
+          "Feedforward Data: Calculated RPM feeds directly into closed-loop velocity PID algorithms"
+        ]
+      }
     ],
-    review: [
-      'HSC khác CTU (counter thông thường) ở điểm gì? Khi nào cần HSC?',
-      'Encoder 1000 xung/vòng, chế độ A/B Phase (x4). Trục quay 5 vòng thì CV thay đổi bao nhiêu?',
-      'PWM tần số 1kHz, duty cycle 30% — tín hiệu ON trong bao nhiêu microsecond?',
-      'Các bước cần làm trước khi gọi MC_MoveAbsolute là gì?',
-      'MC_MoveRelative(Distance:=100.0) — nếu vị trí hiện tại là 250mm, vị trí cuối là bao nhiêu?',
-      'Các bước cơ bản để kích hoạt và cấu hình kênh HSC trên TIA Portal là gì?',
-      'Làm thế nào để thay đổi Duty cycle của PWM từ chương trình LAD?',
-      'Lý giải cách đo tốc độ RPM của động cơ thông qua tín hiệu HSC.',
-    ],
+    "review": [
+      "How does a High-Speed Counter (HSC) fundamentally differ from a standard CTU counter block, and when is an HSC mandatory?",
+      "An incremental encoder produces 1000 pulses/rev in A/B Quadrature mode (4x decoding). If the motor shaft completes 5 full rotations, what is the net change in the counter CV register?",
+      "A PWM channel operates at a frequency of 1kHz with a 30% duty cycle. What is the active ON duration in microseconds during each cycle?",
+      "Enumerate the mandatory prerequisite steps that must be executed before commanding an MC_MoveAbsolute instruction.",
+      "An axis is positioned at coordinate 250.0mm. If an MC_MoveRelative instruction is executed with Distance := 100.0mm, what is the final axis position?",
+      "Detail the configuration steps required to activate and parameterize an HSC channel in TIA Portal.",
+      "How does user logic dynamically modify the active duty cycle of a PWM output channel from Ladder Diagram?",
+      "Explain the mathematical formulation for computing motor rotational RPM using encoder pulse differences across timed cyclic interrupts."
+    ]
   },
 
   '10-closed-loop-pid': {
-    overview: 'PID (Proportional-Integral-Derivative) là thuật toán điều khiển vòng kín phổ biến nhất trong công nghiệp. S7-1200/1500 cung cấp khối PID_Compact tích hợp với tính năng tự chỉnh (Auto-Tuning) trong TIA Portal.',
-    objectives: [
-      'Hiểu nguyên lý điều khiển PID (P, I, D)',
-      'Cấu hình và sử dụng khối PID_Compact trên S7-1200',
-      'Thực hiện Auto-Tuning và chỉnh thủ công thông số PID',
-      'Thiết kế vòng điều khiển nhiệt độ/áp suất/mức',
+    "overview": "Proportional-Integral-Derivative (PID) control is the dominant closed-loop algorithm in the process and manufacturing industries. The Siemens S7-1200/1500 family incorporates the dedicated PID_Compact technology block featuring integrated auto-tuning in TIA Portal.",
+    "objectives": [
+      "Understand the mathematical principles of Proportional (P), Integral (I), and Derivative (D) control modes",
+      "Configure and instantiate the PID_Compact technology block on an S7-1200 CPU",
+      "Execute automated Pre-Tuning and Fine-Tuning workflows and manually trim PID gains",
+      "Design closed-loop control architectures for temperature, fluid pressure, and liquid level processes"
     ],
-    sections: [
+    "sections": [
       {
-        title: '10.1 Lý thuyết điều khiển PID',
-        content: 'PID tính toán tín hiệu điều khiển dựa trên: sai lệch hiện tại (P), tích phân sai lệch quá khứ (I), đạo hàm sai lệch (D). Mục tiêu: giữ biến quá trình (PV) bám theo giá trị đặt (SP).',
-        keyPoints: [
-          'e(t) = SP − PV: sai lệch điều khiển',
-          'Thành phần P: Output = Kp × e — tác động tức thì, còn sai số tĩnh',
-          'Thành phần I: Loại bỏ sai số tĩnh, tích lũy theo thời gian',
-          'Thành phần D: Dự đoán xu hướng, giảm overshoot',
-          'Kp↑: đáp ứng nhanh hơn, có thể dao động',
-          'Ti↑ (I lớn): loại sai số tĩnh chậm hơn',
-          'Td↑ (D lớn): giảm overshoot nhưng nhạy nhiễu',
-        ],
+        "title": "10.1 Mathematical Principles of PID Control",
+        "content": "PID calculates corrective control output by evaluating: current instantaneous error (P), cumulative historical error (I), and anticipated rate of error change (D). The objective is compelling the Process Variable (PV) to track the Setpoint (SP) despite plant disturbances.",
+        "keyPoints": [
+          "Control Error Formulation: e(t) := Setpoint (SP) − Process Variable (PV)",
+          "Proportional Term (P): Output proportional to error (Kp × e); provides immediate corrective drive but exhibits steady-state offset",
+          "Integral Term (I): Integrates error over time (Ti); systematically eliminates steady-state offset",
+          "Derivative Term (D): Differentiates error rate of change (Td); provides anticipatory damping to reduce overshoot",
+          "Gain Tuning: Higher Kp accelerates response but risks instability; lower Ti accelerates integral correction; higher Td adds damping but amplifies noise"
+        ]
       },
       {
-        title: '10.2 Khối PID_Compact trên S7-1200',
-        content: 'PID_Compact là FB tích hợp trong TIA Portal, hỗ trợ chế độ Manual/Automatic, Auto-Tuning, giới hạn đầu ra và bảo vệ Anti-Windup.',
-        keyPoints: [
-          'Setpoint: giá trị đặt (REAL)',
-          'Input: giá trị đo thực tế PV (REAL hoặc từ AI)',
-          'Output: tín hiệu điều khiển (REAL, 0–100%)',
-          'ManualEnable + ManualValue: chế độ tay',
-          'Mode: 0=Inactive, 1=Pretuning, 2=Fine tuning, 3=Automatic, 4=Manual',
-          'Gọi PID_Compact từ Cyclic OB (OB30, 100ms điển hình)',
-        ],
+        "title": "10.2 The PID_Compact Technology Block Architecture",
+        "content": "PID_Compact is an integrated technology function block in TIA Portal featuring bumpless Auto/Manual transfer, automatic gain tuning, output saturation clamping, and anti-windup protection.",
+        "keyPoints": [
+          "Setpoint: Desired reference target in physical engineering units (REAL)",
+          "Input: Process variable feedback in physical units (REAL), or raw peripheral counts via Input_PER",
+          "Output: Calculated manipulated variable (REAL, 0.0% to 100.0%), or direct peripheral word Output_PER",
+          "Manual Control: ManualEnable activates manual override; ManualValue sets forced output level",
+          "Operating Modes: 0=Inactive, 1=Pre-tuning, 2=Fine-tuning, 3=Automatic, 4=Manual",
+          "Deterministic Calling: Must be invoked from a constant-period Cyclic Interrupt OB (e.g. OB30 at 100ms)"
+        ]
       },
       {
-        title: '10.3 Auto-Tuning và cài đặt PID',
-        content: 'TIA Portal cung cấp giao diện Commissioning trong PID_Compact để thực hiện Auto-Tuning (Pre-tuning → Fine-tuning) và xem trend thời gian thực.',
-        keyPoints: [
-          'Pre-tuning: bước nhảy đầu ra để đo đặc tính hệ thống',
-          'Fine-tuning: chạy vòng kín và tối ưu thông số',
-          'Kết quả Auto-Tuning: Kp, Ti, Td tự động điền vào',
-          'Có thể điều chỉnh thủ công sau Auto-Tuning',
-          'Trend Chart: xem PV và SP theo thời gian thực',
+        "title": "10.3 Auto-Tuning and Commissioning Workflows",
+        "content": "TIA Portal provides an interactive Commissioning editor for PID_Compact supporting automated identification (Pre-tuning → Fine-tuning) alongside real-time trend visualization.",
+        "keyPoints": [
+          "Pre-Tuning: Applies test output steps to measure system dead-time and process gain parameters",
+          "Fine-Tuning: Closes the feedback loop to optimize Kp, Ti, and Td gains for minimal overshoot",
+          "Automatic Gain Allocation: Optimized tuning constants are populated directly into the Instance DB",
+          "Manual Trimming: Engineers can manually trim gains based on operational requirements",
+          "Real-Time Trending: Graphically compares Setpoint (SP), Process Variable (PV), and Output (OUT) curves simultaneously"
         ],
-        note: 'Thực hiện Auto-Tuning khi hệ thống đang ở trạng thái ổn định (không đang trong quá trình thay đổi lớn).',
+        "note": "Always initiate Auto-Tuning when the plant is in a steady, quiescent thermal/fluid state—never during major transient disturbances."
       },
       {
-        title: '10.4 PID_Compact trong TIA Portal',
-        content: 'PID_Compact hỗ trợ điều khiển PID linh hoạt với nhiều chế độ hoạt động, giúp dễ dàng tích hợp vào hệ thống.',
-        keyPoints: [
-          'Chế độ Inactive: bộ điều khiển dừng hoạt động, đầu ra bằng 0',
-          'Chế độ Automatic: PID hoạt động bình thường theo giá trị đặt (SP)',
-          'Chế độ Manual: người dùng tự đặt giá trị đầu ra (ManualValue)',
-          'Tích hợp sẵn các tính năng cảnh báo và bảo vệ',
-          'Sử dụng trong OB ngắt chu kỳ (Cyclic Interrupt OB)',
-        ],
+        "title": "10.4 Operating Modes of PID_Compact",
+        "content": "PID_Compact supports flexible operational states to facilitate seamless commissioning, operational changeovers, and emergency overrides.",
+        "keyPoints": [
+          "Inactive Mode (0): Controller is de-energized; output forced to zero or safe configured value",
+          "Automatic Mode (3): Closed-loop feedback regulation actively tracking the Setpoint (SP)",
+          "Manual Mode (4): Open-loop manual control where operators directly command the output percentage",
+          "Integrated Alarm Diagnostics: Built-in monitoring of high/low limits and loop broken-wire detection",
+          "Execution Architecture: Requires deterministic time-slice invocation within a Cyclic Interrupt OB"
+        ]
       },
       {
-        title: '10.5 Nguyên lý tự chỉnh định tham số PID',
-        content: 'TIA Portal có khả năng tự động chỉnh định các thông số PID (Kp, Ki, Kd) để tối ưu hóa đáp ứng của hệ thống.',
-        keyPoints: [
-          'Tự động đo đạc đặc tính tĩnh và động của hệ thống',
-          'Tính toán các thông số PID tối ưu dựa trên đáp ứng đo được',
-          'Pre-tuning: chỉnh định sơ bộ khi hệ thống đang ở trạng thái ổn định',
-          'Fine-tuning: tinh chỉnh khi hệ thống đang chạy để cải thiện độ chính xác',
-          'Tiết kiệm thời gian so với chỉnh định thủ công',
-        ],
+        "title": "10.5 Mathematical Principles of Pre-Tuning and Fine-Tuning",
+        "content": "The integrated tuning algorithm identifies open-loop and closed-loop process models, utilizing inflection-point methods to derive optimal PID constants.",
+        "keyPoints": [
+          "Automatically quantifies process dead-time (delay) and time constants",
+          "Computes balanced PID gains prioritizing stability or disturbance rejection",
+          "Pre-Tuning: Best executed from ambient startup to characterize heating/cooling rates",
+          "Fine-Tuning: Executes small closed-loop oscillations to refine damping ratios",
+          "Eliminates trial-and-error guesswork, reducing loop commissioning time from hours to minutes"
+        ]
       },
       {
-        title: '10.6 Cấu hình đầu vào/ra PID',
-        content: 'Cấu hình linh hoạt nguồn tín hiệu đầu vào và cách xử lý tín hiệu đầu ra của khối PID_Compact.',
-        keyPoints: [
-          'Setpoint (SP) source: nhận giá trị đặt từ HMI hoặc chương trình PLC',
-          'Process value (PV): nhận tín hiệu phản hồi từ cảm biến (Input hoặc Input_PER)',
-          'Output scaling: chia tỉ lệ tín hiệu đầu ra (Output, Output_PER, Output_PWM)',
-          'Giới hạn tốc độ thay đổi của tín hiệu đầu ra',
-          'Có thể cấu hình lọc nhiễu cho tín hiệu PV',
-        ],
+        "title": "10.6 Process Variable Conditioning and Output Scaling",
+        "content": "Flexible input/output mapping accommodates both direct physical peripheral hardware channels and pre-conditioned software registers.",
+        "keyPoints": [
+          "Setpoint Source: Configurable from HMI operator entries or automated supervisory recipe DBs",
+          "Process Variable Mapping: Select \"Input\" for pre-scaled REAL values; select \"Input_PER\" for raw %AIW counts",
+          "Output Options: \"Output\" for 0–100% REAL; \"Output_PER\" for 0–27648 analog outputs; \"Output_PWM\" for pulse pins",
+          "Output Rate Limiting: Limits maximum slew rate (% change per second) to prevent mechanical valve shock",
+          "Input Noise Filtering: Built-in low-pass filter cleans noise on the incoming process variable"
+        ]
       },
       {
-        title: '10.7 Giới hạn đầu ra và anti-windup',
-        content: 'Bảo vệ hệ thống và ngăn ngừa hiện tượng bão hòa tích phân (windup) bằng các cấu hình giới hạn.',
-        keyPoints: [
-          'Output_UpperLimit và Output_LowerLimit: giới hạn giá trị đầu ra tối đa/tối thiểu',
-          'Bảo vệ cơ cấu chấp hành khỏi hoạt động quá công suất',
-          'Anti-windup: ngăn ngừa thành phần tích phân tăng quá mức khi đầu ra bị giới hạn',
-          'Giúp hệ thống phục hồi nhanh chóng khi sai lệch giảm',
-          'Có thể kích hoạt/vô hiệu hóa các giới hạn trong cấu hình PID',
-        ],
+        "title": "10.7 Output Saturation Clamping and Anti-Windup Protection",
+        "content": "Clamping output bounds protects final control actuators while integral anti-windup algorithms prevent massive transient overshoots following large setpoint changes.",
+        "keyPoints": [
+          "Output_UpperLimit and Output_LowerLimit: Clamps output between safe physical limits (e.g. 0% to 100%)",
+          "Actuator Protection: Prevents overdriving valves, pumps, or electrical heater circuits",
+          "Integral Windup Phenomenon: Occurs when sustained error causes integral terms to accumulate to massive values while output is saturated",
+          "Anti-Windup Mechanism: Halts integral accumulation whenever output reaches upper or lower clamping limits",
+          "Rapid Recovery: Ensures immediate closed-loop recovery the moment the process variable returns within the proportional band"
+        ]
       },
       {
-        title: '10.8 Chế độ Manual override',
-        content: 'Cho phép người vận hành can thiệp thủ công vào quá trình điều khiển một cách an toàn và mượt mà.',
-        keyPoints: [
-          'Chuyển đổi giữa chế độ Auto và Manual từ màn hình HMI',
-          'ManualValue: xác định giá trị đầu ra khi ở chế độ Manual',
-          'Bumpless transfer: chuyển đổi mượt mà giữa Auto/Manual không làm giật đầu ra',
-          'Quan trọng cho bảo trì và khắc phục sự cố',
-          'Có thể cấu hình giá trị đầu ra mặc định khi có lỗi',
-        ],
+        "title": "10.8 Manual Override and Bumpless Transfer",
+        "content": "Enables human operators to take manual control of field actuators during maintenance or process anomalies without causing physical plant disturbances.",
+        "keyPoints": [
+          "Operator Toggle: Switch seamlessly between Automatic and Manual modes via HMI touchscreen controls",
+          "ManualValue Tag: Defines the direct actuator command percentage while in Manual mode",
+          "Bumpless Transfer: When switching from Manual back to Auto, internal integral states initialize to match current output, preventing sudden jolts",
+          "Crucial for system commissioning, initial line charging, and sensor failure recovery",
+          "Configurable safe fallback output state triggered automatically upon sensor loop loss"
+        ]
       },
       {
-        title: '10.9 PID cascade (vòng lặp lồng nhau)',
-        content: 'Cấu trúc điều khiển PID nối tiếp (cascade) giúp cải thiện chất lượng điều khiển cho các hệ thống phức tạp, có nhiễu nội bộ.',
-        keyPoints: [
-          'Vòng điều khiển ngoài (Master) tính toán setpoint cho vòng trong (Slave)',
-          'Vòng trong xử lý các nhiễu nhanh cục bộ',
-          'Cải thiện độ ổn định và đáp ứng của toàn bộ hệ thống',
-          'Thường dùng trong điều khiển nhiệt độ (vòng ngoài) và lưu lượng (vòng trong)',
-          'Yêu cầu vòng trong phải có tốc độ đáp ứng nhanh hơn vòng ngoài',
-        ],
+        "title": "10.9 Cascade Control Architectures (Master-Slave Loops)",
+        "content": "Cascade control pairs two feedback loops in series to rapidly attenuate fast upstream disturbances before they destabilize slow primary process variables.",
+        "keyPoints": [
+          "Primary Master Controller: Monitors slow outer variable (e.g. reactor temperature) and outputs setpoint for the inner loop",
+          "Secondary Slave Controller: Regulates fast inner variable (e.g. steam jacket flow rate or pressure)",
+          "Disturbance Rejection: Rejects supply-side line pressure fluctuations before tank temperature is perturbed",
+          "Significantly improves settling time and dynamic stability in thermal and chemical processes",
+          "Rule of Thumb: The inner slave loop must execute 3 to 5 times faster than the outer master loop"
+        ]
       },
       {
-        title: '10.10 Bài tập: Điều khiển nhiệt độ lò với PID_Compact và màn hình HMI',
-        content: 'Thực hành ứng dụng PID_Compact để điều khiển nhiệt độ lò sấy, tích hợp giao diện HMI để giám sát và cài đặt.',
-        keyPoints: [
-          'Cấu hình phần cứng S7-1200 và cảm biến nhiệt độ',
-          'Cài đặt khối PID_Compact với các giới hạn và chế độ hoạt động',
-          'Thiết kế giao diện HMI: nhập Setpoint, hiển thị PV, đồ thị trend',
-          'Thực hiện Auto-tuning và quan sát đáp ứng nhiệt độ',
-          'Đánh giá chất lượng điều khiển dựa trên độ vọt lố và sai số tĩnh',
-        ],
-      },
+        "title": "10.10 Practical Application: Thermal Chamber PID Control with HMI",
+        "content": "Implements an industrial thermal chamber regulation system utilizing PID_Compact, RTD temperature telemetry, and interactive HMI operator screens.",
+        "keyPoints": [
+          "Hardware Architecture: S7-1200 CPU paired with an SM 1231 RTD module and solid-state relay power stage",
+          "Block Configuration: PID_Compact parameterized with thermal limits and anti-windup clamping",
+          "HMI Screen Development: Real-time numeric entry, live PV display, and historical trending curves",
+          "Auto-Tuning Execution: Run pre-tuning and fine-tuning to determine optimal thermal constants",
+          "Performance Verification: Quantify control metrics: rise time, percentage overshoot, and steady-state error"
+        ]
+      }
     ],
-    review: [
-      'Giải thích vai trò của thành phần P, I, D trong bộ điều khiển PID.',
-      'Kp = 2.0, Ti = 10s, Td = 0.5s — thành phần nào loại bỏ sai số tĩnh?',
-      'PID_Compact cần gọi từ loại OB nào? Tại sao?',
-      'Trình bày các bước thực hiện Auto-Tuning trong TIA Portal.',
-      'Thiết kế vòng điều khiển nhiệt độ lò sấy: SP = 80°C, cảm biến PT100, đầu ra relay SSR.',
-      'Chế độ Manual override của khối PID_Compact có tác dụng gì trong thực tế?',
-      'Tại sao cần phải giới hạn đầu ra (Output Limit) và sử dụng chức năng anti-windup?',
-      'Trong hệ thống PID cascade, vòng điều khiển ngoài và vòng điều khiển trong liên kết với nhau như thế nào?',
-    ],
+    "review": [
+      "Explain the distinct physical roles of Proportional (P), Integral (I), and Derivative (D) terms in closed-loop feedback regulation.",
+      "Given PID parameters Kp = 2.0, Ti = 10s, and Td = 0.5s, which term is responsible for eliminating steady-state error?",
+      "From what type of Organization Block must the PID_Compact block be invoked, and why is this requirement technically critical?",
+      "Enumerate the sequential steps required to execute an automated PID Pre-Tuning workflow in TIA Portal.",
+      "Design a thermal control loop for a drying oven: Setpoint = 80°C, PT100 RTD sensor input, solid-state relay (SSR) heating output.",
+      "What is the practical purpose of \"Bumpless Transfer\" when toggling between Manual and Automatic modes on an HMI?",
+      "Why is output clamping combined with integral anti-windup protection mandatory when commanding real physical actuators?",
+      "In a cascade PID control architecture, how do the Master and Slave control loops interact with each other?"
+    ]
   },
 
   '11-communication': {
-    overview: 'Truyền thông công nghiệp kết nối PLC với HMI, các PLC khác, VFD và hệ thống SCADA. S7-1200 hỗ trợ PROFINET, S7 Communication (PUT/GET), Modbus TCP/RTU và OPC UA.',
-    objectives: [
-      'Cấu hình PROFINET IO để kết nối các thiết bị ngoại vi',
-      'Thực hiện truyền thông S7 giữa hai PLC bằng PUT/GET',
-      'Lập trình Modbus TCP Client/Server và Modbus RTU',
-      'Hiểu cơ bản OPC UA và ứng dụng trong IIoT',
+    "overview": "Industrial communication networks integrate the PLC with operator HMIs, peer PLCs, variable speed drives, and plant-wide SCADA supervisory systems. The S7-1200 supports PROFINET, S7 Communication (PUT/GET), Modbus TCP/RTU, and OPC UA protocols.",
+    "objectives": [
+      "Configure PROFINET IO networks to communicate with distributed remote I/O and field devices",
+      "Implement S7 Communication between peer PLCs utilizing PUT and GET client instructions",
+      "Program and parameterize Modbus TCP Client/Server and Modbus RTU master/slave networks",
+      "Understand the architecture of OPC UA and its critical role in Industrial IoT (IIoT) connectivity"
     ],
-    sections: [
+    "sections": [
       {
-        title: '11.1 Tổng quan mạng công nghiệp',
-        content: 'Các giao thức truyền thông phổ biến trong tự động hóa: PROFINET (Ethernet-based, thời gian thực), PROFIBUS DP (RS485 cũ), Modbus TCP/RTU (mở, đơn giản), OPC UA (IIoT, multi-platform).',
-        keyPoints: [
-          'PROFINET: Ethernet công nghiệp, tốc độ 100Mbit/s, chu kỳ trao đổi ≥1ms',
-          'PROFIBUS: RS485, tốc độ đến 12Mbit/s, vẫn dùng rộng rãi',
-          'Modbus TCP: Modbus qua Ethernet, cổng 502',
-          'Modbus RTU: Modbus qua RS485/RS232, master-slave',
-          'OPC UA: giao thức mở, bảo mật, dùng cho IIoT và cloud',
-        ],
+        "title": "11.1 Overview of Industrial Communication Networks",
+        "content": "Industrial automation relies on robust standardized communication protocols: PROFINET (real-time Ethernet-based), PROFIBUS-DP (legacy RS485 token-ring), Modbus TCP/RTU (open, universal cross-vendor protocol), and OPC UA (platform-independent secure IIoT protocol).",
+        "keyPoints": [
+          "PROFINET: Industrial Ethernet, 100 Mbps full-duplex, deterministic cycle times ≥1ms",
+          "PROFIBUS-DP: RS485 fieldbus, speeds up to 12 Mbps, widely deployed across legacy installations",
+          "Modbus TCP: Universal Modbus protocol encapsulated over standard Ethernet TCP/IP port 502",
+          "Modbus RTU: Serial master-slave communication over RS485 or RS232 electrical lines",
+          "OPC UA: Open, vendor-neutral, encrypted protocol for enterprise SCADA and cloud integration"
+        ]
       },
       {
-        title: '11.2 PROFINET IO',
-        content: 'PROFINET IO là chuẩn truyền thông thời gian thực của Siemens. IO Controller (PLC) điều khiển IO Device (I/O phân tán, VFD, HMI).',
-        keyPoints: [
-          'IO Controller: CPU thực hiện điều khiển (S7-1200)',
-          'IO Device: thiết bị ngoại vi có PROFINET (ET200, biến tần...)',
-          'Cấu hình trong TIA Portal: kéo thả thiết bị vào mạng',
-          'Giao thức RT (Real-Time): chu kỳ 1–512ms',
-          'GSD file: file mô tả thiết bị IO Device',
-        ],
+        "title": "11.2 PROFINET IO Architecture and Device Commissioning",
+        "content": "PROFINET IO represents Siemens' primary real-time communication standard. A PROFINET IO Controller (PLC) deterministically commands distributed PROFINET IO Devices (remote I/O racks, VFD drives, HMI panels).",
+        "keyPoints": [
+          "IO Controller: The master CPU executing control logic and scheduling communication (e.g. S7-1200)",
+          "IO Device: Distributed field apparatus (e.g. ET200SP remote I/O drops, SINAMICS drives)",
+          "Network Configuration: Drag and drop field devices into the TIA Portal Network View and assign to the controller",
+          "Real-Time (RT) Class: Deterministic cyclic data exchange ranging from 1ms to 512ms update times",
+          "GSDML Device File: XML device description file provided by equipment manufacturers defining module parameters"
+        ]
       },
       {
-        title: '11.3 Modbus TCP và Modbus RTU',
-        content: 'Modbus là giao thức mở, đơn giản, được hỗ trợ bởi hầu hết thiết bị công nghiệp. Master gửi yêu cầu, Slave trả lời.',
-        keyPoints: [
-          'Function Code 01: Đọc Coil (bit Output)',
-          'Function Code 03: Đọc Holding Registers',
-          'Function Code 05: Ghi một Coil',
-          'Function Code 06: Ghi một Register',
-          'MB_COMM_LOAD: khởi tạo cổng RTU',
-          'MB_MASTER: gửi yêu cầu Modbus từ CPU',
-          'MB_SLAVE: CPU hoạt động như Slave',
+        "title": "11.3 Modbus TCP and Modbus RTU Communication Protocols",
+        "content": "Modbus is a universal, open master-slave protocol supported by virtually all industrial instrumentation. Modbus masters initiate request telegrams; addressed slaves execute commands and return response packets.",
+        "keyPoints": [
+          "Function Code 01: Read Discrete Output Coils (digital outputs)",
+          "Function Code 03: Read Holding Registers (analog/integer registers)",
+          "Function Code 05: Write Single Coil",
+          "Function Code 06: Write Single Holding Register",
+          "MB_COMM_LOAD: Initializes the serial communication module (CM 1241) port parameters",
+          "MB_MASTER: Transmits Modbus requests from the PLC to remote slave instrumentation",
+          "MB_SLAVE: Configures the PLC to respond as an addressable Modbus slave device"
         ],
-        note: 'Modbus RTU cần module CM 1241 (RS485) nếu S7-1200 không có cổng RS485 tích hợp. Tốc độ baud phổ biến: 9600, 19200, 38400, 115200.',
-      },
+        "note": "Modbus RTU requires adding a CM 1241 RS485 communication module or CB 1241 board to the S7-1200. Standard baud rates include 9600, 19200, 38400, and 115200 bps."
+      }
     ],
-    review: [
-      'Nêu sự khác nhau giữa PROFINET RT và PROFINET IRT.',
-      'Modbus Function Code 03 dùng để làm gì? Định dạng request/response?',
-      'Cần thêm phần cứng gì để S7-1200 giao tiếp Modbus RTU?',
-      'PUT/GET của S7 Communication hoạt động như thế nào?',
-      'OPC UA có ưu điểm gì so với Modbus trong ứng dụng IIoT?',
-    ],
+    "review": [
+      "Explain the technical distinctions between PROFINET RT (Real-Time) and PROFINET IRT (Isochronous Real-Time).",
+      "What is the operational function of Modbus Function Code 03, and what data structure constitutes its request/response packet?",
+      "What specific hardware module must be added to an S7-1200 CPU to enable Modbus RTU serial communication?",
+      "How does S7 Communication operate when exchanging data between two peer PLCs using PUT and GET instructions?",
+      "What architectural advantages does OPC UA offer over legacy Modbus in modern IIoT and Industry 4.0 applications?"
+    ]
   },
 
   '12-fault-diagnostics': {
-    overview: 'Chẩn đoán và xử lý lỗi là kỹ năng quan trọng trong bảo trì hệ thống tự động hóa. TIA Portal cung cấp nhiều công cụ: Diagnostic Buffer, Watch Table, Force Table, Trace và Program Status.',
-    objectives: [
-      'Sử dụng Diagnostic Buffer để đọc lịch sử lỗi CPU',
-      'Dùng Watch Table và Force Table để kiểm tra I/O',
-      'Sử dụng Trace để ghi lại tín hiệu tốc độ cao',
-      'Nhận biết và xử lý các lỗi phổ biến của hệ thống PLC',
+    "overview": "Fault diagnosis and troubleshooting are essential competencies in maintaining automated manufacturing cells. TIA Portal equips engineers with comprehensive online tools: CPU Diagnostic Buffer, Watch Tables, Force Tables, Signal Traces, and Live Program Status.",
+    "objectives": [
+      "Inspect and interpret the CPU Diagnostic Buffer to trace historical hardware and software error events",
+      "Deploy Watch Tables and Force Tables to validate field I/O and simulate operating conditions",
+      "Capture high-speed signal dynamics using the integrated TIA Portal Trace utility",
+      "Identify and troubleshoot common operational faults across PLC hardware, wiring, and software logic"
     ],
-    sections: [
+    "sections": [
       {
-        title: '14.1 Các công cụ chẩn đoán trong TIA Portal',
-        content: 'TIA Portal cung cấp bộ công cụ chẩn đoán Online đầy đủ để kiểm tra trạng thái CPU, module và chương trình mà không cần dừng hệ thống.',
-        keyPoints: [
-          'Diagnostic Buffer: lịch sử lỗi, sự kiện CPU (lưu đến 50 sự kiện)',
-          'Module Information: trạng thái các module I/O',
-          'Watch Table: theo dõi giá trị biến real-time',
-          'Force Table: ép giá trị đầu vào/ra để test',
-          'Trace: ghi tín hiệu với độ phân giải đến 100μs',
-          'Program Status: xem trạng thái ON/OFF từng phần tử trong LAD',
-        ],
+        "title": "14.1 Diagnostic Toolset in TIA Portal",
+        "content": "TIA Portal provides a comprehensive online diagnostic suite enabling automation technicians to inspect CPU operating status, module health, and ladder power flow in real time without halting production.",
+        "keyPoints": [
+          "Diagnostic Buffer: Historical log of CPU system events, hardware faults, and programming errors (stores up to 50 entries)",
+          "Module Information: Real-time telemetry reporting channel health, supply voltage, and wire breaks on expansion modules",
+          "Watch Table: Real-time tabular monitoring and modification of selected process variables",
+          "Force Table: Permanently overrides peripheral physical I/O points for hardware verification",
+          "Trace Utility: High-resolution signal recorder capturing variables down to individual scan cycle resolution",
+          "Program Status (Glasses Icon): Displays live energized power flow through ladder rungs"
+        ]
       },
       {
-        title: '14.2 Xử lý sự cố module đầu vào số (DI)',
-        content: 'Khi đầu vào số báo sai trạng thái so với thực tế: kiểm tra nguồn cấp thiết bị ngoại vi, đo điện áp tại terminal đầu vào, kiểm tra loại module (cách ly / không cách ly).',
-        keyPoints: [
-          'Dùng đồng hồ đo điện áp tại terminal I khi thiết bị ngoại vi ON',
-          'Điện áp <5V khi thiết bị ON: lỗi dây dẫn hoặc thiết bị',
-          'Điện áp đúng nhưng trạng thái PLC sai: thay module',
-          'Module cách ly: mỗi đầu vào độc lập, dễ chẩn đoán',
-          'Module không cách ly: đầu chung ảnh hưởng tất cả đầu vào',
-        ],
+        "title": "14.2 Systematic Troubleshooting of Digital Input (DI) Modules",
+        "content": "When a digital input channel fails to report field switch actuation, follow a systematic isolation procedure: verify field sensor power supply, measure voltage at module terminal screws, and verify common-point polarity.",
+        "keyPoints": [
+          "Measure DC voltage across terminal Ix.x and common terminal 1M with a digital multimeter when sensor is actuated",
+          "Voltage < 5VDC while sensor is actuated indicates broken field wiring or a defective sensor output",
+          "Voltage ≥ 15VDC present at screw terminal but channel LED remains unlit indicates internal optocoupler module failure",
+          "Channel LED illuminates green but software tag remains 0 indicates hardware configuration mismatch or CPU in STOP mode",
+          "Verify sensor output topology (PNP vs NPN) matches module common-terminal configuration (Sink vs Source)"
+        ]
       },
       {
-        title: '14.3 Xử lý sự cố module đầu ra số (DO)',
-        content: 'Dùng Force Table để ép đầu ra ON/OFF. Đo điện áp tại terminal đầu ra. Kiểm tra cầu chì bảo vệ của module.',
-        keyPoints: [
-          'Kiểm tra cầu chì module trước tiên (hay bị đứt do ngắn mạch)',
-          'Force đầu ra ON, đo điện áp tại terminal Q',
-          'Nếu điện áp thay đổi nhưng tải không đáp ứng: lỗi tải',
-          'Nếu điện áp không thay đổi: lỗi module',
-          'Module relay: kiểm tra tiếp âm, thay thế nếu bị cháy',
-        ],
+        "title": "14.3 Systematic Troubleshooting of Digital Output (DO) Modules",
+        "content": "When an actuator fails to energize, utilize Force Tables to verify software command delivery, inspect module protection fuses, and check field supply voltage rails.",
+        "keyPoints": [
+          "Inspect the module branch circuit fuse first; fuses commonly blow due to external coil short-circuits",
+          "Force the output channel to 1 in the Force Table and measure voltage directly across terminal Qx.x and neutral M",
+          "If voltage toggles to 24VDC but contactor fails to pull in, the fault resides in external wiring or the contactor coil",
+          "If voltage remains 0VDC while forced, inspect load power supply rail (1L/2L) or replace the output module",
+          "Relay Modules: Check for welded contacts or contact burn-out resulting from unsuppressed inductive arcing"
+        ]
       },
       {
-        title: '14.4 Xử lý sự cố nguồn và bộ nhớ',
-        content: 'Sự cố nguồn thường gây mất chương trình, lỗi bộ nhớ. Kiểm tra pin backup, điện áp nguồn cấp, nhiễu EMI/RFI.',
-        keyPoints: [
-          'Kiểm tra điện áp 24VDC nguồn cấp (phải trong ±10%)',
-          'Pin backup: thay khi điện áp pin thấp hơn quy định',
-          'Nhiễu EMI: thêm ferrite bead trên cáp tín hiệu',
-          'Upload chương trình từ PLC về PC, so sánh với backup',
-          'Lỗi "Memory Error": có thể cần Format Memory Card',
+        "title": "14.4 Power Supply Quality and Memory Corruption Troubleshooting",
+        "content": "Power quality issues cause erratic CPU behavior, watchdog timeouts, and memory loss. Verify 24VDC voltage tolerance, ripple voltage, and grounding integrity.",
+        "keyPoints": [
+          "Verify 24VDC power supply output voltage (must remain strictly within ±10%, between 21.6VDC and 26.4VDC)",
+          "Check AC ripple voltage: High power supply ripple (>150mV pp) causes CPU brownout resets",
+          "Electromagnetic Interference (EMI): Install ferrite chokes on analog and communication cables near noisy VFDs",
+          "Upload software from the physical CPU to an engineering PC and compare against golden backup archives",
+          "\"Memory Card Error\": Requires clearing memory faults or re-formatting the SIMATIC Memory Card via TIA Portal"
         ],
-        note: 'Luôn backup chương trình PLC trước khi bảo trì. Lưu bản backup lên Memory Card và PC cùng lúc.',
+        "note": "Always maintain current, verified project backup archives prior to performing maintenance on industrial PLC systems."
       },
       {
-        title: '14.5 Online monitoring trong TIA Portal',
-        content: 'Tính năng giám sát trực tuyến cho phép theo dõi và can thiệp vào chương trình đang chạy để phục vụ công tác chẩn đoán.',
-        keyPoints: [
-          'Go Online: kết nối phần mềm lập trình với thiết bị thực tế',
-          'Program Status (kính lúp): hiển thị trạng thái ON/OFF của dòng lệnh LAD',
-          'Watch Table: tạo bảng theo dõi các biến tùy chọn trong thời gian thực',
-          'Force Table: ép giá trị đầu vào/ra bỏ qua logic chương trình',
-          'Modify value: thay đổi giá trị biến tức thời để test hệ thống',
-        ],
+        "title": "14.5 Online Program Monitoring and Real-Time Variable Manipulation",
+        "content": "Online monitoring features allow engineers to observe live ladder execution and inject test values to validate machine interlocks.",
+        "keyPoints": [
+          "Go Online: Establishes active communication session between TIA Portal and physical automation devices",
+          "Program Status: Green solid lines indicate true power flow; blue dashes indicate unenergized logic paths",
+          "Watch Table: Enables grouping and observing mission-critical tags during live production runs",
+          "Force Table: Forces hardware inputs/outputs, bypassing all internal software interlocking logic",
+          "Modify Value: Injects transient test values into data block tags to test operational sequences"
+        ]
       },
       {
-        title: '14.6 CPU diagnostic buffer',
-        content: 'Bộ đệm chẩn đoán của CPU lưu trữ các sự kiện quan trọng và mã lỗi, giúp tìm ra nguyên nhân gốc rễ của sự cố.',
-        keyPoints: [
-          'Diagnostic Buffer lưu tới 50 sự kiện gần nhất (có thể mở rộng trên S7-1500)',
-          'Ghi nhận các lỗi phần cứng, lỗi lập trình, lỗi truyền thông',
-          'Mỗi sự kiện có Timestamp (thời gian) và Event ID (mã lỗi cụ thể)',
-          'Open in Editor: nhảy trực tiếp đến dòng code gây lỗi',
-          'Giữ nguyên thông tin ngay cả khi mất điện',
-        ],
+        "title": "14.6 Reading and Decoding the CPU Diagnostic Buffer",
+        "content": "The CPU Diagnostic Buffer is the primary forensic flight-recorder of the PLC, recording critical operational events, memory faults, and communication disruptions.",
+        "keyPoints": [
+          "Stores up to 50 sequential events on S7-1200 (expandable up to 3200 events on S7-1500)",
+          "Records hardware faults, programming syntax errors, I/O access violations, and mode transitions",
+          "Each event contains a microsecond timestamp, unique Event ID code, and descriptive diagnostic text",
+          "\"Open in Editor\" Button: Automatically opens and navigates directly to the exact ladder rung causing the fault",
+          "Non-Volatile Retention: Retains historical diagnostic logs intact across power interruptions"
+        ]
       },
       {
-        title: '14.7 LED status và ý nghĩa',
-        content: 'Các đèn LED trên mặt CPU và module cung cấp thông tin chẩn đoán nhanh tại hiện trường mà không cần máy tính.',
-        keyPoints: [
-          'RUN/STOP LED: xanh lá (đang chạy), vàng (đang dừng)',
-          'ERROR LED: nháy đỏ (lỗi nhẹ), sáng đỏ (lỗi nặng/phần cứng)',
-          'MAINT LED: sáng vàng (yêu cầu bảo trì, vd: pin yếu)',
-          'I/O LEDs: hiển thị trạng thái thực tế của đầu vào/ra',
-          'Sử dụng kết hợp các đèn LED để chẩn đoán nhanh lỗi CPU',
-        ],
+        "title": "14.7 Front-Panel LED Diagnostics and Fault Decoding",
+        "content": "Front-panel status LEDs on the CPU and expansion modules provide instantaneous physical diagnostics on the factory floor without requiring an engineering laptop.",
+        "keyPoints": [
+          "RUN/STOP LED: Solid Green = RUN mode; Solid Amber = STOP mode; Flashing = Startup transition",
+          "ERROR LED: Flashing Red = Minor fault / I/O access error; Solid Red = Fatal CPU hardware or memory fault",
+          "MAINT LED: Solid Amber = Maintenance demanded (e.g. RTC battery depleted, SD card service needed)",
+          "I/O Channel LEDs: Directly indicate presence of electrical potential at the physical screw terminal",
+          "Correlate combinations: RUN Green + ERROR Red Flash indicates program exception with CPU continuing execution"
+        ]
       },
       {
-        title: '14.8 Lỗi chương trình phổ biến',
-        content: 'Nhận biết các lỗi lập trình và lỗi cấu hình thường gặp dẫn đến CPU bị ngắt và chuyển sang chế độ STOP.',
-        keyPoints: [
-          'OB85 (Program sequence error): lỗi gọi khối hoặc lỗi hệ điều hành',
-          'OB86 (Rack failure): lỗi mất kết nối với module ngoại vi hoặc mạng',
-          'Lỗi truy cập I/O: truy cập địa chỉ ngoài vùng giới hạn',
-          'Lỗi vòng lặp vô hạn (Cycle time exceeded): thời gian quét vượt quá watchdog',
-          'Lỗi toán học: chia cho 0, tràn số, chuyển đổi kiểu dữ liệu sai',
-        ],
+        "title": "14.8 Common Execution Faults and Error Organization Blocks",
+        "content": "Understanding programming runtime errors that provoke CPU transitions into STOP mode, and deploying error Organization Blocks to maintain continuous operation.",
+        "keyPoints": [
+          "OB85 (Program Sequence Error): Triggered by missing block calls or operating system exceptions",
+          "OB86 (Rack / Subnet Failure): Triggered upon loss of communication with distributed PROFINET IO drops",
+          "I/O Access Errors: Triggered by user rungs attempting to read/write addresses of nonexistent expansion modules",
+          "Cycle Time Exceeded: Watchdog timer (default 150ms) trips when endless loops stall CPU scan execution",
+          "Mathematical Exceptions: Division by zero or floating-point overflow halts CPU if error handling is absent"
+        ]
       },
       {
-        title: '14.9 Backup và firmware update',
-        content: 'Quy trình sao lưu dữ liệu an toàn và cập nhật firmware giúp hệ thống hoạt động ổn định và bảo mật hơn.',
-        keyPoints: [
-          'Archive project: lưu toàn bộ cấu hình, code và thiết kế HMI',
-          'Upload as new station: lấy chương trình từ PLC không có mã nguồn',
-          'Cập nhật firmware CPU thông qua TIA Portal hoặc thẻ nhớ SD',
-          'Đảm bảo nguồn cấp ổn định trong quá trình cập nhật firmware',
-          'Luôn backup toàn bộ dự án trước khi thực hiện firmware update',
-        ],
+        "title": "14.9 Project Backups and Safe Firmware Upgrade Procedures",
+        "content": "Standardized backup workflows and firmware update procedures ensure operational stability, cyber-security compliance, and rapid disaster recovery.",
+        "keyPoints": [
+          "Project Archiving: Generates compact .zap archive files bundling code, hardware config, and HMI graphics",
+          "Upload as New Station: Reconstructs a full engineering project directly from an unknown field CPU",
+          "Firmware Upgrades: Applied via TIA Portal online diagnostics or pre-loaded SIMATIC Memory Cards",
+          "Uninterruptible Power: Guarantee stable power during firmware flashing; power loss can brick the CPU mainboard",
+          "Golden Archive Rule: Always take a full upload backup immediately prior to executing any firmware update"
+        ]
       },
       {
-        title: '14.10 Preventive maintenance PLC',
-        content: 'Bảo trì phòng ngừa định kỳ giúp kéo dài tuổi thọ thiết bị và ngăn chặn các sự cố dừng máy đột xuất.',
-        keyPoints: [
-          'Kiểm tra định kỳ các kết nối terminal, siết chặt ốc vít',
-          'Thay pin backup định kỳ (nếu có) trước khi sụt áp',
-          'Vệ sinh tản nhiệt, quạt làm mát và các khe thông gió',
-          'Đo kiểm tra điện áp nguồn và độ gợn sóng (ripple) của bộ nguồn',
-          'Kiểm tra thẻ nhớ (Memory Card) và backup dữ liệu định kỳ',
-        ],
-      },
+        "title": "14.10 Industrial Preventive Maintenance Protocol for Control Panels",
+        "content": "Structured periodic preventive maintenance schedules extend electronic lifespan and prevent catastrophic unplanned production shutdowns.",
+        "keyPoints": [
+          "Terminal Inspection: Annually re-torque all screw terminals to eliminate loose connections caused by vibration",
+          "Battery Maintenance: Measure and replace RTC backup batteries prior to voltage degradation",
+          "Thermal Management: Clean ventilation louvers, vacuum cabinet dust filters, and verify cooling fan operation",
+          "Power Supply Testing: Measure DC output voltage and verify AC ripple remains within catalog specifications",
+          "Diagnostic Review: Inspect CPU Diagnostic Buffer during scheduled shutdowns to catch emerging intermittent faults"
+        ]
+      }
     ],
-    review: [
-      'Các bước kiểm tra khi đầu vào số báo trạng thái sai.',
-      'Force Table khác Watch Table ở điểm gì?',
-      'Khi nào dùng Trace thay vì Watch Table?',
-      'Liệt kê 5 lỗi phổ biến nhất của hệ thống PLC và cách xử lý.',
-      'Tại sao phải kiểm tra cầu chì trước tiên khi đầu ra số không hoạt động?',
-      'Cách sử dụng CPU diagnostic buffer để tìm nguyên nhân khi CPU chuyển sang chế độ STOP?',
-      'Nêu ý nghĩa của các trạng thái đèn LED ERROR và MAINT trên S7-1200.',
-      'Lỗi OB86 xảy ra khi nào và cách khắc phục như thế nào?',
-    ],
+    "review": [
+      "Detail the ordered troubleshooting steps when a digital input channel fails to report field switch actuation.",
+      "Explain the fundamental operational differences between a Watch Table and a Force Table in TIA Portal.",
+      "Under what troubleshooting circumstances should an engineer deploy the Trace utility rather than a Watch Table?",
+      "Enumerate the 5 most prevalent operational faults encountered in PLC control systems along with their corrective remedies.",
+      "Why is inspecting branch circuit fuses the first step when a digital output channel fails to energize its load?",
+      "How does an engineer utilize the CPU Diagnostic Buffer to identify the root cause of a sudden transition to STOP mode?",
+      "Decode the operational meaning of concurrent RUN (Green) and ERROR (Flashing Red) LED indicators on an S7-1200 CPU.",
+      "Under what operational conditions does the operating system invoke Organization Block OB86, and how is it resolved?"
+    ]
   },
 
   '15-system-integration': {
-    overview: 'Dự án tổng hợp tích hợp toàn bộ kiến thức: thiết kế kiến trúc hệ thống PLC-HMI-SCADA, lập kế hoạch I/O, lập trình PLC, thiết kế màn hình HMI và giám sát SCADA cho một ứng dụng thực tế.',
-    objectives: [
-      'Phân tích yêu cầu và thiết kế kiến trúc hệ thống tự động hóa',
-      'Lập danh sách I/O (I/O List) và cấu hình phần cứng',
-      'Tích hợp PLC + HMI + SCADA thành hệ thống hoàn chỉnh',
-      'Vận hành, kiểm tra và bàn giao dự án',
+    "overview": "The capstone project synthesizes the curriculum into a complete industrial application: designing an integrated PLC-HMI-SCADA system architecture, developing the master I/O schedule, implementing structured ladder logic, engineering HMI graphics, and validating plant-wide supervision.",
+    "objectives": [
+      "Analyze customer process specifications and design an end-to-end automation system architecture",
+      "Develop the comprehensive master I/O Schedule and configure symbolic Tag Tables in TIA Portal",
+      "Integrate PLC control logic, local HMI operator graphics, and supervisory SCADA into a cohesive system",
+      "Execute Factory Acceptance Testing (FAT), site commissioning, and handover documentation"
     ],
-    sections: [
+    "sections": [
       {
-        title: '15.1 Thiết kế kiến trúc hệ thống',
-        content: 'Bước đầu tiên: hiểu quy trình công nghệ → xác định thiết bị → vẽ sơ đồ kiến trúc hệ thống (Architecture Diagram). Xác định: PLC cần loại nào, số I/O, cần HMI/SCADA không, giao thức mạng.',
-        keyPoints: [
-          'Phân tích quy trình: vẽ P&ID hoặc sơ đồ khối',
-          'Xác định số lượng và loại I/O (DI, DO, AI, AO)',
-          'Chọn CPU phù hợp (xem thêm tối thiểu 20% dự phòng I/O)',
-          'Thiết kế mạng: PROFINET, Modbus, kết nối HMI/SCADA',
-          'Lập bảng thiết bị (Bill of Materials)',
-        ],
+        "title": "15.1 System Architecture and Topology Engineering",
+        "content": "Initial phase: analyze technological process requirements → identify field instrumentation → draft the System Architecture Diagram. Define CPU sizing, I/O count, network protocols, and HMI/SCADA supervisory tiers.",
+        "keyPoints": [
+          "Process Analysis: Review Process & Instrumentation Diagrams (P&ID) and operational sequence narratives",
+          "I/O Quantification: Tabulate total counts and signal types across DI, DO, AI, and AO channels",
+          "Hardware Sizing: Select appropriate CPU model and expansion modules, provisioning ≥20% spare capacity",
+          "Network Architecture: Design PROFINET, Modbus, and Industrial Ethernet topologies with managed switches",
+          "Bill of Materials (BOM): Compile detailed hardware components, part numbers, and power supply budgets"
+        ]
       },
       {
-        title: '15.2 Lập I/O List và cấu hình Tag Table',
-        content: 'I/O List là tài liệu quan trọng nhất trong dự án PLC. Liệt kê tất cả tín hiệu vào/ra kèm địa chỉ, kiểu dữ liệu, mô tả, dải giá trị và thiết bị liên quan.',
-        keyPoints: [
-          'Cột bắt buộc: Tag Name, Address, Data Type, Description, I/O Type',
-          'Cột khuyến nghị: Engineering Unit, Range, Device, Panel',
-          'Đặt tên theo quy ước: AREA_EQUIPMENT_SIGNAL (ví dụ: PUMP1_FLOW_PV)',
-          'Nhập I/O List vào Tag Table của TIA Portal',
-          'Dùng Import từ Excel vào TIA Portal để tiết kiệm thời gian',
-        ],
+        "title": "15.2 Master I/O Schedule and Tag Table Standardization",
+        "content": "The Master I/O Schedule is the central engineering document bridging electrical hardware design with software programming. It details every field signal, terminal address, data type, range, and physical device tag.",
+        "keyPoints": [
+          "Mandatory Data Columns: Symbolic Tag Name, Absolute Address, Data Type, Engineering Units, Description",
+          "Recommended Fields: Calibrated Measuring Range, Field Device Tag Number, Junction Box, Cabinet Terminal Pin",
+          "Hierarchical Naming Conventions: Use standard AREA_EQUIPMENT_SIGNAL syntax (e.g. PUMP101_FLOW_PV)",
+          "Tag Table Population: Import standardized I/O schedules directly from Excel into TIA Portal Tag Tables",
+          "Eliminates duplicate address errors and ensures 100% naming consistency across PLC, HMI, and SCADA"
+        ]
       },
       {
-        title: '15.3 Chương trình tổng hợp: PLC + HMI + SCADA',
-        content: 'Tích hợp: PLC xử lý điều khiển → HMI vận hành local → SCADA giám sát toàn hệ thống và lưu trữ dữ liệu lịch sử.',
-        keyPoints: [
-          'PLC ↔ HMI: kết nối PROFINET, tags chia sẻ qua Tag Table',
-          'PLC ↔ SCADA: OPC UA hoặc S7 Protocol',
-          'Alarm Management: PLC phát alarm → HMI hiển thị → SCADA lưu log',
-          'Recipe: SCADA gửi setpoint → PLC nhận và áp dụng',
-          'Data Logging: SCADA lưu giá trị AI theo chu kỳ 1s–1min',
-        ],
+        "title": "15.3 Integrated Tri-Tier Control: PLC Logic, HMI Graphics, and SCADA Supervision",
+        "content": "Integration binds the three operational tiers: the PLC executes real-time deterministic control; the local HMI provides machine-side operator manipulation; SCADA provides plant-wide supervision, alarm archiving, and historical trending.",
+        "keyPoints": [
+          "PLC ↔ HMI Interfacing: High-speed PROFINET connection sharing symbolic tags directly from the Tag Table",
+          "PLC ↔ SCADA Interfacing: Industrial OPC UA or S7 Communication channels streaming telemetry to control room servers",
+          "Alarm Management: PLC evaluates thresholds → HMI displays immediate visual banners → SCADA archives historical log",
+          "Recipe Management: Central SCADA dispatches production recipe setpoints down to PLC data blocks",
+          "Historical Data Logging: SCADA historians record analog process variables at periodic sample intervals (1s to 60s)"
+        ]
       },
       {
-        title: '15.4 Kiểm tra, vận hành và bàn giao',
-        content: 'FAT (Factory Acceptance Test) và SAT (Site Acceptance Test) là hai bước kiểm tra bắt buộc trước khi bàn giao hệ thống cho khách hàng.',
-        keyPoints: [
-          'FAT: test tại nhà máy lắp đặt, mô phỏng thiết bị ngoại vi',
-          'SAT: test tại công trình sau khi lắp đặt thực tế',
-          'Test I/O: kiểm tra từng đầu vào/ra theo I/O List',
-          'Test chức năng: chạy từng chế độ (Manual → Auto)',
-          'Test alarm: mô phỏng các tình huống báo lỗi',
-          'Tài liệu bàn giao: As-Built Drawing, Manual, Backup chương trình',
-        ],
-      },
+        "title": "15.4 Testing, Commissioning, and Handover Documentation",
+        "content": "Factory Acceptance Testing (FAT) and Site Acceptance Testing (SAT) represent mandatory formal milestones validating system performance prior to final customer commercial handover.",
+        "keyPoints": [
+          "Factory Acceptance Test (FAT): Rigorous testing at panel fabrication facility utilizing simulated I/O panels",
+          "Site Acceptance Test (SAT): Live commissioning at the customer site following field installation",
+          "Point-to-Point I/O Verification: Methodically verify every sensor and actuator point against the master I/O schedule",
+          "Functional Mode Verification: Test manual overrides, automated sequencing, interlocks, and emergency stop circuits",
+          "Alarm Testing: Simulate broken wires, high-limit overshoots, and motor overloads to verify alarm responses",
+          "Handover Package: As-Built electrical schematics, software backup archives, operator manuals, and SAT sign-off records"
+        ]
+      }
     ],
-    review: [
-      'Liệt kê các bước thiết kế một hệ thống điều khiển PLC từ đầu đến cuối.',
-      'I/O List cần có những cột thông tin nào? Tại sao quan trọng?',
-      'FAT và SAT khác nhau như thế nào?',
-      'Thiết kế hệ thống điều khiển trạm bơm: 2 bơm, 1 cảm biến mức, 1 cảm biến áp suất, điều khiển tự động/thủ công.',
-      'Tài liệu nào cần bàn giao khi hoàn thành dự án PLC?',
-    ],
+    "review": [
+      "Enumerate the sequential engineering phases involved in delivering a PLC automation system from requirements to handover.",
+      "What mandatory information columns must be populated within a professional Master I/O Schedule, and why is this document vital?",
+      "Contrast the operational objectives of a Factory Acceptance Test (FAT) with a Site Acceptance Test (SAT).",
+      "Design an integrated control architecture for a multi-pump booster station: 2 duty/standby pumps, 1 level transmitter, 1 pressure transmitter, and automatic lead-lag alternation.",
+      "What formal engineering documents must be included in the final handover dossier delivered to the operating plant at project completion?"
+    ]
   },
 
   '06-other-plc-brands': {
@@ -1849,7 +1830,7 @@ export const lessonContent: Record<string, LessonContent> = {
           'Functional safety: new Machinery Directive requires SIL 2 — old CPU not certifiable',
           'Integration: factory MES requires OPC-UA or MQTT — old CPU has no Ethernet port',
           'Total Cost of Ownership: ongoing maintenance cost exceeds a one-time replacement cost',
-          'Production window: migrations are easiest during scheduled shutdowns (Christmas, Tết)',
+          'Production window: migrations are easiest during scheduled shutdowns (annual plant turnarounds)',
         ],
       },
       {

@@ -30,54 +30,54 @@ const sios = (id: string) => `https://support.industry.siemens.com/cs/ww/en/view
 
 const DOWNLOADS: Record<string, DownloadSet> = {
   '02-s7-1200-tia-portal': {
-    title: 'SIMATIC STEP 7 Professional + Safety + S7-PLCSIM + WinCC — bản Trial',
+    title: 'SIMATIC STEP 7 Professional + Safety + S7-PLCSIM + WinCC — Trial Version',
     version: 'V19',
     note:
-      'Bản dùng thử chính hãng của Siemens, đủ để làm toàn bộ bài lab trong giáo trình này. Article number của bộ DVD: 6AV2102-0AA02-3AA7.',
+      'Official trial software from Siemens, providing everything needed to complete all lab exercises in this course. DVD package article number: 6AV2102-0AA02-3AA7.',
     items: [
       {
-        name: 'Trang tải chính (STEP 7 + Safety + PLCSIM + WinCC V19 Trial)',
-        detail: 'Điểm vào chứa cả DVD 1 và DVD 2 bên dưới',
+        name: 'Main Download Portal (STEP 7 + Safety + PLCSIM + WinCC V19 Trial)',
+        detail: 'Central entry page containing downloads for DVD 1 and DVD 2 below',
         entryId: '109820994',
       },
       {
         name: 'DVD 1 — TIA_Portal_STEP7_Prof_Safety_WinCC_V19.iso',
         detail: 'STEP 7 Basic/Professional · STEP 7 Safety Basic/Advanced · WinCC Basic/Comfort/Advanced/Professional/Unified',
-        size: '7,5 GB',
+        size: '7.5 GB',
         entryId: '109820994',
       },
       {
         name: 'DVD 2 — TIA_Portal_STEP7_Prof_Safety_WINCC_DVD_2_V19.iso',
         detail: 'Hardware Support Packages · Open Source Software · Tools',
-        size: '2,9 GB',
+        size: '2.9 GB',
         entryId: '109820994',
       },
       {
         name: 'WinCC Unified PC RT Simulation & Trial',
-        detail: 'Bắt buộc nếu muốn mô phỏng thiết bị WinCC Unified khi engineering',
+        detail: 'Required when simulating WinCC Unified runtime devices during engineering',
         entryId: '109820988',
       },
       {
         name: 'WinCC RT Professional Simulation & Trial',
-        detail: 'Bắt buộc nếu muốn mô phỏng thiết bị WinCC RT Professional',
+        detail: 'Required when simulating WinCC RT Professional runtime devices',
         entryId: '109820997',
       },
       {
-        name: 'Hướng dẫn kiểm tra checksum SHA-256',
-        detail: 'Nên chạy trước khi giải nén — file 7,5 GB rất dễ hỏng khi tải',
+        name: 'SHA-256 Checksum Verification Guide',
+        detail: 'Recommended before extraction — large 7.5 GB files can corrupt during download',
         entryId: '109483101',
       },
       {
-        name: 'Danh mục TRIAL cho mọi phiên bản TIA Portal (đến V21)',
-        detail: 'Dùng khi bạn muốn bản mới hơn V19 — xem ghi chú bên dưới',
+        name: 'TRIAL Download Catalog for all TIA Portal Versions (up to V21)',
+        detail: 'Use when exploring newer versions than V19 — see important compatibility notes below',
         entryId: '109798506',
       },
     ],
     warnings: [
-      'Cần tài khoản Siemens (đăng ký miễn phí) mới tải được — chuẩn bị trước để khỏi mất công.',
-      'Giấy phép Trial có hạn 21 ngày kể từ lần khởi động đầu tiên, và không gia hạn lại được trên cùng một máy. Đừng cài sớm rồi để đó — cài khi bạn thật sự bắt đầu làm lab.',
-      'Giáo trình này bám V19. Siemens đã phát hành V20 và V21 — project tạo bằng bản mới KHÔNG mở ngược được bằng bản cũ. Nếu lab ở trường dùng V19 thì cứ giữ V19 cho khớp.',
-      'Chỉ cài trên Windows 64-bit (Pro/Enterprise). Kiểm tra yêu cầu RAM và dung lượng ổ đĩa trong readme trên trang Siemens trước khi tải 10 GB.',
+      'A free Siemens Industry Online Support account is required to download — register in advance.',
+      'The Trial license is valid for 21 days from the first launch and cannot be renewed on the same machine. Install only when you are ready to begin the lab exercises.',
+      'This course uses V19. Projects created in newer versions (V20/V21) are NOT backward compatible with V19. Match your version with the university lab standard.',
+      'Install only on 64-bit Windows (Pro or Enterprise). Review RAM and SSD storage requirements in the Siemens readme before downloading ~10 GB.',
     ],
   },
 };
@@ -98,7 +98,7 @@ export default function LessonDownloads({ slug }: { slug: string }) {
           marginBottom: '12px',
         }}
       >
-        ⬇ Tải phần mềm
+        ⬇ Software Downloads
       </p>
 
       <div
@@ -209,7 +209,7 @@ export default function LessonDownloads({ slug }: { slug: string }) {
               marginBottom: '10px',
             }}
           >
-            ⚠ Đọc trước khi tải
+            ⚠ Read Before Downloading
           </p>
           <ul style={{ margin: 0, paddingLeft: '18px', display: 'flex', flexDirection: 'column', gap: '7px' }}>
             {set.warnings.map((w, i) => (
@@ -222,8 +222,7 @@ export default function LessonDownloads({ slug }: { slug: string }) {
       </div>
 
       <p style={{ fontSize: '11px', color: '#a3a3a3', marginTop: '8px', lineHeight: 1.6 }}>
-        Mọi link trỏ tới Siemens Industry Online Support theo Entry ID — dạng URL này ổn định hơn link tải
-        trực tiếp, vốn hay đổi mỗi lần Siemens cập nhật service pack.
+        All links refer to Siemens Industry Online Support by Entry ID — this URL structure is more permanent than direct download links that change with each service pack.
       </p>
     </div>
   );
