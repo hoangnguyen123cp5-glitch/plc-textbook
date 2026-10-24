@@ -5,7 +5,49 @@ import { getLessonBySlug, lessons } from '@/lib/lessons';
 import { lessonContent } from '@/data/lesson-content';
 import LessonVideo from '@/components/content/LessonVideo';
 import TopicAnimationWrapper from '@/components/animations/TopicAnimationWrapper';
+import { asset } from '@/lib/asset';
 import type { Metadata } from 'next';
+
+const TOPIC_DIAGRAMS: Record<string, { src: string; caption: string }> = {
+  // Topic 1.8: Scan cycle
+  'scan-cycle': {
+    src: '/images/diagrams/plc-scan-cycle.jpg',
+    caption: 'Figure 1.8: Deterministic 4-Phase PLC Scan Cycle & Process Image Registers (PII / PIQ)',
+  },
+  // Lesson 2: Field wiring
+  'field-wiring': {
+    src: '/images/diagrams/plc-wiring-di.jpg',
+    caption: 'Figure 2.3: Industrial Field Wiring Schematic for 24VDC Digital Inputs (Sinking / Sourcing Circuits)',
+  },
+  // Lesson 3: Start/Stop ladder logic
+  'logic-links': {
+    src: '/images/diagrams/ladder-start-stop.jpg',
+    caption: 'Figure 3.1: Start/Stop Motor Latch Circuit (Seal-in Network) in TIA Portal Ladder Diagram',
+  },
+  'set-reset': {
+    src: '/images/diagrams/ladder-start-stop.jpg',
+    caption: 'Figure 3.2: Set/Reset Dominant Latch Logic Evaluation in TIA Portal',
+  },
+  // Lesson 3: Timers
+  'timers': {
+    src: '/images/diagrams/timer-timing-diagram.jpg',
+    caption: 'Figure 3.3: IEC Timing Diagram: TON (On-Delay), TOF (Off-Delay), and TP (Pulse Timer) Waveforms',
+  },
+  // Lesson 10: Closed Loop PID
+  'closed-loop-design': {
+    src: '/images/diagrams/pid-block-diagram.jpg',
+    caption: 'Figure 10.1: Standard Industrial Closed-Loop Feedback Control Block Diagram with Disturbance Input',
+  },
+  'pid-compact': {
+    src: '/images/diagrams/pid-block-diagram.jpg',
+    caption: 'Figure 10.2: Siemens PID_Compact Functional Block Architecture & Error Summation Node',
+  },
+  // Lesson 11: PROFINET
+  'profinet-profibus': {
+    src: '/images/diagrams/profinet-network-diagram.jpg',
+    caption: 'Figure 11.2: PROFINET Real-Time (RT/IRT) Industrial Ethernet Topology with S7-1200 & ET200SP I/O',
+  },
+};
 
 export async function generateStaticParams() {
   const params: { slug: string; topic: string }[] = [];
@@ -162,6 +204,30 @@ export default async function TopicPage({
                     lineHeight: 1.65,
                   }}>
                     💡 <strong>Engineering Note:</strong> {section.note}
+                  </div>
+                )}
+
+                {/* Engineering Diagram (if available for this topic) */}
+                {TOPIC_DIAGRAMS[topic.slug] && (
+                  <div style={{
+                    marginTop: '24px',
+                    background: '#f8fafc',
+                    borderRadius: '12px',
+                    border: '1px solid #e2e8f0',
+                    padding: '16px',
+                    textAlign: 'center',
+                  }}>
+                    <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#64748b', textTransform: 'uppercase', marginBottom: '12px', textAlign: 'left' }}>
+                      📸 Technical Schematic Diagram
+                    </p>
+                    <img
+                      src={asset(TOPIC_DIAGRAMS[topic.slug].src)}
+                      alt={TOPIC_DIAGRAMS[topic.slug].caption}
+                      style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px', border: '1px solid #cbd5e1', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
+                    />
+                    <p style={{ fontSize: '12.5px', color: '#64748b', marginTop: '10px', fontStyle: 'italic', margin: '10px 0 0 0' }}>
+                      {TOPIC_DIAGRAMS[topic.slug].caption}
+                    </p>
                   </div>
                 )}
 
