@@ -2,7 +2,9 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getLessonBySlug, lessons } from '@/lib/lessons';
+import { lessonContent } from '@/data/lesson-content';
 import LessonVideo from '@/components/content/LessonVideo';
+import TopicAnimationWrapper from '@/components/animations/TopicAnimationWrapper';
 import type { Metadata } from 'next';
 
 export async function generateStaticParams() {
@@ -86,23 +88,103 @@ export default async function TopicPage({
       {/* Video — tự ẩn hoàn toàn nếu topic này chưa được đánh mốc */}
       <LessonVideo lessonSlug={lesson.slug} topicSlug={topic.slug} color={color} />
 
-      {/* Content area */}
-      <div style={{
-        background: '#fafafa', border: '1px solid #e5e5e5', borderRadius: '10px',
-        padding: '28px 32px', marginBottom: '36px', minHeight: '200px',
-      }}>
-        <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#a3a3a3', textTransform: 'uppercase', marginBottom: '16px' }}>
-          Lesson Notes
-        </p>
-        <p style={{ fontSize: '14px', color: '#a3a3a3', lineHeight: 1.7, fontStyle: 'italic' }}>
-          Notes for &ldquo;{topic.title}&rdquo; are being written. In the meantime,
-          see the full write-up on the{' '}
-          <Link href={`/lessons/${lesson.slug}`} style={{ color: '#2563eb' }}>
-            {lesson.title}
-          </Link>{' '}
-          lesson page.
-        </p>
-      </div>
+      {/* Content area: Detailed Technical Notes & Interactive Simulator */}
+      {(() => {
+        const contentData = lessonContent[lesson.slug];
+        const numMatch = topic.title.match(/^(\d+\.\d+)/);
+        const section = contentData?.sections.find((s) => {
+          return numMatch ? s.title.includes(numMatch[1]) : false;
+        }) ?? contentData?.sections[topicIndex];
+
+        return (
+          <div style={{ marginBottom: '36px' }}>
+            {section ? (
+              <div style={{
+                background: '#ffffff',
+                border: '1px solid #e5e5e5',
+                borderRadius: '12px',
+                padding: '28px 32px',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                  <span style={{ width: 4, height: 16, background: color, borderRadius: 99 }} />
+                  <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: color, textTransform: 'uppercase', margin: 0 }}>
+                    Technical Notes · {section.title}
+                  </p>
+                </div>
+
+                {/* Primary Content Paragraph */}
+                <p style={{ fontSize: '15px', color: '#334155', lineHeight: 1.8, marginBottom: section.keyPoints ? '20px' : 0 }}>
+                  {section.content}
+                </p>
+
+                {/* Key Takeaways */}
+                {section.keyPoints && section.keyPoints.length > 0 && (
+                  <div style={{
+                    marginTop: '20px',
+                    padding: '18px 20px',
+                    background: '#f8fafc',
+                    borderRadius: '10px',
+                    border: '1px solid #e2e8f0',
+                  }}>
+                    <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', color: '#475569', textTransform: 'uppercase', marginBottom: '12px' }}>
+                      Key Engineering Points
+                    </p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {section.keyPoints.map((kp, idx) => {
+                        const parts = kp.split(':');
+                        const kpTitle = parts[0];
+                        const kpDesc = parts.slice(1).join(':').trim();
+                        return (
+                          <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '13.5px', lineHeight: 1.6 }}>
+                            <span style={{ color: color, fontWeight: 700, flexShrink: 0, marginTop: '1px' }}>▸</span>
+                            <div>
+                              <strong style={{ color: '#0f172a' }}>{kpTitle}</strong>
+                              {kpDesc ? <span style={{ color: '#475569' }}>: {kpDesc}</span> : null}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Note / Tip callout */}
+                {section.note && (
+                  <div style={{
+                    marginTop: '16px',
+                    padding: '12px 18px',
+                    background: '#fffbeb',
+                    border: '1px solid #fde68a',
+                    borderRadius: '8px',
+                    fontSize: '13px',
+                    color: '#92400e',
+                    lineHeight: 1.65,
+                  }}>
+                    💡 <strong>Engineering Note:</strong> {section.note}
+                  </div>
+                )}
+
+                {/* Topic-specific Interactive Simulator */}
+                <TopicAnimationWrapper lessonSlug={lesson.slug} topicSlug={topic.slug} topicIndex={topicIndex} topicTitle={topic.title} />
+              </div>
+            ) : (
+              <div style={{
+                background: '#fafafa', border: '1px solid #e5e5e5', borderRadius: '10px',
+                padding: '28px 32px', minHeight: '160px',
+              }}>
+                <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#a3a3a3', textTransform: 'uppercase', marginBottom: '14px' }}>
+                  Lesson Notes
+                </p>
+                <p style={{ fontSize: '14px', color: '#525252', lineHeight: 1.7 }}>
+                  Detailed practical laboratory guide for &ldquo;{topic.title}&rdquo;. Consult the Siemens S7-1200 System Manual and TIA Portal help files during bench wiring.
+                </p>
+                <TopicAnimationWrapper lessonSlug={lesson.slug} topicSlug={topic.slug} topicIndex={topicIndex} topicTitle={topic.title} />
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Progress: topics in this lesson */}
       <div style={{ marginBottom: '40px' }}>
