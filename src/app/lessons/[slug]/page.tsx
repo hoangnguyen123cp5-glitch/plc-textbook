@@ -90,11 +90,10 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
             {/* Overview */}
             <div style={{ marginBottom: '28px' }}>
               <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#a3a3a3', textTransform: 'uppercase', marginBottom: '10px' }}>Overview</p>
-              <p style={{ fontSize: '15px', color: '#404040', lineHeight: 1.75, borderLeft: `3px solid ${color}`, paddingLeft: '16px' }}>{c.overview}</p>
+              <p style={{ fontSize: '15px', color: '#404040', lineHeight: 1.75, borderLeft: `3px solid ${color}`, paddingLeft: '16px' }}>
+                {c.overview.split('. ').slice(0, 3).join('. ') + '.'}
+              </p>
             </div>
-
-            {/* ── ANIMATION (nếu có cho bài này) ── */}
-            <LessonAnimationWrapper slug={slug} />
 
             {/* ── TẢI PHẦN MỀM (nếu bài này cần cài đặt gì đó) ── */}
             <LessonDownloads slug={slug} />
@@ -112,6 +111,9 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
               </ul>
             </div>
 
+            {/* ── ANIMATION (nếu có cho bài này) — Interactive Demo after Objectives ── */}
+            <LessonAnimationWrapper slug={slug} />
+
             {/* Sections */}
             {/* Math formulas for relevant lessons */}
             <LessonMathBlock slug={slug} />
@@ -119,33 +121,94 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
             <div style={{ marginBottom: '28px' }}>
               <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#a3a3a3', textTransform: 'uppercase', marginBottom: '16px' }}>Lesson Content</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                {c.sections.map((sec, i) => (
-                  <div key={i} style={{ border: '1px solid #e5e5e5', borderRadius: '10px', overflow: 'hidden' }}>
-                    <div style={{ padding: '14px 20px', background: `${color}08`, borderBottom: '1px solid #e5e5e5', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ width: 3, height: 16, background: color, borderRadius: 99, flexShrink: 0 }} />
-                      <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#0a0a0a', margin: 0 }}>{sec.title}</h3>
-                    </div>
-                    <div style={{ padding: '16px 20px' }}>
-                      <p style={{ fontSize: '14px', color: '#525252', lineHeight: 1.7, margin: 0, marginBottom: sec.keyPoints ? '14px' : 0 }}>{sec.content}</p>
-                      {sec.keyPoints && (
-                        <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                          {sec.keyPoints.map((kp, j) => (
-                            <li key={j} style={{ display: 'flex', gap: '8px', fontSize: '13px', color: '#404040', lineHeight: 1.6 }}>
-                              <span style={{ color: color, fontWeight: 700, flexShrink: 0, marginTop: '2px' }}>▸</span>
-                              {kp}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
+                {c.sections.map((sec, i) => {
+                  const hasAnimation = (slug === '01-programmable-control' && [0, 1, 2, 7].includes(i));
+                  return (
+                    <div key={i} style={{ border: '1px solid #e5e5e5', borderRadius: '12px', overflow: 'hidden', marginBottom: '0' }}>
+                      {/* Section header - compact */}
+                      <div style={{ padding: '12px 20px', background: `${color}08`, borderBottom: '1px solid #eee', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ width: 3, height: 16, background: color, borderRadius: 99, flexShrink: 0 }} />
+                        <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#0a0a0a', margin: 0 }}>{sec.title}</h3>
+                      </div>
+
+                      {/* Body: 2-column if has animation */}
+                      <div
+                        className={hasAnimation ? 'section-body-2col' : ''}
+                        style={hasAnimation ? {} : { padding: '16px 20px' }}
+                      >
+                        {hasAnimation ? (
+                          /* Left column: concise principle + key takeaways */
+                          <div className="section-col-left" style={{ padding: '20px 24px', borderRight: '1px solid #f0f0f0', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                            <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: color, marginBottom: '8px' }}>
+                              Core Principle
+                            </div>
+                            <p style={{ fontSize: '13.5px', color: '#404040', lineHeight: 1.7, margin: '0 0 14px 0' }}>
+                              {sec.content.split('. ').slice(0, 2).join('. ') + '.'}
+                            </p>
+                            {sec.keyPoints && (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                {sec.keyPoints.slice(0, 3).map((kp, j) => {
+                                  const parts = kp.split(':');
+                                  const title = parts[0];
+                                  const desc = parts.slice(1).join(':').trim();
+                                  return (
+                                    <div key={j} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '12.5px', color: '#525252', lineHeight: 1.5 }}>
+                                      <span style={{ color: color, fontWeight: 700, flexShrink: 0, marginTop: '1px' }}>▸</span>
+                                      <div>
+                                        <strong style={{ color: '#171717', fontWeight: 600 }}>{title}</strong>
+                                        {desc ? <span style={{ color: '#737373' }}>: {desc.slice(0, 75)}{desc.length > 75 ? '…' : ''}</span> : null}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <>
+                            <p style={{ fontSize: '13.5px', color: '#404040', lineHeight: 1.7, marginBottom: sec.keyPoints ? '14px' : 0 }}>
+                              {sec.content.split('. ').slice(0, 3).join('. ') + '.'}
+                            </p>
+                            {sec.keyPoints && (
+                              <div className="kp-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 20px' }}>
+                                {sec.keyPoints.map((kp, j) => {
+                                  const parts = kp.split(':');
+                                  const title = parts[0];
+                                  const desc = parts.slice(1).join(':').trim();
+                                  return (
+                                    <div key={j} style={{ display: 'flex', alignItems: 'flex-start', gap: '7px', fontSize: '12px', color: '#525252', lineHeight: 1.5 }}>
+                                      <span style={{ color: color, fontWeight: 700, flexShrink: 0, marginTop: '1px' }}>▸</span>
+                                      <div>
+                                        <strong style={{ color: '#171717', fontWeight: 600 }}>{title}</strong>
+                                        {desc ? <span style={{ color: '#737373' }}>: {desc.slice(0, 65)}{desc.length > 65 ? '…' : ''}</span> : null}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </>
+                        )}
+
+                        {/* Right column: Animation */}
+                        {hasAnimation && (
+                          <div style={{ padding: '16px', background: '#f8fafc', display: 'flex', alignItems: 'center' }}>
+                            <div style={{ width: '100%' }}>
+                              <LessonSectionAnimation slug={slug} sectionIndex={i} sectionTitle={sec.title} />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Note (if any) */}
                       {sec.note && (
-                        <div style={{ marginTop: '12px', padding: '10px 14px', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '6px', fontSize: '13px', color: '#92400e', lineHeight: 1.6 }}>
+                        <div style={{ margin: '0 20px 16px', padding: '10px 14px', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '6px', fontSize: '12px', color: '#92400e', lineHeight: 1.6 }}>
                           💡 {sec.note}
                         </div>
                       )}
-                      <LessonSectionAnimation slug={slug} sectionIndex={i} sectionTitle={sec.title} />
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 

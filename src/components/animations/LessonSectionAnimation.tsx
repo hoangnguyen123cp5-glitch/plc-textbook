@@ -9,15 +9,14 @@ interface Props {
 }
 
 export default function LessonSectionAnimation({ slug, sectionIndex, sectionTitle }: Props) {
-  // Lesson 1 Section Animations
   if (slug === '01-programmable-control') {
-    // Section 1.2: Open-Loop vs Closed-Loop
-    if (sectionIndex === 1 || sectionTitle.includes('1.2')) {
-      return <Section1_2LoopAnimation />;
-    }
     // Section 1.1: 5 Core Elements of Control System
     if (sectionIndex === 0 || sectionTitle.includes('1.1')) {
       return <Section1_1FiveElementsAnimation />;
+    }
+    // Section 1.2: Open-Loop vs Closed-Loop
+    if (sectionIndex === 1 || sectionTitle.includes('1.2')) {
+      return <Section1_2LoopAnimation />;
     }
     // Section 1.3: Hardwired vs Programmable
     if (sectionIndex === 2 || sectionTitle.includes('1.3')) {
@@ -33,39 +32,180 @@ export default function LessonSectionAnimation({ slug, sectionIndex, sectionTitl
 }
 
 /* ═════════════════════════════════════════════════════════════════════════
+   SECTION 1.1: 5 CORE FUNCTIONAL ELEMENTS OF CONTROL SYSTEMS
+═════════════════════════════════════════════════════════════════════════ */
+function Section1_1FiveElementsAnimation() {
+  const [activeId, setActiveId] = useState<number>(2); // Default to Controller
+
+  const elements = [
+    {
+      id: 0,
+      num: '1',
+      title: 'Setpoint (SP)',
+      sub: 'Reference Target',
+      icon: '🎯',
+      desc: 'The target command or recipe value that the process variable must reach.',
+      example: 'Target temperature: 60.0°C | Conveyor velocity: 1.5 m/s',
+      badge: 'Input Signal',
+    },
+    {
+      id: 1,
+      num: '2',
+      title: 'Comparator',
+      sub: 'Error Detector (Σ)',
+      icon: '⚖️',
+      desc: 'Calculates instantaneous deviation between command and feedback: e(t) = SP − PV.',
+      example: 'Error e = 60°C − 42°C = +18°C (Heater boost required)',
+      badge: 'Summing Node',
+    },
+    {
+      id: 2,
+      num: '3',
+      title: 'Controller',
+      sub: 'PLC CPU (OB1)',
+      icon: '💻',
+      desc: 'Executes programmed logic (PID, ladder interlocks) to compute corrective action.',
+      example: 'Siemens S7-1200 CPU 1214C running cyclic logic algorithms',
+      badge: 'Decision Logic',
+    },
+    {
+      id: 3,
+      num: '4',
+      title: 'Actuator',
+      sub: 'Final Control Element',
+      icon: '⚡',
+      desc: 'Converts low-power electrical output signals into physical process energy.',
+      example: 'VFD motor drive, proportional control valve, SSR heater',
+      badge: 'Physical Output',
+    },
+    {
+      id: 4,
+      num: '5',
+      title: 'Sensor',
+      sub: 'Feedback Transducer',
+      icon: '📡',
+      desc: 'Continuously measures physical state (PV) and transmits back to comparator.',
+      example: 'PT100 RTD sensor, optical encoder, 4–20 mA transmitter',
+      badge: 'Feedback Loop',
+    },
+  ];
+
+  const current = elements[activeId];
+
+  return (
+    <div className="bg-slate-900 text-slate-100 rounded-xl p-4 border border-slate-700 shadow-md">
+      {/* Top Header */}
+      <div className="flex items-center justify-between border-b border-slate-800 pb-2.5 mb-3">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+          <span className="text-[11px] font-bold tracking-wider uppercase text-cyan-400">
+            Interactive Signal Flow: 5 Core Elements
+          </span>
+        </div>
+        <span className="text-[10px] text-slate-400">Click any block to inspect</span>
+      </div>
+
+      {/* Signal Flow Block Diagram */}
+      <div className="grid grid-cols-5 gap-1.5 mb-3 text-center">
+        {elements.map((el) => {
+          const isActive = activeId === el.id;
+          return (
+            <button
+              key={el.id}
+              onClick={() => setActiveId(el.id)}
+              className={`p-2 rounded-lg transition-all flex flex-col items-center justify-center border text-left cursor-pointer ${
+                isActive
+                  ? 'bg-cyan-950/80 border-cyan-400 text-white shadow-[0_0_12px_rgba(6,182,212,0.3)] ring-1 ring-cyan-400'
+                  : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-slate-800 hover:border-slate-500'
+              }`}
+            >
+              <span className="text-base mb-0.5">{el.icon}</span>
+              <span className="text-[10px] font-bold leading-tight block text-center">
+                {el.num}. {el.title.split(' ')[0]}
+              </span>
+              <span className="text-[8px] text-slate-400 truncate max-w-full block">
+                {el.sub.split(' ')[0]}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Negative Feedback Arrow Graphic */}
+      <div className="flex items-center justify-between px-3 py-1 bg-slate-950/60 rounded-md border border-slate-800/80 text-[10px] text-slate-400 mb-3 font-mono">
+        <span className="text-cyan-400 font-sans font-semibold">Feedforward:</span>
+        <span>SP ──▶ (Σ) ──▶ PLC CPU ──▶ Actuator ──▶ Plant</span>
+        <span className="text-emerald-400 font-sans font-semibold">Feedback: ◀── Sensor</span>
+      </div>
+
+      {/* Balanced 2-Column Inspector */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+        {/* Left Column: Role & Formula */}
+        <div className="p-2.5 rounded-lg bg-slate-800/90 border border-slate-700">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] uppercase font-bold text-cyan-400 tracking-wide">
+              {current.badge}
+            </span>
+            <span className="text-[11px] font-bold text-white">
+              {current.num}. {current.title}
+            </span>
+          </div>
+          <p className="text-slate-300 text-[11px] leading-relaxed m-0">
+            {current.desc}
+          </p>
+        </div>
+
+        {/* Right Column: Industrial Equipment Example */}
+        <div className="p-2.5 rounded-lg bg-slate-800/90 border border-slate-700">
+          <div className="text-[10px] uppercase font-bold text-amber-400 tracking-wide mb-1">
+            Industrial Field Hardware
+          </div>
+          <p className="text-slate-200 text-[11px] leading-relaxed font-mono m-0">
+            {current.example}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═════════════════════════════════════════════════════════════════════════
    SECTION 1.2: OPEN-LOOP VS CLOSED-LOOP SIMULATOR
 ═════════════════════════════════════════════════════════════════════════ */
 function Section1_2LoopAnimation() {
   const [activeScenario, setActiveScenario] = useState<'light' | 'oven'>('light');
 
   return (
-    <div className="my-5 p-4 sm:p-5 bg-gradient-to-b from-slate-50 to-white rounded-xl border border-blue-200 shadow-sm">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 mb-4 border-b border-slate-200">
+    <div className="bg-slate-900 text-slate-100 rounded-xl p-4 border border-slate-700 shadow-md">
+      {/* Top Bar with Scenario Selector */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-2.5 mb-3">
         <div className="flex items-center gap-2">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-white text-xs font-bold">
-            🎬
-          </span>
-          <h4 className="text-sm font-bold text-slate-900 m-0">
-            Interactive Simulation: Open-Loop vs Closed-Loop Control
+          <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+          <h4 className="text-[11px] font-bold uppercase tracking-wider text-blue-300 m-0">
+            Simulation: Open-Loop vs Closed-Loop
           </h4>
         </div>
 
-        <div className="flex items-center gap-1 bg-slate-200/80 p-0.5 rounded-lg text-xs self-start sm:self-auto">
+        <div className="flex items-center gap-1 bg-slate-950 p-0.5 rounded-lg text-[11px]">
           <button
             onClick={() => setActiveScenario('light')}
             className={`px-2.5 py-1 rounded-md font-semibold transition-all ${
-              activeScenario === 'light' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'
+              activeScenario === 'light'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            💡 Street Light (Illuminance)
+            💡 Street Light
           </button>
           <button
             onClick={() => setActiveScenario('oven')}
             className={`px-2.5 py-1 rounded-md font-semibold transition-all ${
-              activeScenario === 'oven' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'
+              activeScenario === 'oven'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            🔥 Thermal Oven (Temperature)
+            🔥 Thermal Oven
           </button>
         </div>
       </div>
@@ -79,251 +219,128 @@ function Section1_2LoopAnimation() {
 function StreetLightScenario() {
   const [isClosedLoop, setIsClosedLoop] = useState<boolean>(true);
   const [isStormy, setIsStormy] = useState<boolean>(false);
-  const [timeHour, setTimeHour] = useState<number>(15); // 15:00 (3 PM)
+  const [timeHour, setTimeHour] = useState<number>(14); // 14:00 (2 PM)
 
-  // In Open Loop: Light is ON only between 18:00 and 06:00
+  // Open-Loop: schedule only (ON 18:00 - 06:00)
   const openLoopLampOn = timeHour >= 18 || timeHour < 6;
 
-  // In Closed Loop: Sensor measures Lux.
+  // Closed-Loop: sensor measures Lux. Threshold is 60 Lux.
   const daylightLux = (timeHour >= 18 || timeHour < 6) ? 5 : isStormy ? 25 : 850;
-  // Lamp turns ON if measured light < 60 Lux
   const closedLoopLampOn = daylightLux < 60;
 
   const lampState = isClosedLoop ? closedLoopLampOn : openLoopLampOn;
 
   return (
     <div>
-      {/* Controls row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-        {/* Mode selector */}
-        <div className="p-3 bg-white rounded-lg border border-slate-200 shadow-sm">
-          <span className="text-[11px] font-bold text-slate-500 uppercase block mb-1">
-            Control Topology:
-          </span>
-          <div className="flex gap-1.5">
-            <button
-              onClick={() => setIsClosedLoop(false)}
-              className={`flex-1 py-1 px-2 rounded text-xs font-bold transition-all ${
-                !isClosedLoop
-                  ? 'bg-amber-500 text-white shadow-sm'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
-            >
-              Open Loop (Timer)
-            </button>
-            <button
-              onClick={() => setIsClosedLoop(true)}
-              className={`flex-1 py-1 px-2 rounded text-xs font-bold transition-all ${
-                isClosedLoop
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
-            >
-              Closed Loop (LDR)
-            </button>
-          </div>
-        </div>
-
-        {/* Time of day slider */}
-        <div className="p-3 bg-white rounded-lg border border-slate-200 shadow-sm">
-          <div className="flex justify-between items-center text-xs mb-1">
-            <span className="font-bold text-slate-600">Time of Day:</span>
-            <span className="font-mono font-bold text-blue-700">{timeHour}:00</span>
-          </div>
-          <input
-            type="range"
-            min={0}
-            max={23}
-            value={timeHour}
-            onChange={(e) => setTimeHour(Number(e.target.value))}
-            className="w-full accent-blue-600 cursor-pointer"
-          />
-          <div className="flex justify-between text-[10px] text-slate-400 mt-0.5">
-            <span>00:00 (Night)</span>
-            <span>12:00 (Noon)</span>
-            <span>23:00 (Evening)</span>
-          </div>
-        </div>
-
-        {/* Weather Disturbance */}
-        <div className="p-3 bg-white rounded-lg border border-slate-200 shadow-sm flex flex-col justify-between">
-          <span className="text-[11px] font-bold text-slate-500 uppercase block mb-1">
-            Environmental Disturbance:
-          </span>
-          <button
-            onClick={() => setIsStormy(!isStormy)}
-            className={`w-full py-1.5 px-3 rounded text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
-              isStormy
-                ? 'bg-rose-100 text-rose-800 border border-rose-300'
-                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-            }`}
-          >
-            <span>{isStormy ? '⛈️ SUDDEN STORM & DARK SKY' : '☀️ Clear Normal Daylight'}</span>
-          </button>
-        </div>
+      {/* Topology Mode Buttons */}
+      <div className="grid grid-cols-2 gap-2 mb-3">
+        <button
+          onClick={() => setIsClosedLoop(false)}
+          className={`py-1.5 px-3 rounded-lg text-xs font-bold transition-all border ${
+            !isClosedLoop
+              ? 'bg-amber-500/20 border-amber-400 text-amber-300 shadow-sm'
+              : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-750'
+          }`}
+        >
+          ⏱️ Open-Loop (Timer Schedule)
+        </button>
+        <button
+          onClick={() => setIsClosedLoop(true)}
+          className={`py-1.5 px-3 rounded-lg text-xs font-bold transition-all border ${
+            isClosedLoop
+              ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-sm'
+              : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-750'
+          }`}
+        >
+          📡 Closed-Loop (LDR Sensor Feedback)
+        </button>
       </div>
 
-      {/* Visual Simulation Display */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-slate-900 text-white p-4 rounded-xl mb-4 overflow-hidden relative">
-        {/* Sky background illumination */}
-        <div
-          className="absolute inset-0 transition-all duration-700 pointer-events-none"
-          style={{
-            background:
-              daylightLux > 500
-                ? 'linear-gradient(to bottom, #38bdf8 0%, #bae6fd 100%)'
-                : daylightLux > 100
-                ? 'linear-gradient(to bottom, #64748b 0%, #94a3b8 100%)'
-                : isStormy
-                ? 'linear-gradient(to bottom, #0f172a 0%, #1e293b 100%)'
-                : 'linear-gradient(to bottom, #020617 0%, #0f172a 100%)',
-          }}
-        />
-
-        {/* Left: Street Lamp Illustration */}
-        <div className="md:col-span-5 relative z-10 flex flex-col items-center justify-center py-2">
-          {/* Light Bulb & Glow */}
-          <div className="relative flex flex-col items-center">
-            {/* Lamp Head */}
-            <div className="w-16 h-8 bg-slate-700 rounded-t-full border border-slate-600 relative">
-              {/* Sensor eye on top (in closed loop) */}
-              {isClosedLoop && (
-                <div
-                  className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-2.5 bg-cyan-400 rounded-t-sm border border-cyan-200 animate-pulse"
-                  title="Photocell LDR Sensor"
-                />
-              )}
+      {/* Balanced 2-Column: Left Visualizer, Right Telemetry */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+        {/* Left: Plant & Environmental Controls */}
+        <div className="p-3 bg-slate-950/80 rounded-xl border border-slate-800 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between text-xs mb-1">
+              <span className="text-slate-400">Time of Day:</span>
+              <span className="font-mono font-bold text-cyan-400">{timeHour}:00</span>
             </div>
-
-            {/* Glowing Lamp */}
-            <div
-              className={`w-12 h-10 rounded-b-xl transition-all duration-300 flex items-center justify-center ${
-                lampState
-                  ? 'bg-amber-200 shadow-[0_0_50px_20px_rgba(251,191,36,0.8)] border border-amber-100'
-                  : 'bg-slate-600/70 border border-slate-500'
-              }`}
-            >
-              <span className="text-xl">{lampState ? '💡' : '⚪'}</span>
-            </div>
-
-            {/* Pole */}
-            <div className="w-2.5 h-24 bg-slate-400 border-x border-slate-500" />
-            <div className="w-12 h-3 bg-slate-600 rounded" />
+            <input
+              type="range"
+              min={0}
+              max={23}
+              value={timeHour}
+              onChange={(e) => setTimeHour(Number(e.target.value))}
+              className="w-full accent-cyan-400 cursor-pointer mb-2"
+            />
           </div>
 
-          <div className="mt-2 text-center">
-            <span
-              className={`px-3 py-1 rounded-full text-xs font-bold inline-block shadow-sm ${
-                lampState ? 'bg-amber-400 text-slate-900' : 'bg-slate-700 text-slate-300'
+          {/* Disturbance Trigger */}
+          <button
+            onClick={() => setIsStormy(!isStormy)}
+            className={`w-full py-1.5 px-2.5 rounded-lg text-xs font-bold transition-all border flex items-center justify-center gap-1.5 ${
+              isStormy
+                ? 'bg-rose-950/80 border-rose-500 text-rose-300'
+                : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750'
+            }`}
+          >
+            <span>{isStormy ? '⛈️ Sudden Storm (Sky Darkens)' : '☀️ Normal Clear Sky'}</span>
+          </button>
+
+          {/* Lamp Visual Graphic */}
+          <div className="mt-3 py-2 flex flex-col items-center justify-center bg-slate-900/90 rounded-lg border border-slate-800 relative overflow-hidden">
+            <div
+              className={`w-10 h-10 rounded-full flex items-center justify-center text-xl transition-all duration-300 ${
+                lampState
+                  ? 'bg-amber-300 text-amber-950 shadow-[0_0_35px_15px_rgba(251,191,36,0.6)]'
+                  : 'bg-slate-700 text-slate-500'
               }`}
             >
-              STREET LIGHT: {lampState ? 'ENERGIZED (ON)' : 'DE-ENERGIZED (OFF)'}
+              {lampState ? '💡' : '⚪'}
+            </div>
+            <span className="text-[10px] font-bold mt-2 uppercase tracking-wide">
+              Lamp Status: {lampState ? 'ENERGIZED (ON)' : 'OFF'}
             </span>
           </div>
         </div>
 
-        {/* Right: Real-time Analysis & State Explanation */}
-        <div className="md:col-span-7 relative z-10 bg-slate-800/90 backdrop-blur-sm p-4 rounded-xl border border-slate-700 text-xs text-slate-200 space-y-2.5">
-          <div className="flex items-center justify-between border-b border-slate-700 pb-2">
-            <span className="font-bold text-slate-400 uppercase tracking-wider text-[11px]">
-              Operating State Diagnostics:
+        {/* Right: Telemetry Metrics & Result */}
+        <div className="p-3 bg-slate-950/80 rounded-xl border border-slate-800 flex flex-col justify-between text-xs">
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
+              Process Telemetry:
             </span>
-            <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${isClosedLoop ? 'bg-blue-900 text-blue-200' : 'bg-amber-900 text-amber-200'}`}>
-              {isClosedLoop ? 'Closed-Loop System' : 'Open-Loop System'}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 text-slate-300">
-            <div>
-              • Current Time: <strong className="text-white font-mono">{timeHour}:00</strong>
-            </div>
-            <div>
-              • Ambient Illuminance: <strong className="text-cyan-400 font-mono">{daylightLux} Lux</strong>
+            <div className="grid grid-cols-2 gap-2 text-[11px] mb-3">
+              <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                <span className="text-slate-400 block text-[9px]">Ambient Lux (PV):</span>
+                <span className="font-mono font-bold text-white text-sm">{daylightLux} Lux</span>
+              </div>
+              <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                <span className="text-slate-400 block text-[9px]">Threshold (SP):</span>
+                <span className="font-mono font-bold text-cyan-400 text-sm">60 Lux</span>
+              </div>
             </div>
           </div>
 
-          {/* Core Lesson Outcome */}
-          <div className="p-2.5 rounded-lg bg-slate-900/90 border border-slate-700">
+          {/* Outcome Badge */}
+          <div className={`p-2.5 rounded-lg border text-[11px] leading-relaxed ${
+            isClosedLoop
+              ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-200'
+              : isStormy && timeHour < 18
+              ? 'bg-rose-950/60 border-rose-500/50 text-rose-200'
+              : 'bg-amber-950/60 border-amber-500/50 text-amber-200'
+          }`}>
             {!isClosedLoop ? (
-              <div>
-                <strong className="text-amber-400 block mb-1">
-                  ⚠️ Open-Loop (Timer Schedule Only):
-                </strong>
-                {timeHour >= 18 || timeHour < 6 ? (
-                  <span className="text-slate-300">Scheduled time window active (night) ➔ Timer contact closes, lamp turns ON.</span>
-                ) : isStormy ? (
-                  <span className="text-rose-400 font-bold">
-                    ❌ OPEN-LOOP FLAW: A severe storm causes pitch-black darkness at {timeHour}:00 (hazardous for traffic), but because the timer hasn&apos;t reached 18:00, the lamp REMAINS OFF! The open-loop controller has no feedback.
-                  </span>
-                ) : (
-                  <span className="text-slate-300">Daytime before 18:00 ➔ Lamp stays OFF per fixed timetable.</span>
-                )}
-              </div>
+              isStormy && timeHour < 18 ? (
+                <span>❌ <strong>Open-Loop Flaw:</strong> Severe storm blacks out road, but timer waits for 18:00 ➔ Lamp stays OFF!</span>
+              ) : (
+                <span>⚠️ <strong>Open-Loop:</strong> Fixed schedule control only. Cannot detect weather changes.</span>
+              )
             ) : (
-              <div>
-                <strong className="text-emerald-400 block mb-1">
-                  ✅ Closed-Loop (LDR Photocell Feedback):
-                </strong>
-                {isStormy && timeHour < 18 ? (
-                  <span className="text-emerald-300 font-bold">
-                    🎯 AUTOMATIC DISTURBANCE REJECTION: Even though it is {timeHour}:00, the LDR sensor detects illuminance plunging to {daylightLux} Lux (&lt; 60 Lux) ➔ PLC immediately ENERGIZES THE LAMP, ensuring road safety!
-                  </span>
-                ) : closedLoopLampOn ? (
-                  <span className="text-slate-300">Ambient light is {daylightLux} Lux (&lt; 60 Lux) ➔ Sensor feedback signals low light, PLC keeps lamp energized.</span>
-                ) : (
-                  <span className="text-slate-300">Ambient light is {daylightLux} Lux (&gt; 60 Lux) ➔ Sensor feedback confirms daylight, PLC turns off lamp to save power.</span>
-                )}
-              </div>
+              <span>✅ <strong>Closed-Loop Success:</strong> LDR sensor detects lux drop ➔ PLC instantly turns lamp ON, rejecting disturbance!</span>
             )}
           </div>
         </div>
-      </div>
-
-      {/* Block Diagram Flow for Section 1.2 */}
-      <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs">
-        <div className="font-bold text-slate-700 mb-2">Signal Flow Diagram:</div>
-        {!isClosedLoop ? (
-          <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono">
-            <span className="px-2.5 py-1 bg-white border border-slate-300 rounded font-bold text-slate-800">
-              Schedule Setpoint (18:00)
-            </span>
-            <span className="text-slate-400">──▶</span>
-            <span className="px-2.5 py-1 bg-amber-50 border border-amber-300 rounded font-bold text-amber-800">
-              Timer Relay
-            </span>
-            <span className="text-slate-400">──▶</span>
-            <span className="px-2.5 py-1 bg-blue-50 border border-blue-300 rounded font-bold text-blue-800">
-              Street Light (Actuator / Load)
-            </span>
-            <span className="ml-auto text-rose-600 font-sans font-medium">
-              (One-way Feedforward — No Sensor Feedback)
-            </span>
-          </div>
-        ) : (
-          <div className="space-y-1.5 font-mono text-[11px]">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="px-2.5 py-1 bg-white border border-slate-300 rounded font-bold text-slate-800">
-                Lux Threshold (60 Lux)
-              </span>
-              <span className="text-slate-400">──▶</span>
-              <span className="px-2 py-0.5 bg-blue-50 border border-blue-300 rounded text-blue-800 font-bold">
-                Comparator (Σ)
-              </span>
-              <span className="text-slate-400">──▶</span>
-              <span className="px-2.5 py-1 bg-blue-50 border border-blue-300 rounded font-bold text-blue-800">
-                PLC Controller
-              </span>
-              <span className="text-slate-400">──▶</span>
-              <span className="px-2.5 py-1 bg-emerald-50 border border-emerald-300 rounded font-bold text-emerald-800">
-                Street Light (Load)
-              </span>
-            </div>
-            <div className="flex items-center gap-2 text-cyan-800 bg-cyan-50/70 p-1.5 rounded border border-cyan-200">
-              <span className="font-sans font-bold">Feedback Loop:</span>
-              <span>Actual Illuminance ──▶ Photocell LDR ──▶ Return signal to Comparator to calculate error e = SP − PV!</span>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
@@ -338,129 +355,103 @@ function HeatingOvenScenario() {
 
   useEffect(() => {
     if (isClosedLoop) {
-      // Closed loop maintains target temp even if door is open
-      setTemperature(doorOpen ? 58.5 : 60);
+      setTemperature(doorOpen ? 58.8 : 60.0);
     } else {
-      // Open loop drops drastically if door open
-      setTemperature(doorOpen ? 37.2 : 60);
+      setTemperature(doorOpen ? 37.5 : 60.0);
     }
   }, [isClosedLoop, doorOpen]);
 
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-white rounded-lg border border-slate-200">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-slate-700">Oven Mode:</span>
-          <button
-            onClick={() => setIsClosedLoop(false)}
-            className={`px-3 py-1 rounded text-xs font-bold ${!isClosedLoop ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-700'}`}
-          >
-            Open Loop (Fixed 50% Power)
-          </button>
-          <button
-            onClick={() => setIsClosedLoop(true)}
-            className={`px-3 py-1 rounded text-xs font-bold ${isClosedLoop ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700'}`}
-          >
-            Closed Loop (PT100 RTD + PLC PID)
-          </button>
-        </div>
-
+    <div>
+      {/* Topology Mode Buttons */}
+      <div className="grid grid-cols-2 gap-2 mb-3">
         <button
-          onClick={() => setDoorOpen(!doorOpen)}
-          className={`px-3 py-1 rounded text-xs font-bold flex items-center gap-1 ${
-            doorOpen ? 'bg-rose-100 text-rose-800 border border-rose-300' : 'bg-slate-100 text-slate-700'
+          onClick={() => setIsClosedLoop(false)}
+          className={`py-1.5 px-3 rounded-lg text-xs font-bold transition-all border ${
+            !isClosedLoop
+              ? 'bg-amber-500/20 border-amber-400 text-amber-300 shadow-sm'
+              : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-750'
           }`}
         >
-          {doorOpen ? '🚪 Oven Door OPEN (Cold Draft Inrush)' : '🚪 Oven Door CLOSED'}
+          ⚡ Open-Loop (Fixed 50% Power)
+        </button>
+        <button
+          onClick={() => setIsClosedLoop(true)}
+          className={`py-1.5 px-3 rounded-lg text-xs font-bold transition-all border ${
+            isClosedLoop
+              ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-sm'
+              : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-750'
+          }`}
+        >
+          📡 Closed-Loop (PT100 + PID)
         </button>
       </div>
 
-      <div className="p-4 bg-slate-900 text-white rounded-xl grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
-        <div className="text-center sm:text-left">
-          <div className="text-xs text-slate-400">Measured Chamber Temperature:</div>
-          <div className="text-4xl font-extrabold font-mono text-amber-400 mt-1">
-            {temperature}°C
-          </div>
-          <div className="text-xs text-slate-400 mt-1">
-            Desired Setpoint: <strong>{targetTemp}°C</strong>
-          </div>
-        </div>
-
-        <div className="text-xs text-slate-300 bg-slate-800 p-3 rounded-lg border border-slate-700">
-          {!isClosedLoop ? (
-            <div>
-              <strong className="text-amber-400 block mb-1">Open-Loop System:</strong>
-              {doorOpen ? (
-                <span className="text-rose-400">
-                  ⚠️ When the door opens to cold ambient air, temperature plunges to {temperature}°C! Controller applies static 50% power and cannot compensate, spoiling batch quality.
-                </span>
-              ) : (
-                <span>Stable undisturbed environment: temperature reaches ~60°C purely from initial bench calibration.</span>
-              )}
-            </div>
-          ) : (
-            <div>
-              <strong className="text-emerald-400 block mb-1">Closed-Loop System:</strong>
-              {doorOpen ? (
-                <span className="text-emerald-300">
-                  🎯 PT100 sensor immediately detects heat loss ➔ PLC ramps heater output to 95%, stabilizing the chamber right back at {temperature}°C!
-                </span>
-              ) : (
-                <span>Continuous sensor feedback maintains setpoint at precisely 60°C with optimal energy modulation.</span>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ═════════════════════════════════════════════════════════════════════════
-   SECTION 1.1: 5 CORE FUNCTIONAL ELEMENTS OF CONTROL SYSTEMS
-═════════════════════════════════════════════════════════════════════════ */
-function Section1_1FiveElementsAnimation() {
-  const [activeBlock, setActiveBlock] = useState<number>(2); // 2: Controller
-
-  const elements = [
-    { id: 0, title: '1. Setpoint (SP)', sub: 'Reference Input', desc: 'The target command or desired value set by an operator or recipe program (e.g., target temperature 60°C, conveyor speed 1.5 m/s).' },
-    { id: 1, title: '2. Comparator', sub: 'Error Detector', desc: 'Computes the instantaneous control error e(t) = SP − PV between the setpoint and the actual process variable measured from the plant.' },
-    { id: 2, title: '3. Controller', sub: 'PLC / CPU Logic', desc: 'The decision-making computing brain that processes control algorithms (logic, timers, PID) to produce corrective manipulated variables.' },
-    { id: 3, title: '4. Actuator', sub: 'Final Control Element', desc: 'Transduces low-power electrical output signals into physical mechanical, thermal, or fluid action: VFDs, motors, control valves, contactors.' },
-    { id: 4, title: '5. Feedback Sensor', sub: 'Measurement Element', desc: 'Measures the output process variable (PV) directly from the physical plant and converts it into standard analog/digital signals back to the controller.' },
-  ];
-
-  return (
-    <div className="my-5 p-4 bg-slate-50 rounded-xl border border-blue-200">
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-base">🎬</span>
-        <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider m-0">
-          Interactive Architecture: 5 Core Elements of Every Control System
-        </h4>
-      </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-3">
-        {elements.map((el) => (
+      {/* Balanced 2-Column: Left Visualizer, Right Telemetry */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+        {/* Left: Oven Door Disturbance */}
+        <div className="p-3 bg-slate-950/80 rounded-xl border border-slate-800 flex flex-col justify-between">
           <button
-            key={el.id}
-            onClick={() => setActiveBlock(el.id)}
-            className={`p-2 rounded-lg text-left transition-all border ${
-              activeBlock === el.id
-                ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
-                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+            onClick={() => setDoorOpen(!doorOpen)}
+            className={`w-full py-2 px-3 rounded-lg text-xs font-bold transition-all border flex items-center justify-center gap-1.5 ${
+              doorOpen
+                ? 'bg-rose-950/80 border-rose-500 text-rose-300'
+                : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750'
             }`}
           >
-            <div className="text-[11px] font-bold">{el.title}</div>
-            <div className={`text-[10px] ${activeBlock === el.id ? 'text-blue-100' : 'text-slate-400'}`}>
-              {el.sub}
-            </div>
+            <span>{doorOpen ? '🚪 Oven Door OPEN (Cold Air Draft)' : '🚪 Oven Door CLOSED'}</span>
           </button>
-        ))}
-      </div>
 
-      <div className="p-3 bg-white rounded-lg border border-slate-200 text-xs text-slate-700">
-        <strong className="text-blue-700 block mb-1">{elements[activeBlock].title} ({elements[activeBlock].sub}):</strong>
-        {elements[activeBlock].desc}
+          <div className="mt-3 py-3 flex flex-col items-center justify-center bg-slate-900/90 rounded-lg border border-slate-800">
+            <span className="text-3xl font-extrabold font-mono text-amber-400">
+              {temperature.toFixed(1)}°C
+            </span>
+            <span className="text-[10px] text-slate-400 mt-1">
+              Target Setpoint: {targetTemp}°C
+            </span>
+          </div>
+        </div>
+
+        {/* Right: Controller Response */}
+        <div className="p-3 bg-slate-950/80 rounded-xl border border-slate-800 flex flex-col justify-between text-xs">
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
+              PID Controller Reaction:
+            </span>
+            <div className="grid grid-cols-2 gap-2 text-[11px] mb-3">
+              <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                <span className="text-slate-400 block text-[9px]">Heater Output:</span>
+                <span className="font-mono font-bold text-amber-400 text-sm">
+                  {!isClosedLoop ? '50% (Static)' : doorOpen ? '95% (Boost)' : '52% (Steady)'}
+                </span>
+              </div>
+              <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                <span className="text-slate-400 block text-[9px]">Error e(t):</span>
+                <span className="font-mono font-bold text-cyan-400 text-sm">
+                  {(targetTemp - temperature).toFixed(1)}°C
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className={`p-2.5 rounded-lg border text-[11px] leading-relaxed ${
+            isClosedLoop
+              ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-200'
+              : doorOpen
+              ? 'bg-rose-950/60 border-rose-500/50 text-rose-200'
+              : 'bg-amber-950/60 border-amber-500/50 text-amber-200'
+          }`}>
+            {!isClosedLoop ? (
+              doorOpen ? (
+                <span>❌ <strong>Cold Draft Failure:</strong> Temp plunges to {temperature}°C. Static 50% power cannot adapt.</span>
+              ) : (
+                <span>⚠️ <strong>Open-Loop:</strong> Fixed heater power. Sensitive to ambient room temperature.</span>
+              )
+            ) : (
+              <span>🎯 <strong>PID Feedback:</strong> PT100 senses heat loss ➔ Output jumps to 95% to hold setpoint at 60°C!</span>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -470,19 +461,64 @@ function Section1_1FiveElementsAnimation() {
    SECTION 1.3: RELAY VS PLC MINI COMPARISON
 ═════════════════════════════════════════════════════════════════════════ */
 function Section1_3RelayVsPlcMiniAnimation() {
+  const [testingChange, setTestingChange] = useState<boolean>(false);
+
   return (
-    <div className="my-4 p-3.5 bg-blue-50/50 rounded-xl border border-blue-200 text-xs text-slate-700">
-      <div className="font-bold text-blue-900 mb-1 flex items-center gap-1.5">
-        <span>⚡</span> Core Technical Distinction: Hardwired vs Programmable Logic Control:
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
-        <div className="bg-white p-2.5 rounded-lg border border-slate-200">
-          <strong className="text-amber-800 block mb-0.5">🗄️ Hardwired Relay Panel:</strong>
-          Control logic is physically hardwired into copper cables and relay coils. Any change in operational sequence requires power disconnection, mechanical rewiring, and adding physical hardware.
+    <div className="bg-slate-900 text-slate-100 rounded-xl p-4 border border-slate-700 shadow-md">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-slate-800 pb-2.5 mb-3">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+          <h4 className="text-[11px] font-bold uppercase tracking-wider text-amber-300 m-0">
+            Hardwired Relay vs S7-1200 PLC Architecture
+          </h4>
         </div>
-        <div className="bg-white p-2.5 rounded-lg border border-blue-200">
-          <strong className="text-blue-800 block mb-0.5">💻 Programmable Logic Controller (PLC):</strong>
-          Control logic resides in CPU software memory. Physical field wiring to I/O screw terminals remains 100% static; program updates and recipe changes download in seconds via Ethernet.
+        <button
+          onClick={() => setTestingChange(!testingChange)}
+          className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all border cursor-pointer ${
+            testingChange
+              ? 'bg-blue-600 border-blue-400 text-white'
+              : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750'
+          }`}
+        >
+          {testingChange ? '🔄 Reset Spec' : '⚡ Simulate Logic Change'}
+        </button>
+      </div>
+
+      {/* Balanced 2-Column Comparison */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+        {/* Left: Hardwired Relay */}
+        <div className="p-3 rounded-lg bg-slate-950/80 border border-slate-800">
+          <div className="flex items-center gap-1.5 font-bold text-amber-400 mb-2">
+            <span>🗄️</span> Hardwired Relay Panel
+          </div>
+          <ul className="space-y-1.5 text-[11px] text-slate-300 list-none p-0 m-0">
+            <li>• <strong>Logic Medium:</strong> Physical copper wiring & relay coils</li>
+            <li>• <strong>Maintenance:</strong> Mechanical wear & contact pitting</li>
+            <li>• <strong>Panel Size:</strong> Large steel enclosure (1200×800 mm)</li>
+          </ul>
+          {testingChange && (
+            <div className="mt-2.5 p-2 rounded bg-rose-950/70 border border-rose-500/60 text-rose-300 text-[10px]">
+              ⚠️ <strong>Process Change Required:</strong> Power down line, unmount relays, drill panel, manual rewiring (~6 hours downtime).
+            </div>
+          )}
+        </div>
+
+        {/* Right: S7-1200 PLC */}
+        <div className="p-3 rounded-lg bg-slate-950/80 border border-slate-800">
+          <div className="flex items-center gap-1.5 font-bold text-cyan-400 mb-2">
+            <span>💻</span> Siemens S7-1200 PLC
+          </div>
+          <ul className="space-y-1.5 text-[11px] text-slate-300 list-none p-0 m-0">
+            <li>• <strong>Logic Medium:</strong> Software code stored in CPU RAM</li>
+            <li>• <strong>Maintenance:</strong> Solid-state reliability (no moving parts)</li>
+            <li>• <strong>Panel Size:</strong> Compact DIN-rail mount (110×100 mm)</li>
+          </ul>
+          {testingChange && (
+            <div className="mt-2.5 p-2 rounded bg-emerald-950/70 border border-emerald-500/60 text-emerald-300 text-[10px]">
+              ✅ <strong>Process Change Required:</strong> Update ladder network in TIA Portal, download to CPU in 5 seconds (zero rewiring!).
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -493,23 +529,138 @@ function Section1_3RelayVsPlcMiniAnimation() {
    SECTION 1.8: MINI SCAN CYCLE FLOW
 ═════════════════════════════════════════════════════════════════════════ */
 function Section1_8ScanCycleMiniAnimation() {
+  const [activePhase, setActivePhase] = useState<number>(0);
+  const [autoPlay, setAutoPlay] = useState<boolean>(true);
+
+  const phases = [
+    {
+      num: 1,
+      title: 'Read Inputs',
+      mem: 'DI ➔ PII',
+      desc: 'CPU polls physical input terminals and writes snapshot to Process Image Input table.',
+      icon: '📥',
+    },
+    {
+      num: 2,
+      title: 'Execute Logic',
+      mem: 'OB1 Evaluation',
+      desc: 'CPU executes user networks sequentially top-to-bottom using PII values.',
+      icon: '⚙️',
+    },
+    {
+      num: 3,
+      title: 'Housekeeping',
+      mem: 'Comms & Diag',
+      desc: 'CPU processes PROFINET network messages, HMI polling, and self-diagnostics.',
+      icon: '🛡️',
+    },
+    {
+      num: 4,
+      title: 'Write Outputs',
+      mem: 'PIQ ➔ DO',
+      desc: 'CPU simultaneously copies the Process Image Output table to physical output terminals.',
+      icon: '📤',
+    },
+  ];
+
+  useEffect(() => {
+    if (!autoPlay) return;
+    const interval = setInterval(() => {
+      setActivePhase((prev) => (prev + 1) % 4);
+    }, 1800);
+    return () => clearInterval(interval);
+  }, [autoPlay]);
+
+  const cur = phases[activePhase];
+
   return (
-    <div className="my-4 p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700">
-      <div className="font-bold text-slate-900 mb-2 flex items-center gap-1.5">
-        <span>🔄</span> 4 Sequential Phases of the PLC Scan Cycle:
+    <div className="bg-slate-900 text-slate-100 rounded-xl p-4 border border-slate-700 shadow-md">
+      {/* Header with Step / Play Toggle */}
+      <div className="flex items-center justify-between border-b border-slate-800 pb-2.5 mb-3">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <h4 className="text-[11px] font-bold uppercase tracking-wider text-emerald-300 m-0">
+            PLC Deterministic Scan Cycle
+          </h4>
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => setAutoPlay(!autoPlay)}
+            className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all border cursor-pointer ${
+              autoPlay
+                ? 'bg-emerald-600/30 border-emerald-500 text-emerald-300'
+                : 'bg-slate-800 border-slate-700 text-slate-300'
+            }`}
+          >
+            {autoPlay ? '⏸ Pause' : '▶ Auto Cycle'}
+          </button>
+          <button
+            onClick={() => {
+              setAutoPlay(false);
+              setActivePhase((prev) => (prev + 1) % 4);
+            }}
+            className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 cursor-pointer"
+          >
+            Next ❯
+          </button>
+        </div>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-[11px] font-mono">
-        <div className="p-2 bg-blue-50 border border-blue-200 rounded font-bold text-blue-800">
-          1. Read Inputs<br/><span className="text-[10px] font-normal text-slate-500">Copy DI into PII</span>
+
+      {/* 4 Cyclic Phase Pipeline */}
+      <div className="grid grid-cols-4 gap-1.5 mb-3 text-center">
+        {phases.map((p, idx) => {
+          const isCurrent = activePhase === idx;
+          return (
+            <button
+              key={p.num}
+              onClick={() => {
+                setAutoPlay(false);
+                setActivePhase(idx);
+              }}
+              className={`p-2 rounded-lg transition-all border flex flex-col items-center justify-center cursor-pointer ${
+                isCurrent
+                  ? 'bg-cyan-950/90 border-cyan-400 text-white shadow-[0_0_12px_rgba(6,182,212,0.35)] ring-1 ring-cyan-400'
+                  : 'bg-slate-800/80 border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+              }`}
+            >
+              <span className="text-sm mb-0.5">{p.icon}</span>
+              <span className="text-[10px] font-bold leading-tight block">
+                {p.num}. {p.title}
+              </span>
+              <span className="text-[8px] text-cyan-300/80 font-mono mt-0.5 block">
+                {p.mem}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Balanced 2-Column Inspector */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+        {/* Left: Active Phase Explanation */}
+        <div className="p-2.5 rounded-lg bg-slate-950/80 border border-slate-800">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] uppercase font-bold text-cyan-400 tracking-wide">
+              Active Phase {cur.num} of 4
+            </span>
+            <span className="text-[11px] font-bold text-white font-mono">
+              {cur.mem}
+            </span>
+          </div>
+          <p className="text-slate-300 text-[11px] leading-relaxed m-0">
+            {cur.desc}
+          </p>
         </div>
-        <div className="p-2 bg-emerald-50 border border-emerald-200 rounded font-bold text-emerald-800">
-          2. Execute OB1<br/><span className="text-[10px] font-normal text-slate-500">Scan rungs top-to-bottom</span>
-        </div>
-        <div className="p-2 bg-amber-50 border border-amber-200 rounded font-bold text-amber-800">
-          3. Housekeeping<br/><span className="text-[10px] font-normal text-slate-500">Self-diagnostics & Comms</span>
-        </div>
-        <div className="p-2 bg-rose-50 border border-rose-200 rounded font-bold text-rose-800">
-          4. Write Outputs<br/><span className="text-[10px] font-normal text-slate-500">Copy PIQ to physical DO</span>
+
+        {/* Right: Real-time Scan Insight */}
+        <div className="p-2.5 rounded-lg bg-slate-950/80 border border-slate-800 flex flex-col justify-between">
+          <div className="text-[10px] uppercase font-bold text-amber-400 tracking-wide mb-1">
+            Deterministic Timing Guarantee
+          </div>
+          <p className="text-slate-300 text-[11px] leading-relaxed m-0">
+            Total scan time $T_{'{scan}'}$ is typically <strong>1–10 ms</strong>. Logic evaluates the frozen PII image rather than physical pins directly, guaranteeing rung data consistency.
+          </p>
         </div>
       </div>
     </div>

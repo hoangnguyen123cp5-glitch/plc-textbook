@@ -272,3 +272,30 @@ body {
 
 /* Chặn cuộn ngang toàn cục ở mọi trang */
 html, body { max-width: 100%; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   LESSON PAGE — Section card responsive grid
+   2-column balanced (left: concise theory, right: interactive animation) on ≥ 768px
+   1-column stacked on mobile
+════════════════════════════════════════════════════════════════════════ */
+.section-body-2col {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  align-items: stretch;
+}
+
+@media (max-width: 767px) {
+  .section-body-2col {
+    display: flex;
+    flex-direction: column;
+  }
+  /* On mobile: remove right border and add subtle bottom border */
+  .section-body-2col .section-col-left {
+    border-right: none !important;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  /* Key-point pill grid stacks to 1 column */
+  .kp-grid-2col {
+    grid-template-columns: 1fr !important;
+  }
+}

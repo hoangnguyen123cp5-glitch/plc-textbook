@@ -21,7 +21,7 @@ const DiagnosticPanel      = dynamic(() => import('./LessonAnimationsNew').then(
 const CapstoneArchitecture = dynamic(() => import('./LessonAnimationsNew').then(m => m.CapstoneArchitecture), { ssr: false });
 
 const map: Record<string, React.ReactElement> = {
-  '01-programmable-control':   <Lesson01InteractiveHub />,
+  // '01-programmable-control' animations are embedded directly into sections 1.1, 1.2, 1.3, 1.8
   '02-s7-1200-tia-portal':     <S7RackExplorer />,
   // '03-tia-portal' → đã gộp vào '02-s7-1200-tia-portal' (<TIAProjectSteps /> chưa dùng)
   '03-binary-operations':      <TIALadderAnimation />,
