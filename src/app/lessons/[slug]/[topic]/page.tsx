@@ -135,7 +135,11 @@ export default async function TopicPage({
         const contentData = lessonContent[lesson.slug];
         const numMatch = topic.title.match(/^(\d+\.\d+)/);
         const section = contentData?.sections.find((s) => {
-          return numMatch ? s.title.includes(numMatch[1]) : false;
+          if (s.title === topic.title) return true;
+          if (numMatch && s.title.includes(numMatch[1])) return true;
+          const cleanTopicTitle = topic.title.replace(/^\d+\.\d+\s*/, '').toLowerCase();
+          const cleanSecTitle = s.title.replace(/^\d+\.\d+\s*/, '').toLowerCase();
+          return cleanSecTitle.includes(cleanTopicTitle) || cleanTopicTitle.includes(cleanSecTitle);
         }) ?? contentData?.sections[topicIndex];
 
         return (

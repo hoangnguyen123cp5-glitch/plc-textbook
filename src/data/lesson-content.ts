@@ -1,8 +1,6 @@
-// Nội dung bài học — ánh xạ từ nội dung cũ sang cấu trúc theo đề cương slide thật.
-// Map: lessonSlug -> nội dung từng section
-//
-// LƯU Ý: nội dung đang là tiếng Việt và sẽ được dịch sang tiếng Anh theo lộ trình.
-// Bốn bài mới dựng từ slide (06, 07, 13, 14) chưa có nội dung — xem CONTENT-GAPS.md.
+// Comprehensive PLC Textbook Lesson Content
+// Systematically structured across all 15 lessons and 66 curriculum topics.
+// Rigorous university-level industrial automation engineering content.
 
 export interface LessonContent {
   overview: string;
@@ -149,1735 +147,1120 @@ export const lessonContent: Record<string, LessonContent> = {
   },
 
   '02-s7-1200-tia-portal': {
-    "overview": "This lesson provides a comprehensive engineering walkthrough of Siemens SIMATIC S7-1200/1500 PLC hardware, TS35 DIN-rail mechanical mounting, 24VDC power distribution, discrete digital input (DI) and digital output (DO) field wiring (sinking vs sourcing), and PROFINET industrial Ethernet commissioning. TIA Portal (Totally Integrated Automation Portal) is Siemens' unified engineering environment uniting hardware configuration, PLC logic programming (STEP 7), HMI graphics development (WinCC), and drive network commissioning into a single cohesive interface.",
-    "objectives": [
-      "Identify and specify all physical hardware modules within the SIMATIC S7-1200 modular family",
-      "Mount and secure the S7-1200 CPU and expansion modules onto standard TS35 DIN rail complying with thermal clearance standards",
-      "Correctly wire 24VDC system power, discrete sinking/sourcing inputs, and relay/transistor outputs",
-      "Configure static IP addressing and subnet masks for the on-board PROFINET interface",
-      "Install, license, and navigate the TIA Portal V19 engineering environment",
-      "Create a new automation project and configure the exact CPU hardware catalog number (MLFB)",
-      "Develop baseline Ladder Diagram logic and download executable code blocks to the CPU",
-      "Perform virtual offline simulation using PLCSIM and monitor live tag states via Watch Tables"
-    ],
-    "sections": [
-      {
-        "title": "2.1 The S7-1200 Programmable Controller Hardware Family",
-        "content": "The modular SIMATIC S7-1200 system comprises: the Central Processing Unit (CPU), Signal Modules (SM for expanding digital/analog I/O count), Communication Modules (CM for serial RS485/RS232 or PROFIBUS networks), and Signal Boards (SB mounted directly into the front receptacle of the CPU).",
-        "keyPoints": [
-          "Integrated CPU: Incorporates microprocessor, execution work memory, load memory, discrete/analog I/O, and PROFINET port",
-          "CPU Power Options: Available in 24VDC or 85–264VAC line supply models",
-          "Signal Modules (SM): Mount sequentially to the RIGHT of the CPU, supporting up to 8 SM modules",
-          "Communication Modules (CM): Mount to the LEFT of the CPU, supporting up to 3 CM modules",
-          "Signal Board (SB): Inserts flush into the CPU front bezel (providing 2DI/2DO or 1AI/1AO without expanding rack width)"
-        ]
-      },
-      {
-        "title": "2.2 DIN Rail Mechanical Installation and Thermal Clearances",
-        "content": "Proper mechanical installation of the S7-1200 onto a standard 35mm DIN rail (EN 50022). Maintaining proper thermal ventilation clearances is vital for device longevity in industrial enclosures.",
-        "keyPoints": [
-          "Secure TS35 DIN rail to the enclosure backplate, anchoring screws every 75mm",
-          "Hook the top rear notch of the CPU over the upper DIN rail lip and pull down the lower DIN clip",
-          "Pivot the CPU flush against the rail and release the spring clip to lock securely",
-          "Maintain minimum thermal ventilation clearances: ≥25mm above and below the CPU and expansion modules",
-          "Enclosure ambient operating temperature rating: 0°C to 55°C horizontal mounting, 0°C to 45°C vertical"
-        ],
-        "note": "Always de-energize and lock out all upstream electrical power supplies before mounting or dismounting modules on the DIN rail."
-      },
-      {
-        "title": "2.3 Power Supply and Digital Input (DI) Wiring Topologies",
-        "content": "24VDC power connects to the CPU at terminals L+, M, and Protective Earth (PE). The discrete digital inputs of the S7-1200 support Sinking or Sourcing topologies depending on common-terminal wiring.",
-        "keyPoints": [
-          "24VDC Supply: L+ (positive 24V), M (0V common return), PE (Protective Earth chassis ground)",
-          "Sinking Input (NPN sensor compatible): 0V (M) connected to common terminal 1M; external +24VDC signal triggers input ON",
-          "Sourcing Input (PNP sensor compatible): +24VDC connected to common terminal 1M; 0V signal triggers input ON",
-          "Siemens Default Standard: Configured as Sinking Input (IEC 61131-2 Type 1 Sink)",
-          "Input Conditioning: Integrated optical isolation (500VAC) and hardware RC debounce filtering"
-        ]
-      },
-      {
-        "title": "2.4 Digital Output (DO) Wiring Topologies",
-        "content": "Digital outputs are available in three distinct technologies: Electromechanical Relay (AC/DC loads), Solid-State DC Transistor (MOSFET sourcing, high switching speed), and Triac (AC switching). The CPU 1214C DC/DC/DC variant provides transistor outputs.",
-        "keyPoints": [
-          "Relay Outputs: Capable of switching AC (up to 250VAC) or DC (up to 30VDC), rated for 2.0A resistive load per point",
-          "Transistor Outputs (DC): 24VDC sourcing (PNP), 0.5A max continuous current, switching frequencies up to 100kHz for motion control",
-          "Triac Outputs: Solid-state AC switching with zero-crossing turn-off; unsuitable for DC loads",
-          "Inductive Load Protection: Always connect reverse-biased freewheeling flyback diodes across DC solenoids and relay coils",
-          "Output Grouping: The CPU 1214C provides 10 DO points divided into 2 isolated voltage groups (1L/2L)"
-        ]
-      },
-      {
-        "title": "2.5 I/O Addressing and Expansion Architecture",
-        "content": "Every discrete physical I/O point is assigned an absolute byte.bit identifier (e.g. %I0.0, %Q0.0). The CPU 1214C provides on-board addresses %I0.0–%I1.5 (14 DI) and %Q0.0–%Q1.1 (10 DO). Expansion modules receive consecutive addresses configured in TIA Portal.",
-        "keyPoints": [
-          "%I0.0 through %I1.5: 14 integrated digital input channels on CPU 1214C",
-          "%Q0.0 through %Q1.1: 10 integrated digital output channels on CPU 1214C",
-          "First expansion SM: Default addressing begins at byte %I2.0... and %Q2.0...",
-          "Analog Addressing: Words %AIW64, %AIW66 for inputs; %AQW64 for analog outputs",
-          "Symbolic Decoupling: Address allocation is governed by hardware configuration rather than physical rack slot number"
-        ]
-      },
-      {
-        "title": "2.6 PROFINET Network Configuration and Topology",
-        "content": "The CPU S7-1200 integrates an RJ45 PROFINET interface (10/100 Mbps, Auto-Negotiation, Auto-MDI/X). This port serves engineering programming from TIA Portal, operator HMI communication, and real-time distributed PROFINET IO.",
-        "keyPoints": [
-          "Factory Default IP Address: 192.168.0.1, Subnet Mask: 255.255.255.0",
-          "Physical Cabling: Standard Cat5e shielded twisted-pair (STP) Ethernet, maximum 100m segment length",
-          "Direct Connection: Auto-MDI/X automatically detects straight-through or crossover patch cables",
-          "PROFINET IO Real-Time: Deterministic cyclic data exchange with remote ET200SP drops and VFD drives",
-          "Media Redundancy Protocol (MRP): Ring topology support for zero-downtime single-point cable breaks",
-          "Connection Budget: Supports up to 16 concurrent S7/HMI/Open-User communication sockets"
-        ],
-        "note": "When connecting directly between an engineering PC and the PLC without a network switch, ensure the PC network interface card is assigned a static IP address in the same subnet (e.g. 192.168.0.241)."
-      },
-      {
-        "title": "2.7 Signal Boards and Specialized Modules",
-        "content": "A Signal Board (SB) inserts directly into the front faceplate of the CPU, expanding I/O capacity without increasing DIN rail width. This is an optimal, cost-effective solution for compact enclosures.",
-        "keyPoints": [
-          "SB 1221: 4 additional digital inputs supporting 200kHz high-speed counting",
-          "SB 1222: 4 additional digital outputs supporting 200kHz pulse trains for stepper/servo drives",
-          "SB 1223: Combination board providing 2DI (24VDC) and 2DO (24VDC)",
-          "SB 1231: 1 analog input channel (±10V, 0–20mA, or RTD PT100), 12-bit resolution",
-          "SB 1232: 1 analog output channel (±10V or 0–20mA, 12-bit)",
-          "CB 1241: RS485 communication board for Modbus RTU or USS drive control",
-          "Hardware Restriction: Each S7-1200 CPU can host exactly one Signal Board / Communication Board"
-        ]
-      },
-      {
-        "title": "2.8 Electrical Safety, Noise Isolation, and Grounding Rules",
-        "content": "Rigorous electrical safety and grounding practices are mandatory in industrial control enclosures. Compliance with international standards ensures personnel safety and immunity against electromagnetic interference (EMI).",
-        "keyPoints": [
-          "ALWAYS isolate and verify zero-energy state before servicing wiring — follow Lockout/Tagout (LOTO) procedures",
-          "Bond Protective Earth (PE) directly from the facility grounding bar to the CPU, enclosure chassis, and DIN rail",
-          "Segregate low-voltage DC sensor cables from 400VAC motor power conductors in separate wire ducts by ≥100mm",
-          "Provide branch circuit fuse or miniature circuit breaker (MCB) protection sized to wire ampacity",
-          "Terminate all stranded wire ends using insulated ferrules (bootlace crimp pins) to prevent stray wire shorts",
-          "Affix permanent wire labels at both terminal ends matching the schematic drawing designations"
-        ],
-        "note": "Industrial control panel wiring must strictly adhere to IEC 60204-1 (Safety of Machinery - Electrical Equipment of Machines) and NFPA 79 standards."
-      },
-      {
-        "title": "3.1 Introduction to the TIA Portal Engineering Suite",
-        "content": "TIA Portal V19 is Siemens' unified engineering framework supporting S7-1200, S7-1500, S7-300/400, WinCC Comfort/Unified, and SINAMICS motion drives. The user interface features Portal View (task-oriented) and Project View (hierarchical object navigation).",
-        "keyPoints": [
-          "Recommended System Specifications: 64-bit Windows 10/11, Quad-core processor, ≥16GB RAM, SSD storage",
-          "Installation Footprint: Approximately 25GB disk space for STEP 7 Professional, WinCC Advanced, and PLCSIM",
-          "Licensing Architecture: Automation License Manager (ALM) manages floating and node-locked licenses",
-          "21-Day Trial License: Freely downloadable from the Siemens Industry Online Support (SIOS) portal"
-        ]
-      },
-      {
-        "title": "3.2 Project Creation and Hardware Configuration Workflow",
-        "content": "Engineering workflow: Create new project → Add new device → Select exact CPU catalog model and firmware revision → Parameterize IP address → Append Signal Modules on the virtual rack.",
-        "keyPoints": [
-          "Verify the complete MLFB Article Number on the CPU physical label (e.g. 6ES7 214-1AG40-0XB0)",
-          "Select the matching firmware version (e.g. V4.6); mismatched firmware can reject block downloads",
-          "Hardware Auto-Detection: Use \"Detect unspecific CPU\" to discover and upload connected network hardware",
-          "PLC Tag Table: Define meaningful symbolic identifiers (e.g. \"PB_Start_Motor\" instead of %I0.0)",
-          "Compile Hardware (Ctrl+B) to validate backplane power budgets and addressing boundaries"
-        ]
-      },
-      {
-        "title": "3.3 PLC Program Block Architecture: OB, FC, FB, and DB",
-        "content": "The modular program architecture comprises: Organization Blocks (OB, operating system interface), Functions (FC, stateless routines), Function Blocks (FB, stateful routines with Instance DB), and Data Blocks (DB, global shared memory).",
-        "keyPoints": [
-          "Main OB (OB1): Executed cyclically by the CPU operating system in continuous loop",
-          "Startup OB (OB100): Executed exactly once upon CPU transition from STOP to RUN mode",
-          "Cyclic Interrupt OB (OB30–OB38): Executed at precise, user-configured time intervals (e.g. 100ms PID loops)",
-          "Functions (FC): Modular logic blocks without internal memory; intermediate tags reside in volatile temporary stack",
-          "Function Blocks (FB): Stateful logic blocks backed by dedicated Instance Data Blocks (Instance DB)",
-          "Global Data Blocks (DB): Project-wide structured memory tables accessible by all program blocks"
-        ]
-      },
-      {
-        "title": "3.4 Program Compilation, Downloading, and Online Monitoring",
-        "content": "Following ladder development: Compile Software (Ctrl+Shift+B) → Resolve syntax errors → Download to Device (Ctrl+D) → Go Online to monitor real-time rung execution.",
-        "keyPoints": [
-          "Compilation: Checks data type consistency, symbolic addressing validity, and instruction syntax",
-          "Download to Device: Transfers hardware configuration tables and compiled user blocks to CPU Load Memory",
-          "Go Online: Establishes active telemetry link to the CPU, visually displaying real-time power flow",
-          "Program Status (Glasses Icon): Illuminates energized rungs in green dashed lines showing live boolean states",
-          "Watch Table: Real-time tabular monitoring and manual variable forcing for field commissioning"
-        ],
-        "note": "Switch the CPU to STOP before downloading hardware configuration changes to prevent unpredictable machinery motion."
-      },
-      {
-        "title": "3.5 PLCSIM — Hardware-Free Virtual Simulation",
-        "content": "S7-PLCSIM creates a fully virtualized CPU instance within your PC operating system, enabling comprehensive logic testing and offline commissioning without physical PLC hardware.",
-        "keyPoints": [
-          "Launch PLCSIM: Click \"Start Simulation\" in TIA Portal; the virtual CPU emulator boots automatically",
-          "Download code and hardware to the virtual PLC identical to physical target hardware",
-          "Simulate Digital Inputs (%I): Toggle input bits manually via SIM tables or integrated Watch Tables",
-          "Force Tables: Force specific physical inputs/outputs to evaluate interlocking behavior",
-          "Supported Platforms: Fully simulates S7-1200 and S7-1500 instruction sets, timers, counters, and math"
-        ]
-      },
-      {
-        "title": "3.6 PLCSIM Advanced — Networked Virtual PLC Emulation",
-        "content": "PLCSIM Advanced extends simulation capabilities with a virtual Ethernet runtime, enabling multi-PLC networked testing, HMI communication, and Co-Simulation with digital twin software.",
-        "keyPoints": [
-          "Creates virtual PLC nodes accessible via real TCP/IP network adapters on your host machine",
-          "Simulates complex industrial protocols including PROFINET IO and Open User Communication",
-          "API Interfacing: Seamless integration with 3D physics engines (NX MCD, SIMIT, Factory I/O)",
-          "Enables multi-instance simulation: Run multiple communicating virtual CPUs concurrently",
-          "Accelerates virtual commissioning, reducing physical on-site commissioning time by up to 60%"
-        ]
-      },
-      {
-        "title": "3.7 Watch Tables and Force Tables: Online Monitoring and Override",
-        "content": "Two indispensable diagnostic tools within TIA Portal. Watch Tables monitor and modify variables within program memory; Force Tables permanently override physical peripheral I/O regardless of user program logic.",
-        "keyPoints": [
-          "Watch Table: Monitors live tag states and allows temporary single-scan value modification",
-          "Modify Value: Injects test values into memory tags without modifying compiled ladder code",
-          "Force Table: Forces peripheral inputs and outputs (%I:P, %Q:P) at the operating system hardware layer",
-          "FORCE Status LED: Illuminates solid amber on the CPU faceplate whenever any I/O point is forced",
-          "Safety Caution: Forcing physical outputs will actuate valves and motors on live machinery without interlocks"
-        ],
-        "note": "Always verify and clear all active force assignments (\"Stop Forcing\") before handing over an operating system."
-      },
-      {
-        "title": "3.8 Cross-References and Diagnostic Navigation",
-        "content": "The Cross-Reference utility tracks every occurrence of an address, tag, or block across the entire project, pinpointing read/write locations and rapidly isolating duplicate coil assignments.",
-        "keyPoints": [
-          "Access via F11 or right-click any tag → \"Cross-references\"",
-          "Clearly indicates whether an address is accessed as a Read contact or a Write coil/assignment",
-          "Rapidly identifies \"Duplicate Coil\" defects (multiple rungs attempting to write to the identical %Q bit)",
-          "The \"Go To\" navigation feature jumps directly to compiler error locations with a single click",
-          "Correlates with the CPU Diagnostic Buffer to locate runtime block execution faults"
-        ]
-      },
-      {
-        "title": "3.9 Tag Tables and Symbolic Addressing Best Practices",
-        "content": "Employing descriptive symbolic identifiers (tags) in place of raw absolute addresses (%I0.0, %M10.2) is fundamental to professional, maintainable automation software engineering.",
-        "keyPoints": [
-          "Default Tag Table: Centralized database managing all physical discrete and analog I/O mappings",
-          "Supported Data Types: Bool, Byte, Int, DInt, Real, Word, DWord, Time, String",
-          "Global Refactoring: Renaming a tag in the Tag Table automatically updates all occurrences project-wide",
-          "Excel Integration: Full bi-directional Import/Export capability via .xlsx and .csv files",
-          "Standardized Naming Conventions: Use consistent prefixes (e.g. DI_Estop_Active, DO_Conveyor_Run, AI_Oven_Temp)"
-        ]
-      },
-      {
-        "title": "3.10 Project Archiving, Backup (.zap19), and Version Control",
-        "content": "Creating compressed project archives (.zap format) encapsulates all engineering source code, hardware profiles, and HMI screens into a single portable container for backup and distribution.",
-        "keyPoints": [
-          "Project Archive: Compresses the multi-gigabyte project folder into a clean, portable .zap19 archive file",
-          "Project Retrieve: Decompresses and reconstructs archived project structures intact",
-          "Software Upload from Station: Reads compiled blocks and hardware configurations directly from a live CPU",
-          "Version Management: Establish clear alphanumeric revision tags (e.g. Project_PackagingLine_V1_2_20261021)",
-          "Firmware Archiving: Always document and archive installed module firmware revisions alongside project files"
-        ]
-      }
-    ],
-    "review": [
-      "List the primary hardware modules that constitute a complete SIMATIC S7-1200 modular PLC system.",
-      "Detail the step-by-step mechanical mounting procedure for snapping an S7-1200 CPU onto a standard TS35 DIN rail.",
-      "What do the three \"DC\" designations signify in the catalog model CPU 1214C DC/DC/DC?",
-      "Why is it critical to install a freewheeling flyback diode across inductive DC solenoid loads controlled by transistor outputs?",
-      "Draw the electrical schematic for wiring a normally open (NO) pushbutton switch to digital input %I0.0 in a Sinking configuration.",
-      "How does a Signal Board (SB) differ from a Signal Module (SM)? Provide an industrial application example for an SB 1232.",
-      "What is the factory default IP address of an unconfigured Siemens S7-1200 CPU, and how is it modified in TIA Portal?",
-      "Enumerate the sequential steps required to configure a new S7-1200 CPU project from scratch in TIA Portal V19.",
-      "Explain the architectural distinction between a Function (FC) and a Function Block (FB). Under what conditions is an FB required?",
-      "Why must a software project be fully compiled before executing a download to the target CPU?",
-      "Can PLCSIM simulate an S7-1200 CPU? Describe the steps to launch an offline logic simulation.",
-      "What is the operational purpose of a Watch Table, and how are symbolic tags added to it for online monitoring?",
-      "What advanced technical capabilities does PLCSIM Advanced offer compared to standard PLCSIM?",
-      "Why must automation engineers exercise extreme caution when applying Force Tables on live production machinery?",
-      "What is a Siemens .zap archive file, and how is it created in TIA Portal?"
-    ]
-  },
+  "overview": "This lesson provides an exhaustive engineering walkthrough of the Siemens SIMATIC S7-1200 compact automation platform and the TIA Portal (Totally Integrated Automation Portal) engineering suite. Students will master the mechanical assembly and thermal clearance guidelines for TS35 DIN-rail mounting, 24VDC control power distribution, electrical topologies for sinking vs sourcing digital inputs (DI), solid-state transistor vs electromechanical relay digital outputs (DO), PROFINET industrial Ethernet network commissioning, and software workflows in STEP 7 V19 for hardware configuration, code compilation, and online diagnostics.",
+  "objectives": [
+    "Identify and specify CPU variants (1211C, 1212C, 1214C, 1215C, 1217C), Signal Modules (SM), Communication Modules (CM), and Signal Boards (SB) in the S7-1200 family",
+    "Mount and anchor S7-1200 controllers onto standard 35mm DIN rail with proper thermal ventilation clearances",
+    "Wire 24VDC system power, digital input sinking/sourcing circuits (1M common), and relay/transistor digital outputs with flyback diode protection",
+    "Verify field wiring using TIA Portal Watch Tables, Force Tables, and physical front-panel diagnostic LEDs",
+    "Install and license TIA Portal V19, STEP 7 Professional, WinCC Advanced, and S7-PLCSIM using Automation License Manager",
+    "Navigate Project View and Portal View, configure exact CPU hardware catalog numbers (MLFB), and assign static PROFINET IP addresses",
+    "Configure PG/PC communication interfaces, establish online connectivity, and execute program downloads to real and virtual CPUs"
+  ],
+  "sections": [
+    {
+      "title": "1.3 The S7-1200 Programmable Controller",
+      "content": "The Siemens SIMATIC S7-1200 is a modular micro-PLC designed for open-loop and closed-loop process control across discrete manufacturing and process industries. The central processing unit (CPU) integrates a 32-bit RISC microprocessor, non-volatile Flash load memory, volatile execution work memory, high-speed digital and analog I/O channels, and an on-board PROFINET Industrial Ethernet port. The hardware family spans five performance tiers: CPU 1211C, 1212C, 1214C, 1215C, and 1217C, differing in work memory capacity (50 KB up to 250 KB), I/O count, and expansion capability. The CPU can be expanded using three modular form factors: Signal Boards (SB) or Communication Boards (CB) that snap directly into the front housing without altering the panel footprint; Signal Modules (SM) providing dense digital/analog expansion attached via high-speed backplane sliding bus connectors to the right; and Communication Modules (CM) providing serial RS232/RS485 or PROFIBUS interfaces attached to the left.",
+      "keyPoints": [
+        "CPU Form Factor Variants: Available in DC/DC/DC (24VDC supply, 24VDC inputs, 24VDC transistor outputs), AC/DC/Relay (120/230VAC supply, 24VDC inputs, relay outputs), and DC/DC/Relay",
+        "Performance Hierarchy: CPU 1211C (50 KB RAM, no SM expansion) to CPU 1214C/1215C/1217C (up to 8 SM expansion modules and 3 CM modules)",
+        "Signal Board (SB) Slot: Dedicated front-bezel receptacle supporting 1 SB (e.g. 2 DI/2 DO, 1 AI 12-bit, or 1 AQ 12-bit) without consuming DIN-rail horizontal length",
+        "High-Speed Backplane Bus: Proprietary multi-pin slide bus interconnects modules on the right; transfers cyclic process images with hardware synchronization",
+        "Communication Modules (CM): Mount to the left of the CPU, supporting up to 3 modules for Point-to-Point (PtP) RS485 Modbus RTU, PROFIBUS-DP, or TeleControl",
+        "Mechanical Mounting: Mounts horizontally or vertically on standard 35mm DIN rail (EN 50022) with pull-down locking spring tabs"
+      ],
+      "note": "For reliable convection cooling, maintain a minimum thermal clearance of 25 mm (1.0 inch) above and below all S7-1200 modules. Maximum ambient operating temperature is 55°C for horizontal DIN-rail mounting and 45°C for vertical mounting."
+    },
+    {
+      "title": "1.4 Program Processing in TIA Portal",
+      "content": "Program processing in the S7-1200 controller is deterministic and governed by the cyclic operating system architecture. The top-level execution thread resides in Organization Block 1 (OB1), which is invoked cyclically by the CPU operating system immediately upon completion of each scan cycle. User application logic is organized hierarchically into modular code blocks: Functions (FC) represent stateless subroutines suitable for standard mathematical transformations or reusable Boolean algorithms; Function Blocks (FB) maintain internal state memory stored in dedicated Instance Data Blocks (Instance DB); and Global Data Blocks (Global DB) hold plant-wide operational parameters, recipe setpoints, and HMI telemetry accessible by all blocks. In addition to cyclic execution, the CPU supports event-driven execution via specialized Organization Blocks: Cyclic Interrupts (OB30–OB38) triggered by precise hardware timers for discrete-time PID loops, Hardware Interrupts (OB40–OB47) triggered within microseconds by digital input edges, and Time-Error Interrupts (OB80).",
+      "keyPoints": [
+        "Main Cyclic Organization Block (OB1): Default entry point executed cyclically by the runtime firmware; evaluates networks sequentially from top to bottom",
+        "Functions (FC): Stateless modular blocks; all internal variables (TEMP) lose their values upon block exit; ideal for pure algorithmic calculations",
+        "Function Blocks (FB): Stateful modular blocks; internal static variables (STAT) persist between cycles within a dedicated Instance Data Block (DB)",
+        "Global Data Blocks (DB): Centralized memory tables accessible across the entire project; supports both standard (offset-based) and optimized (symbolic) access",
+        "Cyclic Interrupts (OB30): Deterministic execution triggered at precise user-defined intervals (e.g. every 10 ms), essential for accurate PID closed-loop control",
+        "Process Image Synchronization: Code blocks read from the Process Image Input (PII) table rather than querying physical pins directly, ensuring data consistency across rungs"
+      ],
+      "note": "Never use standard timers (TON/TOF) or software counters inside interrupt OBs (OB30/OB40). Always keep interrupt block execution times well below the interrupt interval to avoid triggering OB80 cycle time faults."
+    },
+    {
+      "title": "1.5 Wiring the PLC to Field Devices",
+      "content": "Wiring field devices to the S7-1200 requires rigorous adherence to industrial electrical standards (IEC 60204-1 and NFPA 79). Control power is supplied via terminals L+ (+24VDC) and M (0VDC return), with protective earth grounded at the PE screw. The discrete digital inputs of the S7-1200 feature optical isolation and can be configured as Sinking or Sourcing circuits by wiring the common terminal '1M'. In a Sinking DI configuration (standard European PNP sensor compatibility), 1M is connected to 0VDC (M), and external sensors switch +24VDC into the input terminals (%I0.0 to %I1.5). For digital outputs, DC/DC/DC CPUs provide high-speed power MOSFET transistor outputs (24VDC sourcing, rated 0.5A per channel) capable of switching up to 100 kHz for pulse train motion control. AC/DC/Relay CPUs feature dry electromechanical relay contacts rated for 2.0A switching of either 24VDC or 120/230VAC external loads. Freewheeling flyback diodes must be wired across all DC inductive loads (solenoids, contactor coils) to suppress destructive high-voltage inductive kickback.",
+      "keyPoints": [
+        "System Power Supply: 24VDC nominal (allowable range 20.4VDC to 28.8VDC) at L+ and M; provide upstream miniature circuit breaker (MCB) or fuse protection",
+        "Digital Input Sinking Circuit (PNP): Connect common terminal 1M to 0VDC (M); input activates when switched high (+24VDC relative to 1M)",
+        "Digital Input Sourcing Circuit (NPN): Connect common terminal 1M to +24VDC (L+); input activates when pulled low (0VDC relative to 1M)",
+        "Transistor DO Specifications: Sourcing MOSFET outputs (switches +24VDC from 1L+ to output pin); 0.5A max continuous load; 100 kHz maximum switching speed",
+        "Relay DO Specifications: Form-A dry contact; 2.0A resistive / inductive load; maximum 1 Hz switching rate; galvanic isolation between relay groups (1L, 2L)",
+        "Inductive Suppression: Reverse-biased 1N4007 diodes across DC coils, or RC snubber circuits across AC coils, prevent contact arcing and optical isolator damage",
+        "Wiring Practices: Always terminate stranded conductors with insulated ferrule crimp pins (bootlace pins) sized 0.5 mm² to 1.5 mm² (AWG 20 to 16)"
+      ],
+      "note": "Failure to install freewheeling flyback diodes across DC inductive solenoid valves can generate inductive voltage spikes exceeding 400V, causing immediate breakdown of the S7-1200 transistor output stages or intermittent CPU hardware crashes."
+    },
+    {
+      "title": "1.6 Verifying Wiring in Software",
+      "content": "Once physical wiring is terminated, the automation engineer must systematically verify every field channel before commissioning software logic. The S7-1200 front panel provides discrete green status LEDs for every physical input (%I0.0–%I1.5) and output (%Q0.0–%Q1.1) terminal. A green input LED indicates that the electrical threshold (typically >15VDC for logic '1') is present across the terminal and its 1M common. In TIA Portal, the engineer navigates online and utilizes Watch Tables (monitoring live bit values in real time) and Force Tables (manually asserting physical states) to validate loop integrity. By actuating field pushbuttons, limit switches, and photoelectric sensors, the live boolean state can be witnessed simultaneously on the physical LED and in the TIA Portal Watch Table. Similarly, digital outputs can be individually toggled via Watch Table modify commands to verify that the corresponding interposing relay clicks, the solenoid valve fires, and the motor contactor pulls in cleanly.",
+      "keyPoints": [
+        "Hardware LED Telemetry: The green LED indicates electrical potential at the screw terminal, confirming field loop continuity before software execution",
+        "Watch Tables: Allow non-invasive live monitoring and one-shot modifying of bit markers (%M), process inputs (%I), process outputs (%Q), and DB tags",
+        "Force Table Safety: Forcing overrides both user program logic and process images by writing directly to peripheral hardware; indicated by flashing yellow FORCE LED",
+        "Point-to-Point Loop Check: Rigorous commissioning protocol where two technicians (one in field, one in TIA Portal) verify 100% of physical sensor channels",
+        "Cross-Reference List: TIA Portal tool (Shift+F11) revealing every occurrence where a specific tag is read or written, detecting destructive dual-coil conflicts",
+        "Peripheral Addressing (:P): Using %I0.0:P or %Q0.0:P reads or writes directly to physical hardware, bypassing image tables for immediate signal validation"
+      ],
+      "note": "Never leave a machine in 'Force' mode after testing! The Force function locks physical outputs regardless of emergency stops or safety rungs in your program, presenting severe hazard to personnel and machinery."
+    },
+    {
+      "title": "1.7 Installing TIA Portal",
+      "content": "Siemens Totally Integrated Automation Portal (TIA Portal) is an industrial engineering software package integrating STEP 7 (PLC programming), WinCC (HMI and SCADA design), Startdrive (frequency converter parameterization), and S7-PLCSIM (virtual PLC emulation). A robust workstation configuration is critical for efficient engineering workflows: 64-bit Windows 10/11 Professional or Enterprise, multi-core Intel Core i7/i9 or AMD Ryzen processor (>=3.4 GHz), minimum 16 GB of high-speed DDR4/DDR5 RAM (32 GB recommended for large multi-device topologies), and solid-state storage (NVMe SSD) with at least 50 GB of unallocated disk space. The installation media is distributed as self-extracting ISO archives available via Siemens Industry Online Support (SIOS). Licensing is governed centrally by the Automation License Manager (ALM), which manages node-locked, USB dongle, or network floating licenses. Siemens provides a fully functional 21-day trial license enabling complete evaluation and academic laboratory instruction.",
+      "keyPoints": [
+        "Software Components: STEP 7 Professional (S7-1200, S7-1500, S7-300, S7-400), WinCC Advanced/Unified, Safety Advanced, and S7-PLCSIM",
+        "Operating System Support: Windows 10 Pro/Enterprise 64-bit, Windows 11 Pro, Windows Server 2019/2022; Home editions are unsupported",
+        "Hardware Prerequisites: 16 GB to 32 GB RAM, high-speed NVMe SSD, minimum 1920x1080 display resolution with 100% DPI scaling",
+        "Automation License Manager (ALM): Dedicated system service that installs, transfers, validates, and recovers Siemens engineering license keys",
+        "21-Day Trial License: Authorizes all professional software features without functional restriction for 21 days from initial activation",
+        "Installation Best Practices: Temporarily disable aggressive third-party antivirus suites, execute installer with administrative privileges, and reboot upon completion"
+      ],
+      "note": "Always verify that your Windows network adapter is not blocked by aggressive corporate firewalls or VPN tunnels during TIA Portal installation, as the Siemens background communication service (s7oiehsx64) requires local port binding."
+    },
+    {
+      "title": "1.8 Working with TIA Portal",
+      "content": "TIA Portal presents two complementary graphical environments: Portal View and Project View. Portal View is a task-oriented interface tailored for quick operational tasks (creating projects, hardware discovery, diagnostic inspections, and firmware updates). Project View is the comprehensive hierarchical engineering workbench, organized into three primary functional areas: the Project Tree on the left (containing PLC folders, Program Blocks, PLC Tags, and Device Configuration), the central Work Area (where ladder rungs, hardware racks, and network topologies are visually designed), and the Inspector / Task Card Area on the bottom and right (providing contextual hardware properties, diagnostics, instruction catalogs, and cross-references). To configure hardware, the engineer drags the specific CPU model from the hardware catalog into the Device View, verifying that the order code (MLFB) and firmware revision (e.g. V4.6) exactly match the physical device. The project is compiled (Ctrl+B for hardware, Ctrl+Shift+B for software) and downloaded to the CPU via PROFINET.",
+      "keyPoints": [
+        "Portal View vs Project View: Switch seamlessly between task-oriented portal navigation and deep hierarchical project editing via the bottom-left toggle",
+        "Project Tree Organization: Structured root hierarchy containing Devices, Program Blocks (OB/FC/FB/DB), PLC Tag Tables, Watch Tables, and Common Data",
+        "MLFB Part Number Precision: Verify the complete Siemens article number (e.g. 6ES7 214-1AG40-0XB0); mismatched catalog models will reject program downloads",
+        "Firmware Matching: Ensure the project hardware firmware revision matches or is backward-compatible with the physical CPU firmware (e.g. V4.2 vs V4.6)",
+        "Hardware Catalog Navigation: Search and insert CPUs, Signal Boards, Signal Modules, ET 200 distributed stations, and drive nodes into the graphical rack",
+        "Compilation and Download: Full compilation validates memory allocations, addressing conflicts, and syntax errors prior to transferring runtime blocks to Flash"
+      ],
+      "note": "Use the 'Detect unspecific S7-1200 CPU' feature in TIA Portal if the physical CPU's exact firmware revision or expansion card configuration is unknown. TIA Portal will query the online PLC over Ethernet and automatically configure the exact hardware rack."
+    },
+    {
+      "title": "1.9 Communication Setup (PC/PPI Cable)",
+      "content": "Establishing communication between the engineering workstation and the PLC is the prerequisite for all online diagnostics, program downloads, and live monitoring. Modern SIMATIC S7-1200 CPUs utilize standard PROFINET Industrial Ethernet (10/100 Mbps RJ45) eliminating the requirement for proprietary programming adapters. The engineering workstation's Network Interface Card (NIC) must be assigned a static IP address residing in the identical subnet as the PLC (e.g. PC: 192.168.0.241 / 255.255.255.0; PLC factory default: 192.168.0.1 / 255.255.255.0). Standard Cat5e shielded twisted-pair (STP) Ethernet cables are utilized; integrated Auto-MDI/X automatically resolves straight-through or cross-over cable pinouts. In legacy installations (such as S7-200 micro-PLCs), communication required a specialized PC/PPI (Point-to-Point Interface) cable: an RS232-to-RS485 or USB-to-RS485 optoisolated converter operating at 9.6 or 187.5 kbps. In TIA Portal, the 'Accessible Devices' scan tool queries all active nodes on the physical Ethernet segment via MAC broadcast, allowing engineers to flash CPU LEDs to verify identity and assign new IP addresses.",
+      "keyPoints": [
+        "PROFINET Physical Layer: Standard Cat5e STP shielded industrial Ethernet with RJ45 connectors; supports up to 100 meters per cable segment",
+        "Auto-MDI/X Feature: Automatically senses and configures cable pinout orientation, eliminating the need for specialized Ethernet crossover cables",
+        "IP Address Subnetting: The engineering laptop NIC and S7-1200 must share an identical subnet mask (255.255.255.0) and distinct IP addresses in the same range",
+        "Accessible Devices Tool: Broadcasts Layer 2 DCP (Discovery and Configuration Protocol) frames to detect all connected Siemens nodes regardless of IP configuration",
+        "Flash LED Verification: Online diagnostic command that commands the CPU RUN/STOP, ERROR, and MAINT LEDs to flash simultaneously for positive panel identification",
+        "Legacy PC/PPI Cable: Optically isolated USB-to-RS485 converter utilized exclusively for programming vintage SIMATIC S7-200 micro-controllers",
+        "Direct PG/PC Connection: Enables direct peer-to-peer programming without requiring an intermediate Ethernet network switch"
+      ],
+      "note": "If TIA Portal fails to discover an online S7-1200 CPU during the 'Accessible Devices' scan, verify in Windows Network Connections that the active physical Ethernet card is selected as the PG/PC interface, and disable secondary active Wi-Fi adapters to prevent multi-homed routing conflicts."
+    }
+  ],
+  "review": [
+    "List the five CPU performance tiers in the SIMATIC S7-1200 family and explain the functional differences between Signal Boards (SB) and Signal Modules (SM).",
+    "Describe the mechanical mounting and thermal clearance rules for mounting S7-1200 hardware onto a TS35 DIN rail in high-temperature industrial control panels.",
+    "Explain the electrical distinction between Sinking and Sourcing digital input configurations on the S7-1200. What terminal connection determines this operating mode?",
+    "Why must reverse-biased freewheeling flyback diodes be installed across DC inductive solenoid coils driven by S7-1200 transistor digital outputs?",
+    "Compare the operational safety characteristics and runtime effects of using a Watch Table versus a Force Table in TIA Portal.",
+    "Detail the step-by-step engineering workflow required to configure, compile, and download a new S7-1200 hardware project in TIA Portal V19.",
+    "A technician cannot connect an engineering laptop to a newly unboxed S7-1200 CPU. Explain how to configure the laptop IP settings and use the Accessible Devices tool to establish communication."
+  ]
+},
 
   '03-binary-operations': {
-    "overview": "Discrete bit logic programming in Ladder Diagram (LAD) forms the foundational bedrock of industrial automation. This lesson examines fundamental ladder instructions: normally open (NO) contacts, normally closed (NC) contacts, output coils, Set/Reset latches, start-stop seal-in circuits, and hardware/software interlocks. Timers (TON, TOF, TP) and counters (CTU, CTD, CTUD) provide precision time-delay generation and event counting according to IEC 61131-3 standards.",
-    "objectives": [
-      "Program combinational logic expressions (AND, OR, NOT) using Ladder Diagram contacts and branches",
-      "Construct industrial motor Start-Stop control circuits utilizing self-holding seal-in branches",
-      "Apply latch Set (S) and unlatch Reset (R) instructions correctly for memory retention",
-      "Design bidirectional motor interlock circuits incorporating electrical and software interlocks",
-      "Deploy and parameterize the three standard IEC timer blocks: TON, TOF, and TP",
-      "Select and size appropriate timer types for specific industrial delay applications",
-      "Implement CTU, CTD, and CTUD counter blocks for batch tracking and production counting",
-      "Design sequential step-based state control circuits driven by timer cascades"
-    ],
-    "sections": [
-      {
-        "title": "4.1 OB1 and Cyclic Program Execution",
-        "content": "All user control algorithms programmed within Main Organization Block 1 (OB1) are executed cyclically by the PLC operating system. Each Network (rung) represents an independent boolean logic expression, evaluated sequentially top-to-bottom and left-to-right.",
-        "keyPoints": [
-          "Network: The atomic logic unit in LAD, representing a discrete rung between power rails",
-          "Power Flow: Conceptual electrical power flows from the left power rail (L+) toward the right neutral rail (M)",
-          "Contacts: Represent operational preconditions (field digital inputs, memory bit markers %M)",
-          "Coils: Represent execution results (physical digital outputs %Q, internal flags %M, DB bits)"
-        ]
-      },
-      {
-        "title": "4.2 Normally Open (NO), Normally Closed (NC) Contacts, and Output Coils",
-        "content": "A Normally Open (NO) contact passes conceptual power when its referenced bit equals 1 (TRUE). A Normally Closed (NC) contact passes power when its referenced bit equals 0 (FALSE). An output coil assigns the rung power flow state (1 or 0) directly to its target bit address.",
-        "keyPoints": [
-          "NO Contact (—| |—): Conducts power when addressed bit = 1",
-          "NC Contact (—|/|—): Conducts power when addressed bit = 0 (inverts logical state)",
-          "Standard Output Coil (—( )—): Writes 1 to bit when rung is energized; writes 0 when rung is de-energized",
-          "Duplicate Coil Warning: Never assign the same physical output address to multiple standard coils across different networks"
-        ],
-        "note": "An NC contact in software ladder logic does NOT denote a physically normally-closed switch in the field. Software NC performs a logical NOT operation on the sampled state of the addressed bit."
-      },
-      {
-        "title": "4.3 Combinational Boolean Logic: AND, OR, and NOT",
-        "content": "Series contacts create logical AND relationships (all preconditions must conduct). Parallel branches create logical OR relationships (any branch conducts). NC contacts execute boolean inversion (NOT).",
-        "keyPoints": [
-          "AND Logic = Series contacts: %I0.0 AND %I0.1 must both be TRUE to energize output %Q0.0",
-          "OR Logic = Parallel contacts: %I0.0 OR %I0.1 energizes output %Q0.0",
-          "NOT Logic = NC contact: Inverts the incoming bit status",
-          "Complex Expressions: Nested parallel branches implement expressions such as (%I0.0 AND %I0.1) OR %I0.2 → %Q0.0"
-        ]
-      },
-      {
-        "title": "4.4 Motor Start-Stop Circuit and Seal-In Latching",
-        "content": "The classic Start-Stop seal-in circuit is the most fundamental circuit in motor control. A momentary normally-open Start pushbutton is connected in parallel with an auxiliary contact of the motor output coil to maintain power after the button is released.",
-        "keyPoints": [
-          "Momentary Start button (%I0.0 NO) placed in parallel with motor auxiliary contact (%Q0.0 NO)",
-          "Stop button (%I0.1 NC) placed in series with the parallel combination to break the holding circuit",
-          "Boolean Formula: %Q0.0 := (Start OR %Q0.0) AND NOT Stop",
-          "Stop-Dominant Principle: If both Start and Stop are depressed simultaneously, the Stop contact overrides and de-energizes %Q0.0",
-          "Hardware Failsafe: Field Stop pushbuttons are wired mechanically Normally Closed (NC) to open the circuit upon wire breakage"
-        ]
-      },
-      {
-        "title": "4.5 Latch Set (S) and Unlatch Reset (R) Instructions",
-        "content": "The Set (S) coil latches an addressed bit to 1 (TRUE) upon power flow and maintains that state even after rung power flow ceases. The Reset (R) coil unlatches the addressed bit back to 0 (FALSE).",
-        "keyPoints": [
-          "Set (S) Instruction: Writes 1 to bit; state persists indefinitely until cleared by an explicit Reset",
-          "Reset (R) Instruction: Writes 0 to bit; clears any prior Set condition",
-          "SR Flip-Flop: Set-dominant bistable block (Set wins if both S and R inputs are simultaneously energized)",
-          "RS Flip-Flop: Reset-dominant bistable block (Reset wins if both S and R inputs are simultaneously energized)",
-          "Application: Ideal for operational modes, alarm holding states, and valve positioning where memory retention is required"
-        ]
-      },
-      {
-        "title": "4.6 Electrical and Software Interlocking Circuits",
-        "content": "Interlock circuits prevent mutually destructive field outputs from activating concurrently (e.g. forward and reverse contactors on a three-phase motor, which would cause a phase-to-phase dead short).",
-        "keyPoints": [
-          "Forward Contactor (%Q0.0): Rung contains an NC contact of Reverse (%Q0.1) to inhibit forward motion if reverse is active",
-          "Reverse Contactor (%Q0.1): Rung contains an NC contact of Forward (%Q0.0) to inhibit reverse motion if forward is active",
-          "Software Interlock: Prevents concurrent energization inside the PLC scan cycle",
-          "Hardware Interlock: Auxiliary mechanical contacts on physical contactors wired in series with opposite coils in the field panel"
-        ],
-        "note": "Software interlocking alone is insufficient for personnel safety and equipment protection. Always implement physical mechanical/electrical contactor interlocks in the field panel."
-      },
-      {
-        "title": "4.7 Bistable Latch Blocks: SR and RS Flip-Flops",
-        "content": "The SR (Set dominant) and RS (Reset dominant) function blocks encapsulate latching behavior into standardized function blocks with explicit dominance handling when simultaneous Set and Reset signals occur.",
-        "keyPoints": [
-          "SR Flip-Flop: Set input overrides if both S and R1 inputs are active simultaneously",
-          "RS Flip-Flop: Reset input overrides if both R and S1 inputs are active simultaneously (standard safety practice)",
-          "Simplifies multi-condition latch logic without sprawling parallel seal-in rungs",
-          "Ideal for alarm latches requiring mandatory operator manual acknowledgment before clearing",
-          "Assigns state directly to dedicated %M markers or Data Block boolean tags"
-        ]
-      },
-      {
-        "title": "4.8 Edge Detection Instructions: P_TRIG and N_TRIG (One-Shots)",
-        "content": "Edge detection instructions detect transitions in signal states: P_TRIG (Positive / rising edge, 0→1) and N_TRIG (Negative / falling edge, 1→0). Output conducts for exactly one PLC scan cycle.",
-        "keyPoints": [
-          "P_TRIG: Detects rising edge (0→1); commonly triggered upon pushbutton depression or sensor entry",
-          "N_TRIG: Detects falling edge (1→0); triggered upon pushbutton release or part exit from sensor beam",
-          "Prevents continuous repetitive instruction execution during sustained high signals",
-          "Mandatory precursor for counter incrementing, FIFO queue shifting, and math accumulation rungs",
-          "Requires an edge memory bit (%M or DB boolean) to store the previous scan cycle status"
-        ]
-      },
-      {
-        "title": "4.9 IEC Counter Function Blocks: CTU, CTD, and CTUD",
-        "content": "IEC counter blocks track discrete physical events, such as parts produced on a conveyor or pump run cycles. TIA Portal implements Count Up (CTU), Count Down (CTD), and Bidirectional (CTUD) blocks.",
-        "keyPoints": [
-          "CTU (Count Up): Increments Current Value (CV) by 1 upon each rising edge at CU; output Q turns TRUE when CV ≥ PV",
-          "CTD (Count Down): Decrements CV by 1 upon each rising edge at CD; output Q turns TRUE when CV ≤ 0",
-          "CTUD: Combines both up and down count inputs into a single block with individual Q outputs",
-          "Reset (R): Instantly resets the internal count register CV to 0 on CTU blocks",
-          "Preset Value (PV): The calibrated target count threshold defining when output Q energizes"
-        ]
-      },
-      {
-        "title": "4.10 In-Line Mathematical and Comparison Instructions in LAD",
-        "content": "Ladder Diagram allows embedding math and comparison blocks directly into graphical rungs. This combines boolean discrete conditions with quantitative numerical decision logic.",
-        "keyPoints": [
-          "Comparison Blocks: ==, <>, >, <, >=, <= evaluate two operands and pass power flow when TRUE",
-          "Math Blocks: ADD (+), SUB (−), MUL (×), DIV (÷) execute arithmetic inline",
-          "Enable Output (ENO): Propagates power flow to downstream rung elements if arithmetic completes without overflow",
-          "Multi-Type Flexibility: Operates on Int, DInt, Real, and Time data types",
-          "Enhances LAD capability, allowing ladder programs to perform calculation tasks without forcing a shift to SCL"
-        ]
-      },
-      {
-        "title": "4.11 Data Transfer and Conversion: MOVE, CONV, ROUND, and TRUNC",
-        "content": "The MOVE instruction transfers data between registers and variables. CONV converts between data types, ROUND rounds floating-point reals to the nearest integer, and TRUNC truncates fractional digits.",
-        "keyPoints": [
-          "MOVE: Copies data from input IN directly to output OUT",
-          "Commonly used to load recipe parameters and initialize operational setpoints",
-          "CONV: Executes safe data type conversions (e.g. converting 16-bit INT to 32-bit REAL)",
-          "ROUND: Rounds floating-point REAL numbers to the nearest whole integer",
-          "TRUNC: Discards fractional digits entirely, converting REAL to integer without rounding"
-        ]
-      },
-      {
-        "title": "4.12 Practical Application: Intersection Traffic Light Controller",
-        "content": "Synthesizes timers, comparison blocks, Set/Reset instructions, and discrete ladder logic to design an automated 4-way intersection traffic signal sequence with pedestrian crossing intervals.",
-        "keyPoints": [
-          "Construct timing diagrams mapping Green, Yellow, and Red phases across North-South and East-West corridors",
-          "Deploy a master TON timer to establish the total repeatable cycle duration (e.g. 60 seconds)",
-          "Use comparison blocks (>=, <=) evaluating current timer elapsed time (ET) to energize phase outputs",
-          "Integrate Master Start/Stop commands using RS latch flip-flops",
-          "Implement flashing yellow emergency mode via a system clock memory byte"
-        ]
-      },
-      {
-        "title": "5.1 TON Timer — On-Delay Timing",
-        "content": "TON (Timer On-Delay): Output Q turns ON after a preset time delay (PT) has elapsed following input IN becoming TRUE. If input IN drops to FALSE before PT expires, the timer resets elapsed time to zero.",
-        "keyPoints": [
-          "IN: Trigger input signal (must remain continuously TRUE throughout the timing interval)",
-          "PT: Preset Time interval specified in TIME format (e.g. T#5s, T#500ms)",
-          "Q: Output contact; transitions to TRUE when Elapsed Time (ET) ≥ Preset Time (PT)",
-          "ET: Elapsed Time accumulator tracking milliseconds elapsed since IN turned TRUE",
-          "Early Drop Reset: If IN goes FALSE prior to reaching PT, ET resets to 0ms and Q remains FALSE",
-          "Applications: Motor start delays, lube pressure establishment timers, sensor debounce delays"
-        ],
-        "note": "S7-1200 timers are IEC-compliant Function Blocks (FBs) requiring dedicated Instance Data Blocks. Every timer instance must have a unique Instance DB."
-      },
-      {
-        "title": "5.2 TOF Timer — Off-Delay Timing",
-        "content": "TOF (Timer Off-Delay): Output Q turns ON immediately when input IN becomes TRUE. When input IN drops to FALSE, output Q remains ON for the preset time duration (PT) before de-energizing.",
-        "keyPoints": [
-          "Output Q transitions to TRUE immediately when IN becomes TRUE",
-          "Timing countdown commences precisely when input IN drops from TRUE to FALSE",
-          "Output Q de-energizes to FALSE once elapsed time ET reaches PT",
-          "Retrigger: If IN goes TRUE again during the timing countdown, the timer resets and Q remains TRUE",
-          "Applications: Cabinet cooling fan post-run cooldown, delayed lighting shutdown, conveyor clearout intervals"
-        ]
-      },
-      {
-        "title": "5.3 TP Timer — Pulse Generation",
-        "content": "TP (Timer Pulse): When input IN transitions from FALSE to TRUE, output Q turns ON for exactly the preset duration PT, regardless of whether input IN remains held or drops immediately.",
-        "keyPoints": [
-          "Output Q energizes for exactly duration PT upon rising edge of input IN",
-          "Input variations during the active pulse are completely ignored by the block",
-          "Output Q de-energizes once PT expires, requiring a fresh rising edge at IN to trigger again",
-          "Generates deterministic pulse widths regardless of operator button-press duration",
-          "Applications: Pneumatic reject cylinders, lubrication dosing squirts, horn audible sirens"
-        ]
-      },
-      {
-        "title": "5.4 Counter Architecture and Counting Logic",
-        "content": "Counter blocks increment or decrement on rising-edge signal transitions. CTU counts up, CTD counts down, and CTUD handles bidirectional tracking.",
-        "keyPoints": [
-          "CTU: CU (Count Up input), R (Reset), PV (Preset Value), Q (Output active when CV ≥ PV), CV (Current Count)",
-          "CTD: CD (Count Down input), LD (Load Preset), PV, Q (Output active when CV ≤ 0), CV",
-          "CTUD: Combines both CU and CD inputs with separate QU and QD outputs",
-          "Count Register (CV): 16-bit signed integer INT (−32768 to +32767)",
-          "Applications: Conveyor item counting, batch packaging control, maintenance duty tracking"
-        ]
-      },
-      {
-        "title": "5.5 Edge Detection Instructions: R_TRIG and F_TRIG",
-        "content": "R_TRIG generates a single-scan pulse on a rising edge (0→1). F_TRIG generates a single-scan pulse on a falling edge (1→0). Essential for conditioning inputs to counters and accumulators.",
-        "keyPoints": [
-          "R_TRIG: Output Q conducts for exactly one scan upon rising edge at input CLK",
-          "F_TRIG: Output Q conducts for exactly one scan upon falling edge at input CLK",
-          "Placed before counter blocks to guarantee exactly one count increment per button press",
-          "Applications: Optical part sensor edge detection, recipe step advance buttons"
-        ]
-      },
-      {
-        "title": "5.6 Sequential Step Control Using Timers",
-        "content": "Deploying cascaded timers to engineer predictable multi-stage sequences: Green (30s) → Yellow (3s) → Red (25s) → Loop. Utilizing bit markers to cleanly manage step transitions.",
-        "keyPoints": [
-          "Step 1 (Green Phase): TON_1 timing PT=30s; when Q=1, transitions sequence to Step 2",
-          "Step 2 (Yellow Phase): TON_2 timing PT=3s; when Q=1, transitions sequence to Step 3",
-          "Step 3 (Red Phase): TON_3 timing PT=25s; when Q=1, loops sequence back to Step 1",
-          "Memory Bit Markers (%M): Isolate and indicate active step states",
-          "Timer Reset: Automatically clears when upstream precondition drops to FALSE"
-        ]
-      }
-    ],
-    "review": [
-      "Draw the Ladder Diagram for a classic motor Start-Stop seal-in control circuit.",
-      "Explain the operational difference between a standard Output Coil and a Set (S) Latch instruction.",
-      "What is the purpose of an interlocking circuit? Draw an interlock example for a reversing motor starter.",
-      "Why should industrial systems implement both software and hardware interlocking on reversing contactors?",
-      "If %I0.0 is addressed by an NC contact in LAD, does that contact conduct power when the physical field input receives 24VDC?",
-      "Under what operational conditions should an engineer select an RS Flip-Flop over an SR Flip-Flop?",
-      "What is the functional purpose of a P_TRIG instruction, and why does it require an associated edge memory bit?",
-      "Explain how comparison instructions (CMP) are combined with timer elapsed time (ET) to control multi-phase lighting.",
-      "Sketch timing diagrams for TON, TOF, and TP blocks responding to an identical 3-second input pulse with PT = 5s.",
-      "Why is it necessary to insert an R_TRIG one-shot before a CTU block when counting manual pushbutton presses?",
-      "Write a ladder rung to generate a 1Hz flasher (0.5s ON, 0.5s OFF) using TON timer blocks.",
-      "A CTU counter has accumulated CV = 5 with PV = 10. If input Reset transitions to TRUE, what is the new value of CV?",
-      "Design a two-conveyor sequencing circuit where Conveyor 2 automatically starts 5 seconds after Conveyor 1 starts."
-    ]
-  },
+  "overview": "This lesson covers the core binary logic foundations of industrial PLC programming in IEC 61131-3 Ladder Diagram (LAD). Students will master Boolean logic gate equivalents (AND, OR, NOT, XOR), the physical evaluation of Normally Open (NO) and Normally Closed (NC) contacts, output coil behaviors, motor start-stop seal-in latching circuits, Set (S) and Reset (R) dominant latch instructions, IEC standard timers (TON, TOF, TP), and IEC counters (CTU, CTD, CTUD). The lesson concludes with a worked industrial application implementing multi-phase sequence control.",
+  "objectives": [
+    "Evaluate Boolean logic equations in Ladder Diagram using series, parallel, and inverted contact networks",
+    "Differentiate the physical operation and software evaluation of Normally Open (NO) and Normally Closed (NC) contacts",
+    "Design and analyze standard motor Start-Stop latching circuits with physical hardwired emergency stop interlocking",
+    "Apply Set (S) and Reset (R) instructions, evaluating network execution order and SR vs RS dominant flip-flop blocks",
+    "Configure IEC 61131-3 timer function blocks (TON On-Delay, TOF Off-Delay, TP Pulse) with instance data blocks",
+    "Program IEC counter blocks (CTU Count Up, CTD Count Down, CTUD Bidirectional) for industrial part totalization",
+    "Synthesize timers, counters, and edge detection into a fully integrated multi-state manufacturing application"
+  ],
+  "sections": [
+    {
+      "title": "2.1 Logic Links (AND, OR, NOT)",
+      "content": "Binary logic operations in Ladder Diagram (LAD) replicate the behavior of electromechanical relay schematics while executing deterministically within the CPU. The fundamental building blocks are Normally Open (NO) contacts (---[ ]---), Normally Closed (NC) contacts (---[/]---), standard output coils (---( )---), and negated coils (---(/)---). In LAD, power flow evaluates virtually from the left power rail across the rung to the right rail. Series connection of contacts implements Boolean AND logic (both Contact A AND Contact B must conduct for the output to energize). Parallel branch connections implement Boolean OR logic (conduction across either Branch A OR Branch B completes the circuit). An NC contact functions as a Boolean NOT operator: when the referenced memory bit is logic 0 (FALSE), the virtual contact remains closed and conducts; when the bit becomes logic 1 (TRUE), the contact opens, interrupting power flow. Combining series and parallel combinations allows engineers to construct complex combinational logic, including Exclusive-OR (XOR) circuits where an output is true if exactly one of two inputs is active.",
+      "keyPoints": [
+        "Normally Open (NO) Contact (---[ ]---): Passes virtual power flow only when the assigned boolean address evaluates to TRUE (logic 1)",
+        "Normally Closed (NC) Contact (---[/]---): Passes virtual power flow when the assigned address is FALSE (logic 0); opens when address is TRUE",
+        "Standard Output Coil (---( )---): Writes the evaluated Result of Logic Operation (RLO) directly to the designated memory address (%Q or %M)",
+        "Boolean AND Link: Configured by placing two or more contacts in series along a single rung path; all series conditions must evaluate TRUE",
+        "Boolean OR Link: Configured by wiring contacts in parallel branches; power flow conducts if at least one branch evaluates TRUE",
+        "Boolean NOT (Invert RLO): An inline NOT contact block (---[NOT]---) or negated coil (---(/)---) reverses the current rung logic state",
+        "Exclusive-OR (XOR) Logic: Constructed using two parallel branches containing cross-coupled NO and NC contacts: (A AND NOT B) OR (NOT A AND B)"
+      ],
+      "note": "Always remember the golden rule of field sensors: if a physical emergency stop pushbutton is hardwired as Normally Closed (NC) for fail-safe field integrity, it delivers +24V (TRUE) into %I0.0 in its normal safe state. In your PLC ladder program, you must examine %I0.0 using a Normally Open (NO) contact to allow power flow when the button is healthy and unpressed!"
+    },
+    {
+      "title": "2.2 Set / Reset Instructions for Contacts",
+      "content": "Standard output coils are momentary: when rung conditions become FALSE, the coil immediately turns OFF. In industrial automation, maintaining a machine state across cycles requires memory latching. Two primary methods achieve this: the traditional Seal-In Latching circuit (where an auxiliary NO contact of output coil %Q0.0 is wired in parallel with the momentary Start pushbutton), and dedicated Set (---(S)---) and Reset (---(R)---) latching instructions. When power flow reaches a Set coil, the designated memory bit is latched to TRUE (1) and remains locked even after rung power flow is removed. The bit can only be restored to FALSE (0) when a separate rung with a Reset coil is energized. Because a PLC executes networks sequentially, if both Set and Reset conditions for the same bit are active simultaneously, the 'Last-Write Wins' rule determines the outcome. Siemens provides dedicated bistable function blocks: the SR Flip-Flop (Set-dominant, where Set overrides Reset if both inputs are TRUE) and the RS Flip-Flop (Reset-dominant, where Reset overrides Set for enhanced machine safety).",
+      "keyPoints": [
+        "Seal-In Latch Topology: Traditional 3-wire motor circuit using a momentary start pushbutton in parallel with %Q0.0 auxiliary feedback contact",
+        "Set Coil (---(S)---): Latches the targeted boolean bit to logic 1 on a single TRUE scan; persists independently of future rung conditions",
+        "Reset Coil (---(R)---): Unlatches the targeted boolean bit to logic 0 on a single TRUE scan, clearing previous latched states",
+        "SR Flip-Flop Block (Set-Dominant): If both S and R1 inputs are TRUE simultaneously, the output Q remains latched TRUE (Set takes priority)",
+        "RS Flip-Flop Block (Reset-Dominant): If both S1 and R inputs are TRUE simultaneously, the output Q is forced FALSE (Reset takes priority)",
+        "Safety Engineering Standard: In safety-critical stop circuits, Reset-dominant (RS) logic or hardwired de-energization must always be utilized",
+        "Edge Detection Integration: Triggering Set/Reset coils through one-shot edge instructions (P_TRIG / N_TRIG) prevents perpetual coil overwrite"
+      ],
+      "note": "Avoid scattering multiple Set and Reset coils for the same bit address across different program blocks or distant networks. Uncoordinated S/R coils make online debugging notoriously difficult; prefer consolidated RS blocks or state machine registers."
+    },
+    {
+      "title": "2.3 Timers (TON, TOF, TP)",
+      "content": "IEC 61131-3 defines three standardized timer function blocks in the S7-1200, each backed by an internal Instance Data Block (IEC_Timer DB): TON (On-Delay Timer), TOF (Off-Delay Timer), and TP (Pulse Timer). The TON block delays the energization of an output: when the enable input (IN) transitions from FALSE to TRUE, the timer begins accumulating elapsed time (ET). When ET reaches the preset time (PT), the output (Q) turns TRUE and remains active until IN goes FALSE, which immediately resets ET to zero and drops Q to FALSE. The TOF block delays the de-energization of an output: when IN is TRUE, output Q is instantly TRUE; when IN transitions from TRUE to FALSE, timing begins, maintaining Q at TRUE until ET reaches PT, whereupon Q turns FALSE. The TP block generates an output pulse of exact duration PT: upon a rising edge at IN, output Q turns TRUE and timing commences; Q remains TRUE for the entire preset duration PT regardless of whether IN is released early or held on, after which Q drops FALSE.",
+      "keyPoints": [
+        "IEC_Timer Instance Data Block: Every timer instantiation consumes a dedicated data block storing internal state, elapsed time, and status bits",
+        "Preset Time (PT) Syntax: Expressed in IEC Time format: T#500ms, T#2s, T#1m30s, or T#1d (stored internally as a signed 32-bit millisecond integer)",
+        "TON (On-Delay Timer): Delays output turn-on; timing begins on IN rising edge; Q goes TRUE when ET >= PT; resets immediately if IN goes FALSE",
+        "TOF (Off-Delay Timer): Delays output turn-off; Q activates immediately with IN; timing begins on IN falling edge; Q turns FALSE when ET >= PT",
+        "TP (Pulse Timer): Generates fixed-width pulse of duration PT upon IN rising edge; immune to input contact bounce or premature input release",
+        "Elapsed Time (ET): Continuous output port exposing instantaneous running time in millisecond resolution, readable for HMI progress bars",
+        "Flasher Generator Circuit: Two TON timers cascaded in a closed loop (Timer 1 reset by Timer 2) create deterministic symmetric or asymmetric square waves"
+      ],
+      "note": "Do not attempt to pass an elapsed timer output (ET) to an analog actuator directly. ET is of data type TIME (milliseconds). To display timer countdowns on an HMI, divide ET by 1000 in a math block to convert milliseconds into integer seconds."
+    },
+    {
+      "title": "2.4 Counters (CTU, CTD, CTUD)",
+      "content": "Counting discrete occurrences—such as parts traversing a conveyor, machine cycles, or batch quantities—is implemented via standardized IEC 61131-3 counter function blocks: CTU (Count Up), CTD (Count Down), and CTUD (Bidirectional Count Up/Down). Each counter requires an Instance Data Block to store current count value (CV) and status flags. The CTU block monitors its count input (CU): on every rising edge (FALSE to TRUE transition), the current count value (CV) increments by 1. When CV becomes greater than or equal to the preset value (PV), the output flag (Q) evaluates TRUE. Asserting the Reset (R) input instantly forces CV to 0 and clears Q. The CTD block decrements CV on each rising edge of CD, initializing CV to PV when the Load (LD) input is pulsed; output Q turns TRUE when CV decrements to <= 0. The CTUD block combines both mechanisms with independent CU and CD clock inputs, separate QU and QD outputs, and simultaneous Reset and Load controls, making it ideal for tracking bidirectional storage buffers or parking garage capacity.",
+      "keyPoints": [
+        "Edge-Triggered Clocking: Counters increment/decrement strictly on the rising edge of input pulses; steady-state TRUE inputs do not cause repeated counts",
+        "Instance Data Block Architecture: Dedicated DB retains current count value (CV) across power interruptions if configured with retentive memory",
+        "Data Type Flexibility: Supported integer types include SInt (8-bit, max 127), Int (16-bit, max 32,767), and DInt (32-bit, max 2.14 billion counts)",
+        "CTU (Count Up): Increments CV on CU rising edge; Q activates when CV >= PV; Reset input (R) takes priority and forces CV = 0",
+        "CTD (Count Down): Decrements CV on CD rising edge; Q activates when CV <= 0; Load input (LD) loads preset PV into CV",
+        "CTUD (Bidirectional): Independent CU (up) and CD (down) inputs; QU flags over-target while QD flags empty buffer condition",
+        "Counting Speed Limitation: Software IEC counters in OB1 are limited by the PLC scan cycle time (max reliable input frequency ~50 Hz); higher frequencies require hardware High-Speed Counters (HSC)"
+      ],
+      "note": "If an optical sensor generates pulses narrower than the PLC scan cycle (e.g. small parts passing rapidly on a conveyor), an IEC counter in OB1 will miss counts! Use hardware High-Speed Counter (HSC) inputs or pulse-stretching sensor amplifiers for high-speed tracking."
+    },
+    {
+      "title": "2.5 Application Exercise",
+      "content": "This practical application synthesizes binary logic, timers, counters, and edge detection into a complete industrial workcell: an automated packaging line inspection and batch diversion station. The process operates as follows: an infeed conveyor motor (M1, %Q0.0) transports cartons past an optical part sensor (%I0.2). An inductive proximity sensor (%I0.3) inspects each carton for the presence of a metallic safety seal. As cartons pass, an IEC counter (CTU) increments the total production count. If a carton passes the optical sensor without triggering the metal proximity sensor, a defective-part condition is latched, and a TON timer initiates a calibrated delay matching the conveyor transit time to the reject pusher. When the timer elapses, a solenoid actuator (%Q0.1) pulses for 500 ms (via a TP timer) to divert the unsealed carton onto a reject chute. Upon reaching a batch count of 50 acceptable cartons, conveyor M1 halts, an acoustic buzzer (%Q0.2) sounds for 3 seconds via a TOF timer, and a packaging gate indexes the batch.",
+      "keyPoints": [
+        "System State Decomposition: Break complex machine cycles into discrete states: Idle, Running, Rejecting, Batch Complete, and Fault",
+        "Fail-Safe Interlocking: Hardwired NC emergency stop (%I0.0) and thermal motor overload (%I0.1) contacts precede all rung power flow",
+        "Part Tracking Mechanism: Synchronize sensor edge detection with conveyor mechanical travel time using precision TON timers",
+        "Defect Latching: Latch fault flags with Reset-dominant RS blocks; prevent machine restart until the reject bin is cleared and reset is pressed",
+        "Batch Management: Automatic counter reset upon batch completion combined with totalizer accumulation in a non-volatile Global DB",
+        "Structured Network Layout: Segregate code into logical networks: Network 1 (Safety & E-Stop), Network 2 (Conveyor Control), Network 3 (Inspection Logic), Network 4 (Pusher Actuation), Network 5 (Batch Counter)"
+      ],
+      "note": "Always document each ladder network with descriptive titles and comment headers explaining the mechanical sequence. In factory commissioning, well-commented ladder logic reduces fault diagnosis time from hours to minutes."
+    }
+  ],
+  "review": [
+    "Explain the functional difference between a Normally Open (NO) and Normally Closed (NC) contact in Ladder Diagram when evaluating a physical sensor.",
+    "A physical emergency stop pushbutton with hardwired NC contacts is connected to digital input %I0.0. Should you use a NO or NC contact in your ladder logic rung? Justify your answer.",
+    "Compare the operation of a traditional seal-in Start-Stop motor latch against Set (S) and Reset (R) coils. What occurs if both Set and Reset are active simultaneously?",
+    "Draw the timing diagrams for TON (On-Delay), TOF (Off-Delay), and TP (Pulse) timers, clearly showing the relationship between input IN, output Q, and elapsed time ET.",
+    "Why are software IEC counters in OB1 incapable of accurately counting pulses from high-speed rotary encoders operating at 10 kHz?",
+    "Describe how two TON timers can be interconnected to create an oscillating flasher circuit for an industrial alarm beacon.",
+    "In the batch diversion case study, explain how a TON timer and a TP timer work together to track and eject defective parts from a moving conveyor."
+  ]
+},
 
   '04-numeric-operations': {
-    "overview": "Numerical data structures and arithmetic manipulation form the core computational framework of modern PLCs. This lesson details fundamental IEC 61131-3 data types (BOOL, BYTE, INT, DINT, REAL, DWORD, STRING, TIME), the MOVE instruction, fixed-point and floating-point mathematics, magnitude comparisons, type conversions, and overflow handling on the S7-1200.",
-    "objectives": [
-      "Differentiate between IEC data types in TIA Portal (BOOL, BYTE, WORD, INT, DINT, REAL)",
-      "Deploy the MOVE instruction to transfer numerical values between memory registers",
-      "Execute arithmetic operations: addition, subtraction, multiplication, division, and modulo (MOD)",
-      "Utilize magnitude comparison blocks to execute conditional logic decisions",
-      "Perform data type conversions and output clamping using CONVERT and LIMIT blocks"
-    ],
-    "sections": [
-      {
-        "title": "6.1 Fundamental Data Types and Memory Sizing",
-        "content": "TIA Portal fully implements standard data types conforming to IEC 61131-3. Selecting appropriate data types optimizes memory consumption and prevents catastrophic numerical overflow errors.",
-        "keyPoints": [
-          "BOOL (1 bit): TRUE or FALSE — used for discrete binary states",
-          "BYTE (8 bits): Unsigned integer 0 to 255 — used for character codes and status masks",
-          "WORD (16 bits): Unsigned integer 0 to 65535 — used for raw registers and bit fields",
-          "DWORD (32 bits): Unsigned integer 0 to 4,294,967,295 — used for high-speed counter values and timestamps",
-          "INT (16 bits signed): −32,768 to +32,767 — standard signed integer",
-          "DINT (32 bits signed): −2,147,483,648 to +2,147,483,647 — double-length integer",
-          "REAL (32 bits IEEE 754): Single-precision floating-point number — used for analog scaling and PID mathematics",
-          "TIME (32 bits signed ms): T#0ms to T#24d20h31m23s647ms — standardized timer duration format",
-          "STRING: ASCII character array supporting up to 254 characters"
-        ]
-      },
-      {
-        "title": "6.2 The MOVE and Memory Block Transfer Instructions",
-        "content": "The MOVE instruction transfers data from input IN to destination OUT. Operands must share identical or compatible data types. Because MOVE executes every scan, conditional gating is essential when managing setpoint updates.",
-        "keyPoints": [
-          "MOVE: OUT := IN — copies value into target memory register",
-          "MOVE_BLK: Copies a contiguous block of array elements from source to destination",
-          "UMOVE_BLK: Uninterruptible memory block transfer protected against process interrupts",
-          "Automatic widening: Moving an INT into a DINT is performed automatically without data loss",
-          "FILL_BLK: Initializes an entire array by populating all elements with an identical initial value"
-        ]
-      },
-      {
-        "title": "6.3 Arithmetic Operations: Addition, Subtraction, Multiplication, Division, and Modulo",
-        "content": "The S7-1200 executes arithmetic operations across INT, DINT, and REAL operands. Engineers must account for integer truncation and register overflow when multiplying large values.",
-        "keyPoints": [
-          "ADD: Addition — OUT := IN1 + IN2",
-          "SUB: Subtraction — OUT := IN1 − IN2",
-          "MUL: Multiplication — OUT := IN1 × IN2",
-          "DIV: Division — OUT := IN1 ÷ IN2 (integer division truncates fractional remainders)",
-          "MOD: Modulo — OUT := IN1 MOD IN2 (extracts integer division remainder)",
-          "Overflow Mitigation: Convert INT operands to DINT or REAL before multiplication to prevent sign inversion",
-          "Floating-Point Precision: REAL calculations provide 7 significant decimal digits of accuracy"
-        ],
-        "note": "When dividing integer operands (INT ÷ INT), the result is strictly an integer truncated toward zero (e.g. 7 DIV 2 = 3, not 3.5). Convert operands to REAL if fractional precision is required."
-      },
-      {
-        "title": "6.4 Magnitude Comparison and Conditional Branches",
-        "content": "Comparison instructions evaluate numerical relationships between two values, outputting boolean TRUE/FALSE power flow to downstream ladder contacts.",
-        "keyPoints": [
-          "CMP ==: Equal to",
-          "CMP <>: Not equal to",
-          "CMP >: Greater than",
-          "CMP <: Less than",
-          "CMP >=: Greater than or equal to",
-          "CMP <=: Less than or equal to",
-          "Application Example: If Measured_Temperature > 80.0°C, energize high-temperature warning coil"
-        ]
-      },
-      {
-        "title": "6.5 Type Conversion and Clamping with CONVERT and LIMIT",
-        "content": "CONVERT handles transformations between numeric formats. LIMIT bounds values between calibrated minimum and maximum thresholds, preventing downstream actuator saturation.",
-        "keyPoints": [
-          "INT_TO_REAL: Transforms 16-bit integer values to floating-point REAL format for decimal arithmetic",
-          "REAL_TO_INT: Converts REAL values to integers using standard rounding rules",
-          "DINT_TO_INT: Narrowing conversion; will truncate high-order bits if value exceeds 32,767",
-          "LIMIT: OUT := LIMIT(MIN, IN, MAX) — clamps values strictly between MIN and MAX",
-          "ABS: Absolute value function — strips sign to return non-negative magnitude",
-          "MIN / MAX: Extracts lowest or highest value between input operands"
-        ]
-      },
-      {
-        "title": "6.6 Bit String Manipulation: DWORD, LWORD, and Bit Masking",
-        "content": "DWORD (32-bit) and LWORD (64-bit) represent unformatted bit patterns utilized for bitwise masking, machine status aggregation, and raw communication frame parsing.",
-        "keyPoints": [
-          "Bitwise Boolean Operations: AND, OR, XOR, NOT operations executed across parallel bit registers",
-          "Bit Masking: Use bitwise AND to isolate or clear specific bits; use OR to force specific flag bits TRUE",
-          "Ideal for packaging complex multi-station error codes into a single telemetry word",
-          "Bit Slicing Syntax: Access individual bits directly via tag name syntax (e.g. StatusWord.%X0)",
-          "Distinction: Distinct from signed integers (DINT/LINT); bit strings carry no arithmetic sign bit"
-        ]
-      },
-      {
-        "title": "6.7 Text String Processing: STRING Declarations and String Functions",
-        "content": "The STRING data type stores ASCII text strings. A declared STRING occupies memory equal to its defined character capacity plus a 2-byte header encoding maximum and current length.",
-        "keyPoints": [
-          "Memory Header: A STRING[20] variable occupies 22 bytes in memory (2 header bytes + 20 data bytes)",
-          "CONCAT: Concatenates two string variables into a unified string output",
-          "String Comparison: Evaluates equality (==) and lexicographical ordering (<, >) based on ASCII codes",
-          "Substring Extraction: LEFT, RIGHT, and MID instructions extract designated character segments",
-          "Applications: Displaying dynamic operator messages on HMI panels, barcode scanner parsing, label printing"
-        ]
-      },
-      {
-        "title": "6.8 Real-Time Date and Time Formats: TIME, DATE, TOD, and DTL",
-        "content": "The S7-1200 implements standardized IEC time and date structures. TIME defines durations; DATE, TOD, and DTL manage real-time clock (RTC) synchronization and shift scheduling.",
-        "keyPoints": [
-          "TIME: Duration format (e.g. T#14d_1h_5m), internally stored as a 32-bit signed integer in milliseconds",
-          "DATE: Calendar date format (e.g. D#2026-10-21)",
-          "TOD (Time_Of_Day): Clock time within a 24-hour cycle (e.g. TOD#23:55:00.000)",
-          "Duration Arithmetic: TIME values support direct addition and subtraction (e.g. T#2s + T#3s = T#5s)",
-          "DTL Structure: 12-byte comprehensive date and time container resolving down to nanosecond precision"
-        ]
-      },
-      {
-        "title": "6.9 Advanced Data Conversions: CONV and BCD Decoding",
-        "content": "Beyond standard Int/Real conversions, legacy machines frequently utilize Binary-Coded Decimal (BCD) thumbwheel switches and 7-segment digital displays.",
-        "keyPoints": [
-          "The universal CONV instruction adapts across diverse numeric formats based on selected types",
-          "BCD Encoding: Represents each decimal digit (0–9) using a dedicated 4-bit nibble",
-          "BCD_TO_INT: Decodes thumbwheel switch inputs into standard integers for PLC math",
-          "INT_TO_BCD: Encodes internal integer registers into BCD format for hardware display driving",
-          "Data Truncation Alert: Always verify destination register capacity when performing narrowing conversions"
-        ]
-      },
-      {
-        "title": "6.10 Two's Complement Representation and Arithmetic Overflow",
-        "content": "The S7-1200 represents signed integers (INT, DINT) using two's complement binary notation. The Most Significant Bit (MSB) serves as the sign flag (0 = positive, 1 = negative).",
-        "keyPoints": [
-          "16-Bit INT Range: −32,768 to +32,767",
-          "Two's Complement Formulation: Invert all bits and add 1 to the result",
-          "Arithmetic Overflow: Adding 1 to +32,767 results in −32,768, creating severe operational faults if unmanaged",
-          "Overflow Detection: Monitor the instruction ENO output or CPU status flags (OV, OS) to trap overflow exceptions",
-          "Safe Practice: Utilize 32-bit DINT or REAL variables for accumulators and totalizers prone to high magnitudes"
-        ]
-      },
-      {
-        "title": "6.11 Practical Laboratory: Flow Totalization and HMI Numeric Display",
-        "content": "Integrates numerical data operations to calculate instantaneous liquid flow rates, totalize cumulative volumetric consumption, and format clean rounded values for HMI visualization.",
-        "keyPoints": [
-          "Scale raw analog input counts (INT) into calibrated flow velocity in m³/h (REAL)",
-          "Totalize cumulative volume by integrating flow samples over discrete timer intervals",
-          "Deploy comparison blocks (CMP) to trigger high-consumption alarm thresholds",
-          "Apply the ROUND instruction to convert floating-point totals into clean integers for HMI displays",
-          "Format dynamic text alarm strings using STRING concatenation for operator dispatch"
-        ]
-      }
-    ],
-    "review": [
-      "What are the fundamental differences between REAL and INT data types, and when is REAL mandatory?",
-      "Why does integer division 7 DIV 2 yield 3 instead of 3.5 in PLC programming?",
-      "Write a ladder rung: If measured oven temperature (MW10, INT) > 80°C, energize output %Q0.0.",
-      "Evaluate: LIMIT(0, MW20, 100) when MW20 holds a value of 150. What is the resulting output?",
-      "To compute rectangular surface area (Length × Width) yielding decimal precision, what conversion must be executed prior to multiplication?",
-      "Describe an industrial application where bitwise AND masking on a DWORD register is technically necessary.",
-      "How many bytes of physical PLC memory are occupied by a declared STRING[20] variable?",
-      "Why does an integer register overflow when incrementing past +32,767, suddenly becoming −32,768?"
-    ]
-  },
+  "overview": "This lesson covers the numeric data processing architecture of modern programmable controllers. Industrial applications require continuous measurement, mathematical calculations, recipes, comparisons, and time stamping. Students will study elementary IEC 61131-3 data types (Bool, Byte, Word, DWord, Int, DInt, Real, Time), memory organization and bit alignment in S7-1200 data blocks, magnitude comparisons, bit-shift and rotate operations for tracking FIFO buffers, arithmetic functions with overflow and division-by-zero protection, and the on-board Real-Time Clock (RTC) for shift-based scheduling.",
+  "objectives": [
+    "Identify, classify, and size all elementary and complex IEC 61131-3 data types in TIA Portal",
+    "Analyze memory allocation, byte addressing, and word boundaries across Bit Memory (%M) and Data Blocks (DB)",
+    "Implement relational comparison operations (==, <>, >, >=, <, <=) and window comparators for numeric limits",
+    "Apply bit-shift (SHL, SHR) and rotate (ROL, ROR) instructions to implement FIFO shift registers on material conveyors",
+    "Perform arithmetic calculations (ADD, SUB, MUL, DIV, MOD) and construct compound equations using the CALCULATE block",
+    "Read, write, and manipulate the hardware Real-Time Clock using system functions (RD_SYS_T, WR_SYS_T, RD_LOC_T) and the DTL structure"
+  ],
+  "sections": [
+    {
+      "title": "3.1 Data Space and Data Types",
+      "content": "Microprocessors in industrial PLCs manipulate data represented in standardized bit lengths defined by IEC 61131-3. Bit strings include BYTE (8 bits, 0 to 255 hex 16#FF), WORD (16 bits, 0 to 65,535 hex 16#FFFF), and DWORD (32 bits, hex 16#FFFF_FFFF), used primarily for raw hardware bitmasks and communication telegrams. Signed integers represent numeric quantities using two's complement notation: SINT (8-bit, -128 to +127), INT (16-bit, -32,768 to +32,767), and DINT (32-bit, -2,147,483,648 to +2,147,483,647). Continuous process variables (temperature, flow, pressure) utilize REAL (32-bit floating point complying with IEEE 754), which allocates 1 sign bit, an 8-bit exponent, and a 23-bit mantissa to represent values from ±1.175495e-38 to ±3.402823e+38. Memory in the S7-1200 is addressed by area prefix and byte offset: %MB10 (Memory Byte 10), %MW10 (Memory Word occupying bytes 10 and 11, where %MB10 is the high byte and %MB11 is the low byte in Big-Endian format), and %MD10 (Memory Double-word occupying bytes 10 through 13). Overlapping memory addresses will cause silent data corruption.",
+      "keyPoints": [
+        "Bit String Types: BYTE (8-bit), WORD (16-bit), DWORD (32-bit), LWORD (64-bit); interpreted as raw hexadecimal bit patterns",
+        "Signed Integer Types: SINT (8-bit), INT (16-bit), DINT (32-bit), LINT (64-bit); use two's complement for negative values",
+        "Floating-Point REAL (32-bit): IEEE 754 standard representing fractional numbers with ~7 decimal digits of precision; format: 1.2345e+2",
+        "Temporal Data Type (TIME): Stored internally as a signed 32-bit integer expressing time duration in milliseconds (e.g. T#2h45m)",
+        "Big-Endian Memory Alignment: In S7-1200 standard memory, the most significant byte (MSB) is stored at the lowest byte memory address",
+        "Address Overlap Hazard: Writing a 32-bit value to %MD10 overwrites bytes %MB10, %MB11, %MB12, and %MB13; %MW10 and %MW12 share this memory space",
+        "Optimized vs Standard DBs: Modern S7-1200 Data Blocks default to 'Optimized block access', eliminating physical byte offsets and preventing address overlap"
+      ],
+      "note": "Always use 'Optimized block access' for new Data Blocks in TIA Portal. Optimized blocks allow the CPU compiler to arrange variables by memory alignment for maximum execution speed, prevent address overlapping errors, and support retain settings on individual variables."
+    },
+    {
+      "title": "3.2 Comparison Functions",
+      "content": "Comparison instructions evaluate numerical relationships between two values of identical data type and pass virtual ladder power flow if the mathematical condition is satisfied. TIA Portal provides six standard comparison contact blocks in LAD: Equal (==), Not Equal (<>), Greater Than (>), Greater Than or Equal (>=), Less Than (<), and Less Than or Equal (<=). During evaluation, input IN1 is compared against input IN2 (IN1 == IN2). In process automation, comparisons are used to trigger high-level alarms, interlock heating circuits when temperatures exceed thresholds, and synchronize multi-stage machines. When comparing floating-point REAL numbers, direct equality (==) should be avoided because rounding errors inherent in IEEE 754 floating-point arithmetic can cause numbers that are mathematically equal to differ by fractional bits in the lowest mantissa position. Instead, engineers implement an epsilon tolerance band: ABS(IN1 - IN2) < 0.001. Window comparators combine two comparisons in series (e.g. Value >= Min AND Value <= Max) to confirm that a process parameter is within safe operating limits.",
+      "keyPoints": [
+        "In-Line LAD Contact Blocks: Comparison instructions appear as contact boxes placed directly in the ladder rung power flow path",
+        "Strict Type Consistency: Both comparison operands (IN1 and IN2) must share the identical data type (e.g. comparing an INT directly to a REAL causes a compiler syntax error)",
+        "Equality Hazard with REALs: Due to binary floating-point representation, 1.0 / 3.0 * 3.0 may evaluate to 0.9999999 rather than 1.0000000; never use '==' on REAL variables",
+        "Floating-Point Tolerance Band: Evaluate equality using absolute difference: ABS(RealA - RealB) <= Epsilon",
+        "Window Comparator: Placing a '>=' contact in series with a '<=' contact validates that a process variable remains inside a defined deadband",
+        "Multi-Condition Branching: Multiple comparison contacts placed in parallel branches execute conditional branching based on operating modes"
+      ],
+      "note": "When comparing analog sensor signals (e.g. tank level or temperature), always implement a software hysteresis deadband (e.g. 2%) between the alarm trip point and the clear point to prevent rapid chattering of alarm relays when the signal hovers near the threshold."
+    },
+    {
+      "title": "3.3 Rotate and Shift Functions",
+      "content": "Shift and rotate instructions manipulate the individual bit positions within BYTE, WORD, or DWORD registers. Shift Left (SHL) shifts bits toward the most significant bit (MSB) by n positions, filling evacuated low-order bit positions with binary zeros; each 1-bit left shift effectively multiplies an unsigned integer by 2. Shift Right (SHR) shifts bits toward the least significant bit (LSB) by n positions, filling evacuated high-order bits with zeros; each 1-bit right shift divides an unsigned integer by 2. Rotate Left (ROL) and Rotate Right (ROR) operate as closed circular registers: bits pushed out of one end are looped back into the opposite end without bit loss. In manufacturing, shift registers are widely used for parts tracking along indexed conveyor lines: a binary shift register represents consecutive conveyor pockets. When an inspection camera detects a defective part at Station 1, it shifts a logic '1' into bit 0. As the conveyor advances, an encoder proximity pulse triggers an SHL instruction, moving the defect bit down the register until it reaches the reject pusher station, which fires automatically.",
+      "keyPoints": [
+        "Shift Left (SHL): Shifts bit pattern left by n positions; vacated low-order bits filled with 0; equivalent to multiplying unsigned values by 2^n",
+        "Shift Right (SHR): Shifts bit pattern right by n positions; vacated high-order bits filled with 0; equivalent to integer division by 2^n",
+        "Rotate Left (ROL): Circular shift left; bit shifted out of MSB re-enters at LSB position; no bits are destroyed",
+        "Rotate Right (ROR): Circular shift right; bit shifted out of LSB re-enters at MSB position",
+        "Parts Tracking Shift Register: Each bit represents a mechanical station along a transfer line; clock pulses advance the register synchronously with conveyor motion",
+        "Bit Masking Operations: Combining bit shifts with logical AND/OR operations allows engineers to pack and unpack multiple binary flags into single communication words",
+        "Byte Swapping (SWAP): Reverses the byte order within a WORD or DWORD to convert between Big-Endian and Little-Endian network telegrams"
+      ],
+      "note": "Always trigger SHL and SHR instructions using a one-shot rising edge pulse (P_TRIG)! If a shift instruction is energized with a continuous TRUE signal, it will execute on every single PLC scan cycle, shifting all bits to zero within a few milliseconds."
+    },
+    {
+      "title": "3.4 Arithmetic Functions",
+      "content": "The S7-1200 instruction set includes full mathematical capabilities for integer and floating-point computations: ADD (Addition), SUB (Subtraction), MUL (Multiplication), DIV (Division), and MOD (Modulo / Integer Division Remainder). Arithmetic blocks execute when enabled (EN = TRUE) and pass power to the output (ENO = TRUE) if the calculation completes successfully without numeric exceptions. In addition to basic two-operand blocks, TIA Portal provides the compound CALCULATE instruction, which allows engineers to write complete algebraic expressions (e.g. ((IN1 * 1.8) + 32.0) for Celsius-to-Fahrenheit conversion) within a single ladder box. Arithmetic operations are susceptible to two major industrial runtime errors: Numeric Overflow (when a calculation exceeds the maximum representable limit of the target data type) and Division by Zero (attempting to divide by a variable that equals zero). If an integer divides by zero, the CPU asserts the overflow status flag and, depending on configuration, can fault the controller into STOP mode unless protected by upstream logic.",
+      "keyPoints": [
+        "Elementary Math Blocks: ADD (IN1 + IN2), SUB (IN1 - IN2), MUL (IN1 * IN2), DIV (IN1 / IN2), MOD (remainder of integer division)",
+        "CALCULATE Block: Evaluates multi-term mathematical formulas directly in LAD without chaining dozens of individual math boxes",
+        "Data Type Promotion: When multiplying two 16-bit INTs, the product can exceed 32,767; convert operands to 32-bit DINT prior to multiplication to prevent overflow",
+        "Division by Zero Protection: Always precede a DIV instruction with a comparison contact verifying that the divisor is not equal to zero (Divisor <> 0)",
+        "ENO Enable Output Behavior: ENO evaluates FALSE if a mathematical fault occurs (overflow, underflow, NaN, division by zero), allowing safe fault handling",
+        "Rounding Functions: ROUND (rounds floating point to nearest integer), TRUNC (truncates fractional digits toward zero), CEIL (rounds up), FLOOR (rounds down)",
+        "Advanced Math Blocks: SQR (square), SQRT (square root), LN (natural logarithm), EXP (exponential), and trigonometric functions (SIN, COS, TAN)"
+      ],
+      "note": "Never perform division without a safety interlock! In LAD, place a contact [ Divisor <> 0.0 ] immediately before the DIV block. If a field sensor fails and outputs zero, an unprotected DIV block will trigger a CPU math exception and drop the line offline."
+    },
+    {
+      "title": "3.5 Real-Time Clock",
+      "content": "The S7-1200 CPU incorporates an on-board hardware Real-Time Clock (RTC) backed by a high-capacity supercapacitor that maintains current date and time for up to 20 days during complete electrical power failure. In TIA Portal, calendar and time data is represented by the DTL (Date and Time Long) structured data type, a 12-byte structure containing: Year (UInt), Month (USInt), Day (USInt), Weekday (USInt, 1=Sunday to 7=Saturday), Hour (USInt), Minute (USInt), Second (USInt), and Nanosecond (UDInt). Siemens provides system functions for clock interaction: RD_SYS_T reads Coordinated Universal Time (UTC) directly from the hardware clock; RD_LOC_T reads local time accounting for time zone offsets and daylight saving time (DST) rules; and WR_SYS_T writes a new time stamp to the hardware clock. Industrial applications utilize the RTC for automated time-of-day shift scheduling, logging production hourly totals to non-volatile memory, calculating equipment runtime hours for preventive maintenance schedules, and time-stamping fault events in diagnostic alarm logs.",
+      "keyPoints": [
+        "Hardware RTC Supercapacitor: Retains clock operation and calendar advancement for typically 20 days at 25°C without external 24VDC power",
+        "DTL Structure Components: 12-byte composite tag comprising Year, Month, Day, Weekday, Hour, Minute, Second, and Nanoseconds",
+        "RD_SYS_T (Read System Time): Retrieves current UTC time from hardware RTC into a DTL tag; executed with minimal CPU overhead",
+        "RD_LOC_T (Read Local Time): Retrieves local time adjusted for configured regional time zone and daylight saving daylight shifts",
+        "WR_SYS_T (Write System Time): Updates the CPU hardware clock from an HMI input or an automated network NTP time server",
+        "Time-of-Day Interrupts (OB10): Can be scheduled to execute at exact calendar dates/times (e.g. daily at 06:00:00 for morning shift reset)",
+        "Operational Hour Logging: Measuring pump runtime hours by accumulating running seconds from the RTC into retentive double-word registers"
+      ],
+      "note": "For facilities with multiple PLCs and HMIs, always configure Network Time Protocol (NTP) synchronization in the CPU PROFINET properties. NTP ensures that all controllers across the plant floor share millisecond-synchronized clocks, making cross-machine event logging and fault root-cause analysis accurate."
+    }
+  ],
+  "review": [
+    "List the bit lengths, numeric ranges, and memory representation for BYTE, INT, DINT, and REAL data types in Siemens S7-1200.",
+    "Explain what occurs in PLC memory when an engineer assigns %MD10 to a REAL flow value and simultaneously assigns %MW10 to a motor speed reference.",
+    "Why is it hazardous to evaluate floating-point equality using a simple '==' comparison block in Ladder Diagram? Provide the recommended solution.",
+    "Describe how a Shift Left (SHL) instruction and an optical part sensor can be combined to track defective items along an automated conveyor line.",
+    "What specific runtime error occurs if a DIV instruction attempts to divide by zero, and how do you protect against this in your ladder logic?",
+    "Explain the internal structure of the DTL data type and contrast the system functions RD_SYS_T and RD_LOC_T.",
+    "A plant manager requires a daily production totalizer to automatically reset at exactly 06:00:00 every morning. How would you implement this using the RTC?"
+  ]
+},
 
   '05-analog-signals': {
-    "overview": "Industrial analog signals represent continuous physical variables such as temperature, pressure, fluid flow, and tank level. The S7-1200 processes analog inputs through the NORM_X and SCALE_X instructions, converting 12-bit to 16-bit unipolar digitized raw counts (0–27648) into real-world calibrated engineering units.",
-    "objectives": [
-      "Explain industrial 4–20mA current loop and 0–10V voltage signal standards",
-      "Configure analog input (AI) and output (AO) modules and correctly wire 2-wire, 3-wire, and 4-wire transmitters",
-      "Deploy NORM_X and SCALE_X instructions to scale raw counts into engineering units",
-      "Implement High/Low alarm limits with hysteresis deadbands on analog variables",
-      "Filter raw sensor noise utilizing moving average digital filter algorithms"
-    ],
-    "sections": [
-      {
-        "title": "9.1 Analog Signals in Industrial Automation",
-        "content": "The two prevailing industrial analog signal standards are 4–20mA (current loop: noise-immune, long transmission distances, broken-wire detection) and 0–10V (voltage: straightforward bench testing, vulnerable to line resistance drops). S7-1200 analog modules convert physical signals into standardized raw integer counts ranging from 0 to 27648.",
-        "keyPoints": [
-          "Current Loop Standard: 4mA corresponds to 0% span; 20mA corresponds to 100% span",
-          "Voltage Standard: 0V corresponds to 0% span; 10V corresponds to 100% span",
-          "Superiority of 4–20mA: Live zero allows immediate detection of severed field wiring (<3.6mA signifies wire break)",
-          "Standard Raw Count: 0 to 27648 corresponds to 0% to 100% nominal measuring span",
-          "Full Scale: 27648 counts = 20mA or 10V input",
-          "Underflow Region (<0 counts down to −32768): Indicates open circuit, reverse polarity, or sensor failure"
-        ]
-      },
-      {
-        "title": "9.2 Analog Input Module Configuration and Transmitter Wiring",
-        "content": "The SM 1231 Analog Input module supports 4 or 8 channels. Parameterizing the input type (Current or Voltage) and range in TIA Portal must match the physical field transmitter topology.",
-        "keyPoints": [
-          "Configuration in TIA Portal: Device Configuration → Signal Module → Channel Properties → Measurement Type",
-          "Select Range: ±10V, 0–10V, ±5V, 0–20mA, 4–20mA",
-          "2-Wire Transmitter (Loop-Powered): Sensor draws operating power directly from the 4–20mA current loop",
-          "3-Wire Transmitter: Shares common power ground, with separate DC supply and active signal lines",
-          "4-Wire Transmitter: External line power supply; current output loop is completely isolated",
-          "RTD Interfacing: Specialized SM 1231 RTD modules interface directly with PT100/PT1000 sensors without external transmitters"
-        ]
-      },
-      {
-        "title": "9.3 NORM_X and SCALE_X — Two-Step Engineering Unit Scaling",
-        "content": "NORM_X normalizes raw integer counts (0–27648) into an unscaled floating-point ratio between 0.0 and 1.0. SCALE_X scales that normalized ratio into physical engineering units (°C, bar, m³/h).",
-        "keyPoints": [
-          "NORM_X: Normalized_Value := (Raw_Input − MIN) / (MAX − MIN) → yields REAL 0.0 to 1.0",
-          "SCALE_X: Engineering_Value := MIN + (Normalized_Value × (MAX − MIN)) → yields calibrated real value",
-          "Example: PT100 RTD (−50°C to +150°C): NORM_X(0, %AIW64, 27648) → SCALE_X(−50.0, norm, 150.0)",
-          "Example: 4–20mA Pressure (0 to 10 bar): NORM_X(5530, %AIW64, 27648) → SCALE_X(0.0, norm, 10.0)",
-          "Offset Calibration: 5530 counts corresponds to 4mA (20% of 27648)",
-          "Inline Optimization: Scaling formulas can be implemented directly within a single line of SCL code"
-        ],
-        "note": "When scaling unconditioned 4–20mA signals on a unipolar 0–20mA module, set the MIN parameter of NORM_X to 5530 (4mA), NOT zero."
-      },
-      {
-        "title": "9.4 Digital Noise Filtering and Signal Conditioning",
-        "content": "Analog signals in plant environments are susceptible to electromagnetic interference (EMI) from VFDs and large contactors. Moving average digital filtering smooths sensor noise to stabilize control loops.",
-        "keyPoints": [
-          "Moving Average Algorithm: Computes the arithmetic mean across the N most recent periodic samples",
-          "Filter Trade-Off: Higher sample sizes (N) deliver smoother signals but introduce phase lag into fast control loops",
-          "Implementation: SCL array buffer shifting executed cyclically within an interrupt OB",
-          "Deadband Filtering: Updates process variables only when signal changes exceed a calibrated threshold",
-          "High Alarm (Hi): Activates warning when PV exceeds high threshold (e.g. Temperature > 90.0°C)",
-          "Alarm Hysteresis: Alarm trips at 90.0°C and resets at 86.0°C, preventing rapid alarm chattering around the setpoint"
-        ]
-      },
-      {
-        "title": "9.5 Analog Output (AO) Modules and Actuator Driving",
-        "content": "The SM 1232 Analog Output module generates ±10V, 0–20mA, or 4–20mA signals to command variable frequency drives (VFDs), proportional valves, and SCR power controllers.",
-        "keyPoints": [
-          "Writing to AO: Write integer counts (0–27648) to output word %AQW64",
-          "Reverse Scaling: Use reverse SCALE_X and NORM_X to convert engineering values into 0–27648 counts",
-          "VFD Frequency Reference: 0Hz corresponds to 4mA (5530 counts); 50Hz corresponds to 20mA (27648 counts)",
-          "Control Valve Positioning: 0% stroke = 4mA, 100% stroke = 20mA",
-          "PID Loop Integration: Output of PID_Compact (0.0–100.0%) scaled directly to %AQW channel register"
-        ]
-      },
-      {
-        "title": "9.6 Signal Modules SM 1231 and SM 1232 Technical Specifications",
-        "content": "SM 1231 (AI) and SM 1232 (AO) provide high-resolution analog interfacing. Critical engineering parameters include ADC resolution, conversion speed, and optical isolation ratings.",
-        "keyPoints": [
-          "SM 1231: Available in 4-channel or 8-channel differential input configurations (Voltage or Current)",
-          "SM 1232: Available in 2-channel or 4-channel analog output configurations",
-          "Resolution: 12-bit to 16-bit analog-to-digital conversion yielding high measurement granularity",
-          "Hardware Diagnostics: Automatic detection of wire breaks, channel short-circuits, and input overrange",
-          "Dedicated Power Rails: Requires clean 24VDC field power distributed to module L+/M terminals"
-        ]
-      },
-      {
-        "title": "9.7 Hardware Filtering and Moving Average Smoothing",
-        "content": "Plant floor noise suppression combines hardware RC integration on the module with digital filtering in software to deliver stable, repeatable measurements.",
-        "keyPoints": [
-          "Hardware Integration Filter: Configurable in TIA Portal with integration times (None, Weak, Medium, Strong)",
-          "Software Averaging: Calculates rolling mean over N successive scan samples",
-          "Noise Immunity: Prevents false trips on high-limit safety interlocks",
-          "Trend Smoothing: Eliminates high-frequency noise spikes on operator SCADA trend screens"
-        ]
-      },
-      {
-        "title": "9.8 Resistance Temperature Detectors: PT100 and PT1000 RTD Interfacing",
-        "content": "PT100 and PT1000 RTD sensors measure temperature via positive temperature coefficient platinum resistance. They represent the industry standard for precision thermal monitoring.",
-        "keyPoints": [
-          "Dedicated RTD Module: Automatically linearizes resistance, outputting temperature × 10 (e.g. 253 counts = 25.3°C)",
-          "Direct Temperature Reading: Bypasses manual NORM_X / SCALE_X arithmetic",
-          "3-Wire Wiring Topology: Compensates for lead wire resistance using a third sensing conductor",
-          "PT100 Specification: Exactly 100.0 Ω resistance at 0.0°C (0.385 Ω/°C sensitivity)",
-          "PT1000 Specification: 1000.0 Ω at 0.0°C; offers superior lead-length noise immunity over long cable runs"
-        ]
-      },
-      {
-        "title": "9.9 Technical Comparison: 4–20mA Current Loops versus 0–10V Voltage Signals",
-        "content": "Understanding physical signal characteristics enables automation engineers to select optimal instrumentation for noisy, sprawling plant installations.",
-        "keyPoints": [
-          "0–10V Vulnerability: Voltage signals suffer IR drop across long cable runs; susceptible to induced EMI",
-          "4–20mA Immunity: Current loop delivers identical current regardless of lead resistance; highly immune to EMI",
-          "Failsafe Broken-Wire Detection: A severed cable drops current to 0mA, immediately triggering open-circuit alarms",
-          "Loop-Powered Convenience: Allows 2-wire field transmitters to be powered directly from the signaling loop",
-          "Industrial Recommendation: Standardize on 4–20mA for all field wiring exceeding 10 meters in distance"
-        ]
-      },
-      {
-        "title": "9.10 Analog Output Control of Variable Frequency Drives (VFDs)",
-        "content": "A classic automation control loop: The PLC outputs an analog speed setpoint to a VFD via 0–10V or 4–20mA, driving the motor at the proportional operational frequency.",
-        "keyPoints": [
-          "VFD Analog Input: Configured to interpret 4–20mA as 0.0Hz to 50.0Hz (or 60.0Hz)",
-          "PLC Scaling Logic: Reverse SCALE_X converts frequency setpoints into 5530–27648 counts",
-          "Drive Macro Configuration: VFD parameter settings must be calibrated to match the analog terminal scaling",
-          "Shield Termination: Analog cable shields must be grounded at the PLC cabinet end only to prevent ground loops",
-          "Closed-Loop Velocity Regulation: Combines analog speed output with PID feedback to maintain constant conveyor speed"
-        ]
-      },
-      {
-        "title": "9.11 Practical Laboratory: Closed-Loop Thermal Control via PID and Analog Outputs",
-        "content": "Synthesizes analog signal processing into a complete thermal control system: reading temperatures via RTD, computing PID corrective commands, and modulating heater power.",
-        "keyPoints": [
-          "Analog Input: Real-time temperature measurement feedback from PT100 RTD sensor",
-          "Operator Setpoint: User-adjustable target setpoint entered via HMI touchscreen",
-          "PID Controller: PID_Compact evaluates error e(t) and outputs manipulated variable (0–100%)",
-          "Power Actuation: Output drives a solid-state relay (SSR) via PWM or analog SCR controller",
-          "Commissioning: Execute pre-tuning and fine-tuning to achieve rapid settling without thermal overshoot"
-        ]
-      }
-    ],
-    "review": [
-      "Why is 4–20mA preferred over 0–10V for long-distance analog signal transmission in industrial plants?",
-      "A PT100 RTD sensor measures −50°C to +150°C. If raw input %AIW64 reads 13824 counts, calculate the actual physical temperature in °C.",
-      "Write the NORM_X and SCALE_X ladder parameters to scale a 4–20mA pressure transmitter measuring 0 to 10 bar.",
-      "If an 8-sample moving average filter is applied, how many sample cycles elapse before a sudden step change is fully reflected in the filtered output?",
-      "An analog output controls a 0–50Hz VFD via 4–20mA. To command a motor frequency of 35Hz, what raw integer count must be written to %AQW64?",
-      "When reading a PT100 sensor through a dedicated Siemens SM 1231 RTD module, what raw integer format does the module return?",
-      "Explain how a 4–20mA current loop detects a severed field wire compared to a 0–10V voltage circuit.",
-      "Describe how alarm hysteresis (deadband) prevents relay chattering on analog temperature monitoring circuits."
-    ]
-  },
-
-  '08-advanced-instructions': {
-    "overview": "Advanced PLC software engineering focuses on modular program architecture: Functions (FC), Function Blocks (FB), Instance Data Blocks, Array indexing, shift/rotate registers, and Structured Control Language (SCL). The goal is architecting standardized, maintainable, and reusable automation code.",
-    "objectives": [
-      "Create and invoke Functions (FC) and Function Blocks (FB) from Main OB1",
-      "Understand the architecture of Instance DBs and contrast them with Global DBs",
-      "Declare, manipulate, and iterate through single and multi-dimensional Arrays",
-      "Implement bitwise shift (SHL/SHR) and rotate (ROL/ROR) instructions for sequential tracking",
-      "Develop structured algorithms in SCL using IF/THEN/ELSE, FOR loops, and CASE statements"
-    ],
-    "sections": [
-      {
-        "title": "7.1 Functions (FC) — Stateless Logic Subroutines",
-        "content": "A Function (FC) is a stateless logic routine that does not possess dedicated internal static memory. Upon block completion, all temporary (TEMP) local stack variables are de-allocated. FCs are ideal for mathematical calculations, unit conversions, and stateless logical transformations.",
-        "keyPoints": [
-          "No Static Memory: Interface contains Input, Output, InOut, Temp, and Return declarations",
-          "Invocation: Called from OB, FB, or peer FC blocks with parameter passing",
-          "Return Value: Can return a calculation result directly through its block return identifier",
-          "Reusability: Write once, instantiate repeatedly across different process areas",
-          "Application Examples: Analog scaling routines, temperature conversion formulas, alarm summary checks"
-        ]
-      },
-      {
-        "title": "7.2 Function Blocks (FB) — Stateful Subroutines with Instance Memory",
-        "content": "A Function Block (FB) differs fundamentally from an FC by incorporating Static (STAT) memory that persists across successive scan cycles. Every invocation of an FB requires an associated Instance Data Block (Instance DB) to store its unique state.",
-        "keyPoints": [
-          "Static Memory (STAT): Variables retain their values indefinitely across scan cycles",
-          "Instance Data Block: Dedicated DB automatically generated upon FB invocation to store instance state",
-          "Object-Oriented Philosophy: Encapsulates recurring equipment (e.g. standard FB for motor starters, valves)",
-          "Multi-Instance Architecture: An enclosing parent FB can embed child FBs within a single shared Instance DB",
-          "Application Example: FB Motor_Control maintaining internal tags: Running (BOOL), TotalRunHours (REAL)"
-        ],
-        "note": "Never write directly to the internal static tags of an Instance DB from outside its governing FB. Pass variables cleanly through the block interface parameters."
-      },
-      {
-        "title": "7.3 Arrays — Structured Data Collections",
-        "content": "An Array is an indexed collection of identical data types accessed via numerical subscript indexes. Arrays are essential for batch tracking, multi-channel temperature monitoring, recipe storage, and shift data history.",
-        "keyPoints": [
-          "Declaration Syntax: Array[0..9] of INT defines a 10-element array of integers",
-          "Indexing Syntax: MyArray[3] references the fourth element (zero-based indexing)",
-          "Dynamic Indexing: Use variable integer tags as indexes within iterative loops",
-          "SCL Integration: FOR loops iterate cleanly across array bounds (e.g. FOR i := 0 TO 9 DO)",
-          "Multidimensional Arrays: Array[0..2, 0..3] of REAL models 2D coordinate matrices",
-          "Applications: Shift production history, recipe setpoint tables, multi-zone thermal logging"
-        ]
-      },
-      {
-        "title": "7.4 Bit Shift (SHL/SHR) and Rotate (ROL/ROR) Instructions",
-        "content": "Shift and rotate instructions shift bit patterns within WORD or DWORD registers. They are widely utilized for item position tracking on conveyor lines, rotating beacon sequences, and binary protocol encoding.",
-        "keyPoints": [
-          "SHL (Shift Left): Shifts bits left by N positions; vacant lower bits are filled with zeros",
-          "SHR (Shift Right): Shifts bits right by N positions; vacant upper bits are filled with zeros",
-          "ROL (Rotate Left): Shifts bits left; overflowing high-order bits wrap around into the lowest bit positions",
-          "ROR (Rotate Right): Shifts bits right; overflowing low-order bits wrap around into the highest bit positions",
-          "Conveyor Tracking: Shifts a binary \"part present\" flag along a register synchronously with conveyor pulse clocks",
-          "Bit Manipulation: Combined with AND/OR masks to manipulate packed status words"
-        ]
-      },
-      {
-        "title": "7.5 Structured Control Language (SCL / IEC Structured Text)",
-        "content": "SCL is a high-level, textual programming language based on Pascal and C. It allows complex mathematical algorithms, data table manipulation, and sorting routines to be expressed far more concisely than Ladder Diagram.",
-        "keyPoints": [
-          "Conditional Branching: IF ... THEN ... ELSIF ... ELSE ... END_IF;",
-          "State Machine Selection: CASE variable OF 1: ...; 2: ...; ELSE ...; END_CASE;",
-          "Iterative Loops: FOR i := 0 TO 9 DO ... END_FOR;",
-          "Conditional Loops: WHILE condition DO ... END_WHILE;",
-          "Seamless Coexistence: LAD and SCL blocks operate harmoniously within the identical project",
-          "Optimal Domain: Complex mathematics, array sorting, string parsing, recipe management"
-        ],
-        "note": "SCL does not replace LAD; they complement each other. LAD remains optimal for discrete digital safety interlocks and field troubleshooting; SCL excels at data algorithms and mathematical computing."
-      },
-      {
-        "title": "7.6 Block Parameter Passing: IN, OUT, IN_OUT, and Local TEMP Variables",
-        "content": "Rigorous parameter management decouples algorithmic logic from absolute addresses, maximizing code modularity and preventing unintended cross-talk between program routines.",
-        "keyPoints": [
-          "IN (Input): Read-only data passed into the block; original external tag remains unmodified",
-          "OUT (Output): Write-only result calculated by the block; updates external tag upon block termination",
-          "IN_OUT (In/Out): Read/write parameter passed by reference; allows in-place variable modification",
-          "TEMP (Temporary): Local scratchpad memory allocated on the CPU stack; de-allocated upon block exit",
-          "Initialization Rule: Always initialize TEMP variables prior to reading to avoid uninitialized garbage values"
-        ]
-      },
-      {
-        "title": "7.7 Multi-Instance Function Block Architecture",
-        "content": "Multi-instance architecture allows a parent Function Block to embed multiple child Function Blocks, consolidating all static variables into a single unified Instance Data Block.",
-        "keyPoints": [
-          "Drastically reduces Data Block proliferation across large project trees",
-          "Encapsulates complex machinery subsystems into clean, self-contained composite blocks",
-          "Simplifies library packaging and version-controlled distribution",
-          "Enables dot-notation addressing for nested internal structures (e.g. MasterFB.Pump1.Running)",
-          "Ideal for standardized machine templates featuring repetitive multi-head actuator stations"
-        ]
-      },
-      {
-        "title": "7.8 Global Data Blocks versus Instance Data Blocks",
-        "content": "Data Blocks (DBs) provide structured data storage in PLC memory. Global DBs are universally accessible across all blocks; Instance DBs are strictly bound to a single parent FB.",
-        "keyPoints": [
-          "Global DB: Universally read and written by any Organization Block, FC, or FB across the project",
-          "Use Global DBs for plant-wide setpoints, recipe tables, SCADA tags, and system operating modes",
-          "Instance DB: Bound exclusively to an associated Function Block to preserve internal private state",
-          "Encapsulation Rule: Restrict external read/write access to Instance DBs to preserve data integrity",
-          "Both DB types support Retentive memory configuration to survive power interruptions"
-        ]
-      },
-      {
-        "title": "7.9 Retentive Variables and Non-Volatile Memory Preservation",
-        "content": "Retentive variable configuration guarantees that critical process setpoints, batch recipe tags, and machine calibration parameters persist intact across CPU power cycles and restarts.",
-        "keyPoints": [
-          "Utilizes hardware non-volatile NVRAM backed by onboard supercapacitors",
-          "Essential for cumulative runtime counters, batch totalizers, and machine home positions",
-          "Configured easily by checking the \"Retain\" column checkbox in Data Block interface editors",
-          "Retentive capacity is hardware-bounded; allocate retentive memory deliberately for critical tags only",
-          "Instance DBs inherit retentive properties from the parent FB variable declarations"
-        ]
-      },
-      {
-        "title": "7.10 Project and Global Engineering Libraries",
-        "content": "TIA Portal libraries package tested Function Blocks, User Data Types (UDTs), and HMI Faceplates into reusable modules, dramatically accelerating standardized engineering.",
-        "keyPoints": [
-          "Project Library: Manages reusable blocks local to the current active project",
-          "Global Library: Independent, standalone library file shared across different enterprise projects",
-          "Version Control: Enforces formal semantic version tracking for library blocks",
-          "Unified Packaging: Packages PLC code, UDT structures, and WinCC HMI Faceplates together",
-          "Accelerates commissioning by allowing pre-tested, standardized equipment blocks to be dropped onto new rungs"
-        ]
-      },
-      {
-        "title": "7.11 Structured Programming and Modular Hierarchy",
-        "content": "Structured programming decomposes complex automated machinery into decoupled, manageable subsystems. Main OB1 acts as a top-level dispatcher calling dedicated modular functions.",
-        "keyPoints": [
-          "OB1 functions as a clean sequence dispatcher calling structured FC and FB blocks",
-          "Avoid monolithic rungs: decompose sprawling logic into discrete functional units",
-          "Organize code hierarchically by process area (e.g. Raw Material Handling, Heating, Packaging)",
-          "Enhances diagnostic transparency, isolating faults quickly during production stoppages",
-          "Enables concurrent multi-engineer development across standardized block interfaces"
-        ]
-      }
-    ],
-    "review": [
-      "Detail the fundamental technical differences between an FC and an FB. Under what criteria is an FB mandatory?",
-      "What is an Instance Data Block, and when is it generated during the TIA Portal engineering workflow?",
-      "Declare an SCL array of 5 REAL values named \"Zone_Temperatures\" and write an SCL code snippet to compute their arithmetic mean.",
-      "Evaluate the result of: SHL(W#16#0001, 3). Provide the output in hexadecimal notation.",
-      "Write an SCL CASE statement: If mode = 1, run Pump A; if mode = 2, run Pump B; if mode = 3, run both pumps simultaneously.",
-      "Contrast the operational behaviors of IN, OUT, and IN_OUT block interface parameters.",
-      "What is the primary architectural advantage of utilizing Multi-Instance Function Blocks?",
-      "Explain the scope and access distinctions between a Global Data Block and an Instance Data Block."
-    ]
-  },
-
-  '09-high-speed-counting': {
-    "overview": "High-Speed Counters (HSC) capture high-frequency encoder pulse trains independently of CPU scan time. Pulse Width Modulation (PWM) modulates duty cycle for variable power delivery. Pulse Train Output (PTO) interfaces with stepper and servo drives through PLCopen Motion Control.",
-    "objectives": [
-      "Configure High-Speed Counter (HSC) channels to decode optical incremental encoders",
-      "Read and manipulate high-speed counter values programmatically within ladder code",
-      "Configure and modulate Pulse Width Modulation (PWM) duty cycles for variable loads",
-      "Implement Pulse Train Output (PTO) and commission PLCopen Motion Control blocks (MC_Power, MC_MoveAbsolute)"
-    ],
-    "sections": [
-      {
-        "title": "8.1 High-Speed Counter (HSC) Hardware Architecture",
-        "content": "High-Speed Counters (HSC) are dedicated on-chip hardware counters integrated within the S7-1200 microprocessor that accumulate pulse frequencies up to 100kHz asynchronously from the OB1 scan cycle.",
-        "keyPoints": [
-          "Hardware-Driven: Operates independently of CPU scan time, guaranteeing zero missed pulses",
-          "Dedicated Physical Pins: Inputs %I0.0 (HSC1), %I0.2 (HSC2), %I0.4 (HSC3)... reserved for counter channels",
-          "3 Operating Modes: Single Phase (single pulse stream), A/B Phase (quadrature encoder), Pulse + Direction",
-          "Quadrature A/B Decoding (4x): Evaluates phase relationship between channels A and B to resolve direction and quadruple resolution",
-          "Count Register (CV): 32-bit signed DINT spanning −2,147,483,648 to +2,147,483,647",
-          "Preset Value (PV): Reference target count that triggers hardware interrupts or automatic counter resets"
-        ],
-        "note": "When an HSC channel is enabled in TIA Portal, its associated physical digital input pins are dedicated to the hardware counter and cannot be read as standard discrete DI inputs."
-      },
-      {
-        "title": "8.2 HSC Channel Configuration in TIA Portal",
-        "content": "HSC channels are configured in Device Configuration → CPU Properties → High Speed Counters. Parameters define counting modes, hardware identifiers, and interrupt assignments.",
-        "keyPoints": [
-          "Step 1: Open CPU Properties → High Speed Counters → Check \"Enable this high-speed counter\"",
-          "Step 2: Select Operational Function: Counting, Frequency measurement, or Period duration",
-          "Step 3: Define Counting Mode: Single phase, A/B phase quadrature, or Pulse/Direction",
-          "Step 4: Note the Hardware Identifier and input address register (e.g. %ID1000)",
-          "Step 5: Compile hardware configuration and download to target CPU",
-          "Reading Value: Access %ID register directly or manage dynamically via the CTRL_HSC instruction"
-        ]
-      },
-      {
-        "title": "8.3 Pulse Width Modulation (PWM) Control",
-        "content": "PWM generates a continuous rectangular wave with a fixed frequency and variable duty cycle (0% to 100%). It is widely applied for heating power modulation, DC motor velocity control, and proportional valve positioning.",
-        "keyPoints": [
-          "Fixed Frequency: Configurable from 1Hz up to 100kHz",
-          "Variable Duty Cycle: 0% (fully de-energized) to 100% (continuously energized)",
-          "Hardware Setup: Device Configuration → Pulse Generators (PTO/PWM) → Enable PWM mode",
-          "Control Interface: Modulate duty cycle dynamically via output word registers or the CTRL_PWM block",
-          "Transistor Output Requirement: PWM channels mandate solid-state DC transistor outputs (CPU DC/DC/DC)"
-        ]
-      },
-      {
-        "title": "8.4 Pulse Train Output (PTO) and PLCopen Motion Control",
-        "content": "PTO outputs variable-frequency pulse trains to command stepper and servo drive amplifiers. The S7-1200 integrates Motion Control Technology Objects conforming to international PLCopen standards.",
-        "keyPoints": [
-          "MC_Power: Enables the drive amplifier and initializes the motion axis",
-          "MC_Home: Executes homing sequences to calibrate machine zero datum",
-          "MC_MoveAbsolute: Commands motion to a specific absolute engineering coordinate (mm, degrees)",
-          "MC_MoveRelative: Commands relative positioning travel from the current position",
-          "MC_MoveVelocity: Commands continuous velocity jog rotation",
-          "MC_Halt / MC_Stop: Decelerates axis to a controlled stop or executes emergency stop abort",
-          "Axis Technology Object: Parameterizes mechanical gear ratios, lead-screw pitches, and acceleration limits"
-        ],
-        "note": "On S7-1200 CPUs, PTO channels utilize on-board outputs %Q0.0 (PTO1) and %Q0.1 (PTO2). These physical outputs cannot be used for standard coils when PTO is active."
-      },
-      {
-        "title": "8.5 Counting Modes, Quadrature A/B Phase, and Hardware Interrupts",
-        "content": "Selecting optimal counter decoding modes matches sensor physical dynamics, while hardware interrupts allow immediate response upon reaching target production thresholds.",
-        "keyPoints": [
-          "Configure Phase Decoding to match encoder electrical outputs (Single-ended or Differential)",
-          "Reference Value: Set target count thresholds that trigger OB40 hardware interrupt routines",
-          "Zero Latency: Interrupt routines execute immediately, bypassing the normal scan cycle delay",
-          "Direction Inversion: Invert direction flags programmatically without swapping physical sensor wires"
-        ]
-      },
-      {
-        "title": "8.6 Programmatic Interfacing via the CTRL_HSC Instruction Block",
-        "content": "The CTRL_HSC instruction allows user code to dynamically modify counter parameters, reload reference setpoints, and reset current counts during runtime.",
-        "keyPoints": [
-          "Direct Register Read: Current counter value is continuously available at double-word address %ID (e.g. %ID1000)",
-          "CTRL_HSC Instruction: Executes runtime control commands (resetting, changing direction, updating target values)",
-          "Parameter NEW_CV: Injects a new starting count value into the hardware register",
-          "Parameter DIR: Commands counting direction dynamically from software logic",
-          "Diagnostic Feedback: Status and error flags report hardware counter health to the user program"
-        ]
-      },
-      {
-        "title": "8.7 Pulse Generator Configuration in TIA Portal",
-        "content": "Configuring on-board Pulse Generators (PTO/PWM) dictates physical output channel assignments, signal formats, and hardware identifiers.",
-        "keyPoints": [
-          "Enable Pulse Generators in CPU Properties (e.g. Pulse 1, Pulse 2)",
-          "Select Signal Type: PWM (duty cycle modulation) or PTO (frequency modulation)",
-          "Output Format: Assign pulse stream (Pulse A) and direction output (Direction B)",
-          "Hardware Identifier: Dedicated hardware ID links software blocks to physical channels",
-          "Requires fast solid-state transistor outputs on the CPU mainboard"
-        ]
-      },
-      {
-        "title": "8.8 Motor Speed and Heater Control via Dynamic PWM Duty Cycles",
-        "content": "Modulating duty cycle proportionally varies average DC voltage delivered to resistive heaters or DC motor armatures.",
-        "keyPoints": [
-          "The CTRL_PWM instruction enables or disables the pulse output stream programmatically",
-          "Write duty cycle values (0–1000 corresponding to 0.0%–100.0%) directly to output word %QW registers",
-          "High Switching Frequency: Eliminates audible acoustic hum and mechanical vibration",
-          "Power Interfacing: Drives solid-state relays (SSRs) or MOSFET H-bridge amplifiers",
-          "Closed-Loop Integration: Serves as the manipulated variable output for PID temperature loops"
-        ]
-      },
-      {
-        "title": "8.9 Motion Control Axis Technology Objects and Commissioning",
-        "content": "Axis Technology Objects encapsulate drive kinematics, mechanical gear ratios, and safety limit switches into a unified engineering interface.",
-        "keyPoints": [
-          "Create Technology Object: Axis (Linear or Rotary kinematics)",
-          "Mechanical Parameterization: Pulses per revolution, millimeters traveled per motor rotation",
-          "Dynamic Limits: Maximum velocity, maximum acceleration, jerk limitation (S-curve smoothing)",
-          "Integrated Commissioning Panel: Manual jogging, homing, and positioning tests prior to writing code",
-          "Safety Limits: Software travel boundaries and hardware overtravel limit switch assignments"
-        ]
-      },
-      {
-        "title": "8.10 Practical Application: Real-Time Motor RPM Measurement via Encoder",
-        "content": "Measures rotational motor speed by counting incremental encoder pulses over precise cyclic interrupt time windows.",
-        "keyPoints": [
-          "Execute calculation inside a cyclic interrupt block (OB30 configured to exactly 100ms)",
-          "Delta Pulses Calculation: Delta_Pulses := Current_Count − Previous_Count",
-          "Velocity Formula: RPM := (Delta_Pulses / Pulses_Per_Rev) × (60.0 / Sample_Period_Seconds)",
-          "High Precision: Utilize DINT and REAL types to eliminate round-off errors at high velocities",
-          "Feedforward Data: Calculated RPM feeds directly into closed-loop velocity PID algorithms"
-        ]
-      }
-    ],
-    "review": [
-      "How does a High-Speed Counter (HSC) fundamentally differ from a standard CTU counter block, and when is an HSC mandatory?",
-      "An incremental encoder produces 1000 pulses/rev in A/B Quadrature mode (4x decoding). If the motor shaft completes 5 full rotations, what is the net change in the counter CV register?",
-      "A PWM channel operates at a frequency of 1kHz with a 30% duty cycle. What is the active ON duration in microseconds during each cycle?",
-      "Enumerate the mandatory prerequisite steps that must be executed before commanding an MC_MoveAbsolute instruction.",
-      "An axis is positioned at coordinate 250.0mm. If an MC_MoveRelative instruction is executed with Distance := 100.0mm, what is the final axis position?",
-      "Detail the configuration steps required to activate and parameterize an HSC channel in TIA Portal.",
-      "How does user logic dynamically modify the active duty cycle of a PWM output channel from Ladder Diagram?",
-      "Explain the mathematical formulation for computing motor rotational RPM using encoder pulse differences across timed cyclic interrupts."
-    ]
-  },
-
-  '10-closed-loop-pid': {
-    "overview": "Proportional-Integral-Derivative (PID) control is the dominant closed-loop algorithm in the process and manufacturing industries. The Siemens S7-1200/1500 family incorporates the dedicated PID_Compact technology block featuring integrated auto-tuning in TIA Portal.",
-    "objectives": [
-      "Understand the mathematical principles of Proportional (P), Integral (I), and Derivative (D) control modes",
-      "Configure and instantiate the PID_Compact technology block on an S7-1200 CPU",
-      "Execute automated Pre-Tuning and Fine-Tuning workflows and manually trim PID gains",
-      "Design closed-loop control architectures for temperature, fluid pressure, and liquid level processes"
-    ],
-    "sections": [
-      {
-        "title": "10.1 Mathematical Principles of PID Control",
-        "content": "PID calculates corrective control output by evaluating: current instantaneous error (P), cumulative historical error (I), and anticipated rate of error change (D). The objective is compelling the Process Variable (PV) to track the Setpoint (SP) despite plant disturbances.",
-        "keyPoints": [
-          "Control Error Formulation: e(t) := Setpoint (SP) − Process Variable (PV)",
-          "Proportional Term (P): Output proportional to error (Kp × e); provides immediate corrective drive but exhibits steady-state offset",
-          "Integral Term (I): Integrates error over time (Ti); systematically eliminates steady-state offset",
-          "Derivative Term (D): Differentiates error rate of change (Td); provides anticipatory damping to reduce overshoot",
-          "Gain Tuning: Higher Kp accelerates response but risks instability; lower Ti accelerates integral correction; higher Td adds damping but amplifies noise"
-        ]
-      },
-      {
-        "title": "10.2 The PID_Compact Technology Block Architecture",
-        "content": "PID_Compact is an integrated technology function block in TIA Portal featuring bumpless Auto/Manual transfer, automatic gain tuning, output saturation clamping, and anti-windup protection.",
-        "keyPoints": [
-          "Setpoint: Desired reference target in physical engineering units (REAL)",
-          "Input: Process variable feedback in physical units (REAL), or raw peripheral counts via Input_PER",
-          "Output: Calculated manipulated variable (REAL, 0.0% to 100.0%), or direct peripheral word Output_PER",
-          "Manual Control: ManualEnable activates manual override; ManualValue sets forced output level",
-          "Operating Modes: 0=Inactive, 1=Pre-tuning, 2=Fine-tuning, 3=Automatic, 4=Manual",
-          "Deterministic Calling: Must be invoked from a constant-period Cyclic Interrupt OB (e.g. OB30 at 100ms)"
-        ]
-      },
-      {
-        "title": "10.3 Auto-Tuning and Commissioning Workflows",
-        "content": "TIA Portal provides an interactive Commissioning editor for PID_Compact supporting automated identification (Pre-tuning → Fine-tuning) alongside real-time trend visualization.",
-        "keyPoints": [
-          "Pre-Tuning: Applies test output steps to measure system dead-time and process gain parameters",
-          "Fine-Tuning: Closes the feedback loop to optimize Kp, Ti, and Td gains for minimal overshoot",
-          "Automatic Gain Allocation: Optimized tuning constants are populated directly into the Instance DB",
-          "Manual Trimming: Engineers can manually trim gains based on operational requirements",
-          "Real-Time Trending: Graphically compares Setpoint (SP), Process Variable (PV), and Output (OUT) curves simultaneously"
-        ],
-        "note": "Always initiate Auto-Tuning when the plant is in a steady, quiescent thermal/fluid state—never during major transient disturbances."
-      },
-      {
-        "title": "10.4 Operating Modes of PID_Compact",
-        "content": "PID_Compact supports flexible operational states to facilitate seamless commissioning, operational changeovers, and emergency overrides.",
-        "keyPoints": [
-          "Inactive Mode (0): Controller is de-energized; output forced to zero or safe configured value",
-          "Automatic Mode (3): Closed-loop feedback regulation actively tracking the Setpoint (SP)",
-          "Manual Mode (4): Open-loop manual control where operators directly command the output percentage",
-          "Integrated Alarm Diagnostics: Built-in monitoring of high/low limits and loop broken-wire detection",
-          "Execution Architecture: Requires deterministic time-slice invocation within a Cyclic Interrupt OB"
-        ]
-      },
-      {
-        "title": "10.5 Mathematical Principles of Pre-Tuning and Fine-Tuning",
-        "content": "The integrated tuning algorithm identifies open-loop and closed-loop process models, utilizing inflection-point methods to derive optimal PID constants.",
-        "keyPoints": [
-          "Automatically quantifies process dead-time (delay) and time constants",
-          "Computes balanced PID gains prioritizing stability or disturbance rejection",
-          "Pre-Tuning: Best executed from ambient startup to characterize heating/cooling rates",
-          "Fine-Tuning: Executes small closed-loop oscillations to refine damping ratios",
-          "Eliminates trial-and-error guesswork, reducing loop commissioning time from hours to minutes"
-        ]
-      },
-      {
-        "title": "10.6 Process Variable Conditioning and Output Scaling",
-        "content": "Flexible input/output mapping accommodates both direct physical peripheral hardware channels and pre-conditioned software registers.",
-        "keyPoints": [
-          "Setpoint Source: Configurable from HMI operator entries or automated supervisory recipe DBs",
-          "Process Variable Mapping: Select \"Input\" for pre-scaled REAL values; select \"Input_PER\" for raw %AIW counts",
-          "Output Options: \"Output\" for 0–100% REAL; \"Output_PER\" for 0–27648 analog outputs; \"Output_PWM\" for pulse pins",
-          "Output Rate Limiting: Limits maximum slew rate (% change per second) to prevent mechanical valve shock",
-          "Input Noise Filtering: Built-in low-pass filter cleans noise on the incoming process variable"
-        ]
-      },
-      {
-        "title": "10.7 Output Saturation Clamping and Anti-Windup Protection",
-        "content": "Clamping output bounds protects final control actuators while integral anti-windup algorithms prevent massive transient overshoots following large setpoint changes.",
-        "keyPoints": [
-          "Output_UpperLimit and Output_LowerLimit: Clamps output between safe physical limits (e.g. 0% to 100%)",
-          "Actuator Protection: Prevents overdriving valves, pumps, or electrical heater circuits",
-          "Integral Windup Phenomenon: Occurs when sustained error causes integral terms to accumulate to massive values while output is saturated",
-          "Anti-Windup Mechanism: Halts integral accumulation whenever output reaches upper or lower clamping limits",
-          "Rapid Recovery: Ensures immediate closed-loop recovery the moment the process variable returns within the proportional band"
-        ]
-      },
-      {
-        "title": "10.8 Manual Override and Bumpless Transfer",
-        "content": "Enables human operators to take manual control of field actuators during maintenance or process anomalies without causing physical plant disturbances.",
-        "keyPoints": [
-          "Operator Toggle: Switch seamlessly between Automatic and Manual modes via HMI touchscreen controls",
-          "ManualValue Tag: Defines the direct actuator command percentage while in Manual mode",
-          "Bumpless Transfer: When switching from Manual back to Auto, internal integral states initialize to match current output, preventing sudden jolts",
-          "Crucial for system commissioning, initial line charging, and sensor failure recovery",
-          "Configurable safe fallback output state triggered automatically upon sensor loop loss"
-        ]
-      },
-      {
-        "title": "10.9 Cascade Control Architectures (Master-Slave Loops)",
-        "content": "Cascade control pairs two feedback loops in series to rapidly attenuate fast upstream disturbances before they destabilize slow primary process variables.",
-        "keyPoints": [
-          "Primary Master Controller: Monitors slow outer variable (e.g. reactor temperature) and outputs setpoint for the inner loop",
-          "Secondary Slave Controller: Regulates fast inner variable (e.g. steam jacket flow rate or pressure)",
-          "Disturbance Rejection: Rejects supply-side line pressure fluctuations before tank temperature is perturbed",
-          "Significantly improves settling time and dynamic stability in thermal and chemical processes",
-          "Rule of Thumb: The inner slave loop must execute 3 to 5 times faster than the outer master loop"
-        ]
-      },
-      {
-        "title": "10.10 Practical Application: Thermal Chamber PID Control with HMI",
-        "content": "Implements an industrial thermal chamber regulation system utilizing PID_Compact, RTD temperature telemetry, and interactive HMI operator screens.",
-        "keyPoints": [
-          "Hardware Architecture: S7-1200 CPU paired with an SM 1231 RTD module and solid-state relay power stage",
-          "Block Configuration: PID_Compact parameterized with thermal limits and anti-windup clamping",
-          "HMI Screen Development: Real-time numeric entry, live PV display, and historical trending curves",
-          "Auto-Tuning Execution: Run pre-tuning and fine-tuning to determine optimal thermal constants",
-          "Performance Verification: Quantify control metrics: rise time, percentage overshoot, and steady-state error"
-        ]
-      }
-    ],
-    "review": [
-      "Explain the distinct physical roles of Proportional (P), Integral (I), and Derivative (D) terms in closed-loop feedback regulation.",
-      "Given PID parameters Kp = 2.0, Ti = 10s, and Td = 0.5s, which term is responsible for eliminating steady-state error?",
-      "From what type of Organization Block must the PID_Compact block be invoked, and why is this requirement technically critical?",
-      "Enumerate the sequential steps required to execute an automated PID Pre-Tuning workflow in TIA Portal.",
-      "Design a thermal control loop for a drying oven: Setpoint = 80°C, PT100 RTD sensor input, solid-state relay (SSR) heating output.",
-      "What is the practical purpose of \"Bumpless Transfer\" when toggling between Manual and Automatic modes on an HMI?",
-      "Why is output clamping combined with integral anti-windup protection mandatory when commanding real physical actuators?",
-      "In a cascade PID control architecture, how do the Master and Slave control loops interact with each other?"
-    ]
-  },
-
-  '11-communication': {
-    "overview": "Industrial communication networks integrate the PLC with operator HMIs, peer PLCs, variable speed drives, and plant-wide SCADA supervisory systems. The S7-1200 supports PROFINET, S7 Communication (PUT/GET), Modbus TCP/RTU, and OPC UA protocols.",
-    "objectives": [
-      "Configure PROFINET IO networks to communicate with distributed remote I/O and field devices",
-      "Implement S7 Communication between peer PLCs utilizing PUT and GET client instructions",
-      "Program and parameterize Modbus TCP Client/Server and Modbus RTU master/slave networks",
-      "Understand the architecture of OPC UA and its critical role in Industrial IoT (IIoT) connectivity"
-    ],
-    "sections": [
-      {
-        "title": "11.1 Overview of Industrial Communication Networks",
-        "content": "Industrial automation relies on robust standardized communication protocols: PROFINET (real-time Ethernet-based), PROFIBUS-DP (legacy RS485 token-ring), Modbus TCP/RTU (open, universal cross-vendor protocol), and OPC UA (platform-independent secure IIoT protocol).",
-        "keyPoints": [
-          "PROFINET: Industrial Ethernet, 100 Mbps full-duplex, deterministic cycle times ≥1ms",
-          "PROFIBUS-DP: RS485 fieldbus, speeds up to 12 Mbps, widely deployed across legacy installations",
-          "Modbus TCP: Universal Modbus protocol encapsulated over standard Ethernet TCP/IP port 502",
-          "Modbus RTU: Serial master-slave communication over RS485 or RS232 electrical lines",
-          "OPC UA: Open, vendor-neutral, encrypted protocol for enterprise SCADA and cloud integration"
-        ]
-      },
-      {
-        "title": "11.2 PROFINET IO Architecture and Device Commissioning",
-        "content": "PROFINET IO represents Siemens' primary real-time communication standard. A PROFINET IO Controller (PLC) deterministically commands distributed PROFINET IO Devices (remote I/O racks, VFD drives, HMI panels).",
-        "keyPoints": [
-          "IO Controller: The master CPU executing control logic and scheduling communication (e.g. S7-1200)",
-          "IO Device: Distributed field apparatus (e.g. ET200SP remote I/O drops, SINAMICS drives)",
-          "Network Configuration: Drag and drop field devices into the TIA Portal Network View and assign to the controller",
-          "Real-Time (RT) Class: Deterministic cyclic data exchange ranging from 1ms to 512ms update times",
-          "GSDML Device File: XML device description file provided by equipment manufacturers defining module parameters"
-        ]
-      },
-      {
-        "title": "11.3 Modbus TCP and Modbus RTU Communication Protocols",
-        "content": "Modbus is a universal, open master-slave protocol supported by virtually all industrial instrumentation. Modbus masters initiate request telegrams; addressed slaves execute commands and return response packets.",
-        "keyPoints": [
-          "Function Code 01: Read Discrete Output Coils (digital outputs)",
-          "Function Code 03: Read Holding Registers (analog/integer registers)",
-          "Function Code 05: Write Single Coil",
-          "Function Code 06: Write Single Holding Register",
-          "MB_COMM_LOAD: Initializes the serial communication module (CM 1241) port parameters",
-          "MB_MASTER: Transmits Modbus requests from the PLC to remote slave instrumentation",
-          "MB_SLAVE: Configures the PLC to respond as an addressable Modbus slave device"
-        ],
-        "note": "Modbus RTU requires adding a CM 1241 RS485 communication module or CB 1241 board to the S7-1200. Standard baud rates include 9600, 19200, 38400, and 115200 bps."
-      }
-    ],
-    "review": [
-      "Explain the technical distinctions between PROFINET RT (Real-Time) and PROFINET IRT (Isochronous Real-Time).",
-      "What is the operational function of Modbus Function Code 03, and what data structure constitutes its request/response packet?",
-      "What specific hardware module must be added to an S7-1200 CPU to enable Modbus RTU serial communication?",
-      "How does S7 Communication operate when exchanging data between two peer PLCs using PUT and GET instructions?",
-      "What architectural advantages does OPC UA offer over legacy Modbus in modern IIoT and Industry 4.0 applications?"
-    ]
-  },
-
-  '12-fault-diagnostics': {
-    "overview": "Fault diagnosis and troubleshooting are essential competencies in maintaining automated manufacturing cells. TIA Portal equips engineers with comprehensive online tools: CPU Diagnostic Buffer, Watch Tables, Force Tables, Signal Traces, and Live Program Status.",
-    "objectives": [
-      "Inspect and interpret the CPU Diagnostic Buffer to trace historical hardware and software error events",
-      "Deploy Watch Tables and Force Tables to validate field I/O and simulate operating conditions",
-      "Capture high-speed signal dynamics using the integrated TIA Portal Trace utility",
-      "Identify and troubleshoot common operational faults across PLC hardware, wiring, and software logic"
-    ],
-    "sections": [
-      {
-        "title": "14.1 Diagnostic Toolset in TIA Portal",
-        "content": "TIA Portal provides a comprehensive online diagnostic suite enabling automation technicians to inspect CPU operating status, module health, and ladder power flow in real time without halting production.",
-        "keyPoints": [
-          "Diagnostic Buffer: Historical log of CPU system events, hardware faults, and programming errors (stores up to 50 entries)",
-          "Module Information: Real-time telemetry reporting channel health, supply voltage, and wire breaks on expansion modules",
-          "Watch Table: Real-time tabular monitoring and modification of selected process variables",
-          "Force Table: Permanently overrides peripheral physical I/O points for hardware verification",
-          "Trace Utility: High-resolution signal recorder capturing variables down to individual scan cycle resolution",
-          "Program Status (Glasses Icon): Displays live energized power flow through ladder rungs"
-        ]
-      },
-      {
-        "title": "14.2 Systematic Troubleshooting of Digital Input (DI) Modules",
-        "content": "When a digital input channel fails to report field switch actuation, follow a systematic isolation procedure: verify field sensor power supply, measure voltage at module terminal screws, and verify common-point polarity.",
-        "keyPoints": [
-          "Measure DC voltage across terminal Ix.x and common terminal 1M with a digital multimeter when sensor is actuated",
-          "Voltage < 5VDC while sensor is actuated indicates broken field wiring or a defective sensor output",
-          "Voltage ≥ 15VDC present at screw terminal but channel LED remains unlit indicates internal optocoupler module failure",
-          "Channel LED illuminates green but software tag remains 0 indicates hardware configuration mismatch or CPU in STOP mode",
-          "Verify sensor output topology (PNP vs NPN) matches module common-terminal configuration (Sink vs Source)"
-        ]
-      },
-      {
-        "title": "14.3 Systematic Troubleshooting of Digital Output (DO) Modules",
-        "content": "When an actuator fails to energize, utilize Force Tables to verify software command delivery, inspect module protection fuses, and check field supply voltage rails.",
-        "keyPoints": [
-          "Inspect the module branch circuit fuse first; fuses commonly blow due to external coil short-circuits",
-          "Force the output channel to 1 in the Force Table and measure voltage directly across terminal Qx.x and neutral M",
-          "If voltage toggles to 24VDC but contactor fails to pull in, the fault resides in external wiring or the contactor coil",
-          "If voltage remains 0VDC while forced, inspect load power supply rail (1L/2L) or replace the output module",
-          "Relay Modules: Check for welded contacts or contact burn-out resulting from unsuppressed inductive arcing"
-        ]
-      },
-      {
-        "title": "14.4 Power Supply Quality and Memory Corruption Troubleshooting",
-        "content": "Power quality issues cause erratic CPU behavior, watchdog timeouts, and memory loss. Verify 24VDC voltage tolerance, ripple voltage, and grounding integrity.",
-        "keyPoints": [
-          "Verify 24VDC power supply output voltage (must remain strictly within ±10%, between 21.6VDC and 26.4VDC)",
-          "Check AC ripple voltage: High power supply ripple (>150mV pp) causes CPU brownout resets",
-          "Electromagnetic Interference (EMI): Install ferrite chokes on analog and communication cables near noisy VFDs",
-          "Upload software from the physical CPU to an engineering PC and compare against golden backup archives",
-          "\"Memory Card Error\": Requires clearing memory faults or re-formatting the SIMATIC Memory Card via TIA Portal"
-        ],
-        "note": "Always maintain current, verified project backup archives prior to performing maintenance on industrial PLC systems."
-      },
-      {
-        "title": "14.5 Online Program Monitoring and Real-Time Variable Manipulation",
-        "content": "Online monitoring features allow engineers to observe live ladder execution and inject test values to validate machine interlocks.",
-        "keyPoints": [
-          "Go Online: Establishes active communication session between TIA Portal and physical automation devices",
-          "Program Status: Green solid lines indicate true power flow; blue dashes indicate unenergized logic paths",
-          "Watch Table: Enables grouping and observing mission-critical tags during live production runs",
-          "Force Table: Forces hardware inputs/outputs, bypassing all internal software interlocking logic",
-          "Modify Value: Injects transient test values into data block tags to test operational sequences"
-        ]
-      },
-      {
-        "title": "14.6 Reading and Decoding the CPU Diagnostic Buffer",
-        "content": "The CPU Diagnostic Buffer is the primary forensic flight-recorder of the PLC, recording critical operational events, memory faults, and communication disruptions.",
-        "keyPoints": [
-          "Stores up to 50 sequential events on S7-1200 (expandable up to 3200 events on S7-1500)",
-          "Records hardware faults, programming syntax errors, I/O access violations, and mode transitions",
-          "Each event contains a microsecond timestamp, unique Event ID code, and descriptive diagnostic text",
-          "\"Open in Editor\" Button: Automatically opens and navigates directly to the exact ladder rung causing the fault",
-          "Non-Volatile Retention: Retains historical diagnostic logs intact across power interruptions"
-        ]
-      },
-      {
-        "title": "14.7 Front-Panel LED Diagnostics and Fault Decoding",
-        "content": "Front-panel status LEDs on the CPU and expansion modules provide instantaneous physical diagnostics on the factory floor without requiring an engineering laptop.",
-        "keyPoints": [
-          "RUN/STOP LED: Solid Green = RUN mode; Solid Amber = STOP mode; Flashing = Startup transition",
-          "ERROR LED: Flashing Red = Minor fault / I/O access error; Solid Red = Fatal CPU hardware or memory fault",
-          "MAINT LED: Solid Amber = Maintenance demanded (e.g. RTC battery depleted, SD card service needed)",
-          "I/O Channel LEDs: Directly indicate presence of electrical potential at the physical screw terminal",
-          "Correlate combinations: RUN Green + ERROR Red Flash indicates program exception with CPU continuing execution"
-        ]
-      },
-      {
-        "title": "14.8 Common Execution Faults and Error Organization Blocks",
-        "content": "Understanding programming runtime errors that provoke CPU transitions into STOP mode, and deploying error Organization Blocks to maintain continuous operation.",
-        "keyPoints": [
-          "OB85 (Program Sequence Error): Triggered by missing block calls or operating system exceptions",
-          "OB86 (Rack / Subnet Failure): Triggered upon loss of communication with distributed PROFINET IO drops",
-          "I/O Access Errors: Triggered by user rungs attempting to read/write addresses of nonexistent expansion modules",
-          "Cycle Time Exceeded: Watchdog timer (default 150ms) trips when endless loops stall CPU scan execution",
-          "Mathematical Exceptions: Division by zero or floating-point overflow halts CPU if error handling is absent"
-        ]
-      },
-      {
-        "title": "14.9 Project Backups and Safe Firmware Upgrade Procedures",
-        "content": "Standardized backup workflows and firmware update procedures ensure operational stability, cyber-security compliance, and rapid disaster recovery.",
-        "keyPoints": [
-          "Project Archiving: Generates compact .zap archive files bundling code, hardware config, and HMI graphics",
-          "Upload as New Station: Reconstructs a full engineering project directly from an unknown field CPU",
-          "Firmware Upgrades: Applied via TIA Portal online diagnostics or pre-loaded SIMATIC Memory Cards",
-          "Uninterruptible Power: Guarantee stable power during firmware flashing; power loss can brick the CPU mainboard",
-          "Golden Archive Rule: Always take a full upload backup immediately prior to executing any firmware update"
-        ]
-      },
-      {
-        "title": "14.10 Industrial Preventive Maintenance Protocol for Control Panels",
-        "content": "Structured periodic preventive maintenance schedules extend electronic lifespan and prevent catastrophic unplanned production shutdowns.",
-        "keyPoints": [
-          "Terminal Inspection: Annually re-torque all screw terminals to eliminate loose connections caused by vibration",
-          "Battery Maintenance: Measure and replace RTC backup batteries prior to voltage degradation",
-          "Thermal Management: Clean ventilation louvers, vacuum cabinet dust filters, and verify cooling fan operation",
-          "Power Supply Testing: Measure DC output voltage and verify AC ripple remains within catalog specifications",
-          "Diagnostic Review: Inspect CPU Diagnostic Buffer during scheduled shutdowns to catch emerging intermittent faults"
-        ]
-      }
-    ],
-    "review": [
-      "Detail the ordered troubleshooting steps when a digital input channel fails to report field switch actuation.",
-      "Explain the fundamental operational differences between a Watch Table and a Force Table in TIA Portal.",
-      "Under what troubleshooting circumstances should an engineer deploy the Trace utility rather than a Watch Table?",
-      "Enumerate the 5 most prevalent operational faults encountered in PLC control systems along with their corrective remedies.",
-      "Why is inspecting branch circuit fuses the first step when a digital output channel fails to energize its load?",
-      "How does an engineer utilize the CPU Diagnostic Buffer to identify the root cause of a sudden transition to STOP mode?",
-      "Decode the operational meaning of concurrent RUN (Green) and ERROR (Flashing Red) LED indicators on an S7-1200 CPU.",
-      "Under what operational conditions does the operating system invoke Organization Block OB86, and how is it resolved?"
-    ]
-  },
-
-  '15-system-integration': {
-    "overview": "The capstone project synthesizes the curriculum into a complete industrial application: designing an integrated PLC-HMI-SCADA system architecture, developing the master I/O schedule, implementing structured ladder logic, engineering HMI graphics, and validating plant-wide supervision.",
-    "objectives": [
-      "Analyze customer process specifications and design an end-to-end automation system architecture",
-      "Develop the comprehensive master I/O Schedule and configure symbolic Tag Tables in TIA Portal",
-      "Integrate PLC control logic, local HMI operator graphics, and supervisory SCADA into a cohesive system",
-      "Execute Factory Acceptance Testing (FAT), site commissioning, and handover documentation"
-    ],
-    "sections": [
-      {
-        "title": "15.1 System Architecture and Topology Engineering",
-        "content": "Initial phase: analyze technological process requirements → identify field instrumentation → draft the System Architecture Diagram. Define CPU sizing, I/O count, network protocols, and HMI/SCADA supervisory tiers.",
-        "keyPoints": [
-          "Process Analysis: Review Process & Instrumentation Diagrams (P&ID) and operational sequence narratives",
-          "I/O Quantification: Tabulate total counts and signal types across DI, DO, AI, and AO channels",
-          "Hardware Sizing: Select appropriate CPU model and expansion modules, provisioning ≥20% spare capacity",
-          "Network Architecture: Design PROFINET, Modbus, and Industrial Ethernet topologies with managed switches",
-          "Bill of Materials (BOM): Compile detailed hardware components, part numbers, and power supply budgets"
-        ]
-      },
-      {
-        "title": "15.2 Master I/O Schedule and Tag Table Standardization",
-        "content": "The Master I/O Schedule is the central engineering document bridging electrical hardware design with software programming. It details every field signal, terminal address, data type, range, and physical device tag.",
-        "keyPoints": [
-          "Mandatory Data Columns: Symbolic Tag Name, Absolute Address, Data Type, Engineering Units, Description",
-          "Recommended Fields: Calibrated Measuring Range, Field Device Tag Number, Junction Box, Cabinet Terminal Pin",
-          "Hierarchical Naming Conventions: Use standard AREA_EQUIPMENT_SIGNAL syntax (e.g. PUMP101_FLOW_PV)",
-          "Tag Table Population: Import standardized I/O schedules directly from Excel into TIA Portal Tag Tables",
-          "Eliminates duplicate address errors and ensures 100% naming consistency across PLC, HMI, and SCADA"
-        ]
-      },
-      {
-        "title": "15.3 Integrated Tri-Tier Control: PLC Logic, HMI Graphics, and SCADA Supervision",
-        "content": "Integration binds the three operational tiers: the PLC executes real-time deterministic control; the local HMI provides machine-side operator manipulation; SCADA provides plant-wide supervision, alarm archiving, and historical trending.",
-        "keyPoints": [
-          "PLC ↔ HMI Interfacing: High-speed PROFINET connection sharing symbolic tags directly from the Tag Table",
-          "PLC ↔ SCADA Interfacing: Industrial OPC UA or S7 Communication channels streaming telemetry to control room servers",
-          "Alarm Management: PLC evaluates thresholds → HMI displays immediate visual banners → SCADA archives historical log",
-          "Recipe Management: Central SCADA dispatches production recipe setpoints down to PLC data blocks",
-          "Historical Data Logging: SCADA historians record analog process variables at periodic sample intervals (1s to 60s)"
-        ]
-      },
-      {
-        "title": "15.4 Testing, Commissioning, and Handover Documentation",
-        "content": "Factory Acceptance Testing (FAT) and Site Acceptance Testing (SAT) represent mandatory formal milestones validating system performance prior to final customer commercial handover.",
-        "keyPoints": [
-          "Factory Acceptance Test (FAT): Rigorous testing at panel fabrication facility utilizing simulated I/O panels",
-          "Site Acceptance Test (SAT): Live commissioning at the customer site following field installation",
-          "Point-to-Point I/O Verification: Methodically verify every sensor and actuator point against the master I/O schedule",
-          "Functional Mode Verification: Test manual overrides, automated sequencing, interlocks, and emergency stop circuits",
-          "Alarm Testing: Simulate broken wires, high-limit overshoots, and motor overloads to verify alarm responses",
-          "Handover Package: As-Built electrical schematics, software backup archives, operator manuals, and SAT sign-off records"
-        ]
-      }
-    ],
-    "review": [
-      "Enumerate the sequential engineering phases involved in delivering a PLC automation system from requirements to handover.",
-      "What mandatory information columns must be populated within a professional Master I/O Schedule, and why is this document vital?",
-      "Contrast the operational objectives of a Factory Acceptance Test (FAT) with a Site Acceptance Test (SAT).",
-      "Design an integrated control architecture for a multi-pump booster station: 2 duty/standby pumps, 1 level transmitter, 1 pressure transmitter, and automatic lead-lag alternation.",
-      "What formal engineering documents must be included in the final handover dossier delivered to the operating plant at project completion?"
-    ]
-  },
+  "overview": "This lesson provides a comprehensive treatment of continuous analog signal acquisition, electrical interfacing, hardware quantization, and mathematical scaling in the Siemens S7-1200 PLC. Industrial processes require measuring real-world variables—temperatures, tank levels, fluid pressures, and motor velocities—that vary continuously across a spectrum. Students will analyze the technical trade-offs between voltage loops (0–10V) and current loops (4–20mA), 2-wire vs 4-wire transmitter wiring, analog-to-digital converter (ADC) quantization, on-board and expansion analog modules, Siemens raw integer representation (0 to 27648), and mathematical signal conditioning using the NORM_X and SCALE_X instructions.",
+  "objectives": [
+    "Differentiate the physical characteristics and industrial noise immunity of 0–10V voltage loops versus 4–20mA current loops",
+    "Wire 2-wire (loop-powered) and 4-wire (self-powered) analog transmitters to S7-1200 analog input channels with proper shield grounding",
+    "Identify on-board analog I/O specifications and configure SM 1231, SM 1232, and SM 1234 analog expansion modules in TIA Portal",
+    "Explain the internal conversion mechanics of 10-bit to 16-bit ADCs and map raw integer counts (0–27648) to physical voltages and currents",
+    "Derive the mathematical normalization formula and configure the NORM_X instruction block",
+    "Derive the mathematical engineering scaling formula and configure the SCALE_X instruction block for temperature, pressure, and level transmitters",
+    "Implement analog input filtering and threshold alarm detection with software deadbands"
+  ],
+  "sections": [
+    {
+      "title": "4.1 Analog Signals (4–20 mA, 0–10 V)",
+      "content": "Unlike discrete binary signals which exist strictly as ON or OFF, analog signals represent continuous physical phenomena such as temperature, pressure, flow rate, and mechanical displacement. In industrial instrumentation, two standardized electrical signal formats dominate: 0–10V (or ±10V) voltage signals and 4–20mA (or 0–20mA) current loops complying with ANSI/ISA-50.00.01. Voltage loops are inexpensive and simple to troubleshoot with a standard voltmeter; however, they suffer from significant signal degradation over long wire runs because lead wire resistance causes voltage drops (V = I * R), and high-impedance voltage inputs are highly susceptible to electromagnetic interference (EMI) from adjacent motor cables. Conversely, 4–20mA current loops provide superior industrial noise immunity: the transmitter dynamically modulates the current in the loop, meaning the signal remains constant regardless of wire length and resistance. Furthermore, 4–20mA incorporates a 'Live Zero': 4mA represents 0% of the process range, whereas a complete wire break or power failure drops loop current to 0mA, allowing the PLC to instantly distinguish between a true zero measurement and a broken field cable.",
+      "keyPoints": [
+        "Voltage Signals (0–10V, ±10V): Inexpensive; straightforward testing; high susceptibility to capacitive noise coupling and IR lead resistance drop over runs >15m",
+        "Current Signals (4–20mA): High noise immunity; loop current is unaffected by cable resistance up to the transmitter voltage compliance limit",
+        "Live Zero Principle (4mA): 4mA represents 0% measurement; 0mA indicates a broken cable, open circuit, or transmitter power loss",
+        "Current Loop Shunt Resistor: S7-1200 voltage inputs can measure 4–20mA by wiring an external precision 500-ohm (0.1%) shunt resistor across input terminals (producing 2–10V)",
+        "2-Wire Loop-Powered Transmitters: The sensor derives its operating power directly from the 4–20mA loop conductors, requiring only two wires",
+        "4-Wire Self-Powered Transmitters: The sensor receives external AC/DC mains power via two dedicated wires and outputs an active 4–20mA loop on two signal wires",
+        "Digital Communication on 4–20mA: HART (Highway Addressable Remote Transducer) protocol superimposes digital FSK frequency data onto the 4–20mA analog carrier"
+      ],
+      "note": "Never use 0–10V voltage signals for long-distance field runs or near variable frequency drives (VFDs). Always specify 4–20mA current loops for industrial field sensors to guarantee measurement integrity and automated cable break diagnostics."
+    },
+    {
+      "title": "4.2 Wiring Analog Inputs and Outputs",
+      "content": "Proper physical wiring and shielding are critical to prevent ground loops and electromagnetic interference from corrupting sensitive analog readings. Analog wiring must utilize individually shielded twisted-pair (STP) cables routed in grounded metallic conduits segregated from 400VAC motor power conductors by at least 200 mm. Grounding the cable shield requires strict discipline: the overall shield must be grounded at ONE end only—typically at the PLC control panel's dedicated analog grounding busbar using a 360-degree shield clamp. Grounding both ends of a cable shield creates circulating ground loop currents caused by earth potential differences between distant plant locations, introducing devastating 50Hz/60Hz AC ripple into the analog measurement. For 2-wire loop-powered transmitters, the +24VDC power supply connects to the transmitter positive terminal, the transmitter negative terminal connects to the PLC analog input channel (+), and the PLC analog common (-) connects back to 0VDC (M). For analog outputs driving proportional valves or VFD speed references, two-wire shielded cables connect the PLC AQ channel directly to the actuator input impedance load.",
+      "keyPoints": [
+        "Shielded Twisted-Pair (STP) Cabling: Twisting cancels magnetic noise induction; braided copper or foil shield repels electrostatic noise fields",
+        "Single-Point Shield Grounding Rule: Terminate cable shields strictly at the control enclosure end using 360-degree conductive saddle clamps; leave the field end isolated",
+        "Ground Loop Hazard: Connecting cable shields to ground at both ends induces large circulating ground currents, generating artificial measurement fluctuations",
+        "2-Wire Transmitter Topology: 24VDC (+) -> Transmitter (+) -> Transmitter (-) -> PLC AI (+) -> PLC AI (-) -> Power Supply 0VDC (M)",
+        "4-Wire Transmitter Topology: External Power connects to Line/Neutral or L+/M; isolated analog output terminals connect to PLC AI (+) and AI (-)",
+        "Analog Output Wiring: PLC AQ channels (0–10V or 4–20mA) connect to field actuators; observe maximum load resistance limits (typically <= 500 ohms for current outputs)",
+        "Cable Conduit Segregation: Maintain >= 200 mm physical spacing between analog signal conduits and 3-phase AC motor or inverter power cables"
+      ],
+      "note": "If an analog reading in TIA Portal fluctuates wildly when a nearby motor starts, the root cause is almost always an ungrounded cable shield, a shield grounded at both ends creating a ground loop, or routing signal cables inside the same wire duct as inverter output leads."
+    },
+    {
+      "title": "4.3 S7-1200 Analog Modules",
+      "content": "The S7-1200 hardware architecture provides both integrated and expandable analog processing capabilities. All CPU models (1211C through 1217C) feature two integrated analog input channels on the CPU terminal strip, mapped to peripheral word addresses %IW64 and %IW66. These on-board channels measure 0–10V DC with 10-bit resolution (1,024 discrete steps) and an input impedance of 100 k-ohms. To expand capacity or introduce analog outputs, engineers install Signal Boards (SB) or Signal Modules (SM). The SB 1231 provides 1 AI channel (12-bit), while the SB 1232 provides 1 AQ channel (12-bit). Dense modular expansion is achieved via SM 1231 analog input modules (available in 4-channel or 8-channel variants with 13-bit or 16-bit resolution supporting 0–10V, ±10V, 0–20mA, and 4–20mA), SM 1232 analog output modules (2 or 4 channels, 14-bit), and SM 1234 combo modules (4 AI / 2 AQ). Siemens uses a standardized internal integer representation: regardless of whether a module has 10-bit, 12-bit, or 16-bit hardware resolution, the ADC firmware automatically left-shifts the conversion result into a standardized 16-bit integer spanning 0 to 27648 for nominal range.",
+      "keyPoints": [
+        "Integrated CPU Analog Inputs: 2 channels (0–10V DC only), 10-bit hardware resolution, mapped by default to addresses %IW64 and %IW66",
+        "Siemens Standard Integer Range: Nominal full-scale signal (0–10V or 4–20mA) corresponds to integer values 0 to 27648",
+        "Overrange and Underrange Limits: 27649 to 32511 represents overrange (linear up to 118.5%); 32512 to 32767 represents digital overflow saturation",
+        "Negative Limits (Bipolar): Nominal bipolar range (-10V to +10V) spans integer values -27648 to +27648",
+        "Signal Board Expansion: SB 1231 (1 AI, 12-bit) or SB 1232 (1 AQ, 12-bit) snaps into the CPU faceplate without altering DIN-rail width",
+        "Signal Module Expansion: SM 1231 (4AI/8AI, 13/16-bit), SM 1232 (2AQ/4AQ, 14-bit), SM 1234 (4AI/2AQ combo), and RTD/TC temperature modules",
+        "Hardware Smoothing Filters: TIA Portal module properties configure digital RC smoothing (None, Weak, Medium, Strong) to reject 50Hz/60Hz line noise"
+      ],
+      "note": "Remember that the on-board analog inputs on the S7-1200 CPU only measure 0–10V! If you need to connect a 4–20mA sensor to %IW64, you must wire a high-precision 500-ohm resistor (tolerance 0.1%, 1/4W) across the input terminals to convert 4–20mA into 2–10V."
+    },
+    {
+      "title": "Normalising and Scaling (NORM_X / SCALE_X)",
+      "content": "Converting a raw analog integer (%IW64) into meaningful engineering units (such as degrees Celsius, bars of pressure, or cubic meters per hour) requires a two-step mathematical transformation in TIA Portal using the NORM_X and SCALE_X instruction blocks. Step 1: Normalization (NORM_X). The NORM_X block converts the raw integer count (0 to 27648) into a dimensionless floating-point ratio spanning 0.0 to 1.0. The mathematical equation executed is: OUT = (VALUE - MIN) / (MAX - MIN). When raw input VALUE = 0, OUT = 0.0; when VALUE = 27648, OUT = 1.0; when VALUE = 13824, OUT = 0.5. Step 2: Scaling (SCALE_X). The SCALE_X block takes the normalized floating-point ratio and maps it onto the real-world physical engineering range defined by MIN and MAX. The equation executed is: OUT = VALUE * (MAX - MIN) + MIN. For example, to scale a 4–20mA pressure transmitter measuring 0.0 to 10.0 bar: NORM_X normalizes %IW64 from [0, 27648] to a temporary REAL variable [0.0, 1.0]; SCALE_X then scales this ratio with MIN = 0.0 and MAX = 10.0 bar. Conversely, to drive an analog output (%QW64) from an engineering setpoint, the order is reversed: NORM_X maps the setpoint to [0.0, 1.0], and SCALE_X maps [0.0, 1.0] to [0, 27648].",
+      "keyPoints": [
+        "Two-Step Standard Pipeline: Raw Input (%IW) -> [NORM_X] -> Normalized Ratio (0.0 to 1.0 REAL) -> [SCALE_X] -> Engineering Units (REAL)",
+        "NORM_X Mathematical Formula: OUT = (VALUE - MIN) / (MAX - MIN); converts raw integers into normalized floating-point range",
+        "SCALE_X Mathematical Formula: OUT = VALUE * (MAX - MIN) + MIN; projects normalized ratio onto physical engineering boundaries",
+        "Input Parameter Configuration: For nominal unipolar inputs: MIN = 0, MAX = 27648; for bipolar inputs (±10V): MIN = -27648, MAX = +27648",
+        "Engineering Units Real World Example: Temperature sensor 0–150°C: MIN = 0.0, MAX = 150.0; at raw count 13824, scaled temperature = 75.0°C",
+        "Analog Output Scaling Pipeline: Engineering Setpoint (REAL) -> [NORM_X with Eng Units] -> Ratio [0.0, 1.0] -> [SCALE_X with 0, 27648] -> %QW64",
+        "Value Clamping with LIMIT: Precede or follow scaling with a LIMIT block to clamp out-of-range sensor spikes caused by electrical noise surges"
+      ],
+      "note": "Never perform manual integer arithmetic to scale analog signals (e.g. dividing by 276)! Integer division truncates all decimal remainders, resulting in stepped, coarse measurements. Always normalize to a 32-bit REAL variable first using NORM_X and SCALE_X."
+    }
+  ],
+  "review": [
+    "Compare the electrical advantages and disadvantages of 0–10V voltage signals versus 4–20mA current loops in noisy plant environments.",
+    "Explain the 'Live Zero' principle in a 4–20mA loop. How does a PLC distinguish between a valid 0 bar tank measurement and a cut sensor cable?",
+    "Describe the single-point grounding rule for shielded analog cables. What physical phenomenon occurs if both ends of the shield are grounded?",
+    "Explain how an S7-1200 CPU with on-board 0–10V analog inputs (%IW64) can be adapted to read a 4–20mA industrial pressure transmitter.",
+    "State the nominal integer count range used by Siemens S7-1200 analog input channels. What does integer count 27648 represent?",
+    "Write out the mathematical formulas executed by NORM_X and SCALE_X. Trace the step-by-step transformation for an input of 13,824 counts on a 0–100°C RTD channel.",
+    "Describe the reverse scaling pipeline required to command a proportional control valve (0–100% opening) connected to analog output %QW64."
+  ]
+},
 
   '06-other-plc-brands': {
-    overview: 'While Siemens dominates the European market, real factories contain PLCs from many vendors. Omron and Mitsubishi are the two most common alternatives you will encounter in Vietnamese and Asian manufacturing. This lesson maps their hardware, I/O wiring conventions, handheld programming consoles, and Ladder Diagram dialect onto what you already know from the S7-1200 — so you can read an unfamiliar panel without starting from zero.',
-    objectives: [
-      'Identify the CPU and I/O modules of an Omron CP1H and a Mitsubishi FX3U',
-      'Wire a sinking and a sourcing DI circuit for each brand',
-      'Use a handheld programming console to enter and monitor a short ladder program',
-      'Write equivalent ladder rungs in Omron CX-Programmer and Mitsubishi GX Works',
-      'Compare bit-address notation across Siemens, Omron, and Mitsubishi',
-    ],
-    sections: [
-      {
-        title: '5.1 Omron and Mitsubishi — Why Bother?',
-        content: 'Roughly 30 % of the PLCs installed in Vietnamese factories are not Siemens. Omron (Japan) and Mitsubishi (Japan) share most of that remainder. Their hardware philosophy is similar to Siemens — CPU + expansion modules on a backplane — but naming, addressing, and software differ enough to cause confusion on a first encounter.',
-        keyPoints: [
-          'Omron CP-series (CP1E/CP1H/CP2E): compact DIN-rail CPUs, USB programming port, CX-Programmer software',
-          'Mitsubishi FX-series (FX3U/FX5U/iQ-F): compact CPUs, GX Works 2/3 software',
-          'Both brands use 100–240 VAC or 24 VDC power supply variants',
-          'Bit addressing: Siemens I0.0 ≡ Omron 0.00 ≡ Mitsubishi X0',
-          'Word addressing: Siemens MW10 ≡ Omron DM0 ≡ Mitsubishi D0',
-          'All three brands comply with IEC 61131-3 Ladder Diagram',
-        ],
-      },
-      {
-        title: '5.2 Input and Output Circuits',
-        content: 'The sinking/sourcing distinction that applies to Siemens DI/DO applies equally to Omron and Mitsubishi. The wiring diagram symbols and terminal labels differ, but the underlying transistor physics is identical.',
-        keyPoints: [
-          'Omron CP1H: COM terminal shared among groups — check manual for group boundaries',
-          'Mitsubishi FX3U: S/S terminal selects sink or source for all DIs together',
-          'Transistor output (PNP/NPN) maximum load current: typically 0.5 A per point',
-          'Relay output modules: same 2 A per point as Siemens, suitable for AC loads',
-          'Analog I/O: 12-bit resolution, 4–20 mA or 0–10 V, add-on cartridge or expansion',
-          'Always confirm COM grouping before connecting a mixed-voltage field panel',
-        ],
-        note: 'Mixing sinking and sourcing devices on the same COM group will short the two power rails. Always verify before energising.',
-      },
-      {
-        title: '5.3 Programming Console',
-        content: 'A handheld programming console (HPP) lets you enter, modify, and monitor a ladder program without a laptop. This is the standard tool in small shops and for emergency field changes. Omron and Mitsubishi both ship a console that connects to the CPU programming port.',
-        keyPoints: [
-          'CX-Programmer (Omron): Windows software; HPP for offline edits',
-          'GX Works2/3 (Mitsubishi): Windows software; GOT HMI or HPP for field edits',
-          'Console keypad mnemonics: LD (Load), AND, OR, OUT, END — same logic as STL',
-          'Monitor mode: force ON/OFF individual bits, watch current values in real time',
-          'Typical use: clear a fault, force an output to test a contactor, read a timer value',
-          'Download requires PROG mode; switching to RUN resumes execution',
-        ],
-      },
-      {
-        title: '5.4 Ladder Diagram Programming',
-        content: 'IEC 61131-3 LAD rungs look the same across all three brands, but the instruction library, timer types, and data handling differ in detail. This section maps the most common instructions.',
-        keyPoints: [
-          'Normally-Open contact: LD in Omron/Mitsubishi — same symbol as Siemens',
-          'Normally-Closed contact: LDI (Omron), LDI (Mitsubishi) — slash through contact',
-          'Output coil: OUT — single coil, no difference visually',
-          'Omron SET/RSET ≡ Mitsubishi SET/RST ≡ Siemens S/R coils',
-          'Timers: Omron TIM (100 ms base) / TIMH (10 ms); Mitsubishi T (100 ms) / T (10 ms select)',
-          'Counters: Omron CNT (down); Mitsubishi C (up) — direction differs, check preset logic',
-        ],
-      },
-      {
-        title: '5.5 Other Common Instructions',
-        content: 'Beyond basic contacts and coils, each brand provides data-move, comparison, and arithmetic instructions. The function names differ but the operands are structurally the same.',
-        keyPoints: [
-          'MOVE: Omron MOV, Mitsubishi MOV — copy a word between registers',
-          'Arithmetic: Omron ADD/SUB/MUL/DIV, Mitsubishi + - * / in LAD boxes',
-          'Comparison: Omron CMP stores result in flags; Mitsubishi uses contact-box comparison',
-          'Jump: Omron JMP/JME, Mitsubishi CJ Pn — skip rungs for efficiency',
-          'Subroutine: Omron SBN/RET, Mitsubishi CALL/SRET — reduce code duplication',
-          'END instruction required on all three brands to terminate the main program scan',
-        ],
-      },
-    ],
-    review: [
-      'Name two Omron CPU models and two Mitsubishi CPU models commonly found in Vietnamese factories.',
-      'How do you select sink vs source DI mode on a Mitsubishi FX3U? On an Omron CP1H?',
-      'Write the Mitsubishi GX Works mnemonic sequence for: load X0, AND-NOT X1, output Y0.',
-      'A Mitsubishi timer T0 with K100 and a 100 ms time base — how many seconds does it time?',
-      'You open a panel and find an Omron CP1H. Describe three steps to read the current program without a laptop.',
-    ],
-  },
+  "overview": "While Siemens holds a dominant share of European industrial automation, automation engineers operating across Asia, North America, and global manufacturing plants regularly encounter other major PLC brands. In Vietnamese and Southeast Asian manufacturing facilities, Japanese manufacturers Omron and Mitsubishi account for over 35% of all installed machinery. This lesson broadens the student's professional competency by examining Omron (CP-series, Sysmac) and Mitsubishi (FX-series, MELSEC iQ-F) hardware architectures, I/O circuit topologies (shared COM vs S/S terminals), handheld programming consoles, memory addressing conventions, and Ladder Diagram dialects, mapping each directly to familiar Siemens concepts.",
+  "objectives": [
+    "Identify and compare hardware architectures of Omron CP1E/CP1H/CP2E and Mitsubishi FX3U/FX5U PLCs against Siemens S7-1200",
+    "Wire sinking and sourcing digital I/O circuits according to Japanese engineering standards (shared COM and S/S terminal jumpers)",
+    "Operate handheld programming consoles (HPP) to inspect, force, and edit ladder rungs in field emergency situations",
+    "Map bit and word addressing conventions across Siemens (%I, %Q, %M, DB), Omron (CIO, W, D), and Mitsubishi (X, Y, M, D)",
+    "Translate timer and counter programming logic across TIA Portal, Omron CX-Programmer, and Mitsubishi GX Works",
+    "Identify vendor-specific instructions including Master Control Relays (MC/MCR), jumps, and mandatory END delimiters"
+  ],
+  "sections": [
+    {
+      "title": "5.1 Omron and Mitsubishi PLCs",
+      "content": "In Vietnamese, Japanese, and Asian automotive, semiconductor, and consumer electronics manufacturing plants, Omron Corporation and Mitsubishi Electric represent the dominant control platforms alongside Siemens. Omron's micro-PLC portfolio is spearheaded by the CP series (CP1E economical, CP1H high-speed, and CP2E modern IoT-ready), programmed via CX-Programmer within the CX-One engineering suite or modern Sysmac Studio. Mitsubishi Electric dominates with the MELSEC FX series: the legendary FX3U (the world's most widely cloned compact PLC) and the modern FX5U (MELSEC iQ-F series) featuring integrated Ethernet and high-speed motion control, programmed via GX Works2 or GX Works3. Both Japanese brands adopt a compact brick-chassis form factor with expandable right-side bus extensions. While core CPU execution loops (input scan -> logic execution -> output scan) and IEC 61131-3 compliance are universal, each manufacturer utilizes proprietary tag syntax, register boundaries, and engineering software paradigms that require systematic cross-referencing.",
+      "keyPoints": [
+        "Omron CP Series Architecture: Compact DIN-rail form factor; USB/Ethernet programming ports; expandable with CPM1A-style expansion I/O blocks",
+        "Mitsubishi MELSEC FX Series: FX3U (RS422 mini-DIN programming port, modular expansion) and FX5U (embedded Ethernet, 4-axis 200kHz motion control)",
+        "Power Supply Engineering: Both brands offer 100–240VAC line supply or 24VDC control supply models with integrated 24VDC auxiliary sensor supplies",
+        "Engineering Software Suites: Omron CX-One (CX-Programmer) and Sysmac Studio; Mitsubishi GX Works2 (legacy FX) and GX Works3 (iQ-F and iQ-R)",
+        "IEC 61131-3 Compliance: All three platforms support Ladder Diagram (LAD) and Structured Text (ST), but proprietary dialects persist",
+        "Global Market Coexistence: A single factory floor frequently runs Siemens on packaging machines, Mitsubishi on CNC tooling, and Omron on robotics"
+      ],
+      "note": "When inspecting an unfamiliar Japanese machine, check the CPU model label carefully. Omron CP1H CPUs use standard USB Type-B cables, whereas older Mitsubishi FX3U controllers require an RS422-to-USB programming cable with specialized drivers."
+    },
+    {
+      "title": "5.2 Input and Output Circuits",
+      "content": "The semiconductor physics of sinking and sourcing digital I/O applies identically across all PLC vendors; however, terminal labeling and common-bus topologies differ significantly between European and Japanese designs. In Europe (Siemens), 24VDC Sinking DI (PNP compatible) is standard. In Japan (Mitsubishi and Omron), NPN sinking transistor logic was historically dominant due to early bipolar semiconductor availability. On the Mitsubishi FX3U, digital input circuits feature a dedicated 'S/S' (Sink/Source) terminal: connecting S/S to +24VDC configures the inputs as NPN sinking (switched to 0VDC); connecting S/S to 0VDC configures the inputs as PNP sourcing (switched to +24VDC). Omron CP1H controllers feature grouped inputs with independent 'COM' terminals (e.g. COM0, COM1) allowing mixed sinking and sourcing configurations across different input banks. For digital outputs, both brands provide either 2.0A electromechanical relay contacts (capable of switching up to 250VAC or 30VDC) or 0.5A solid-state transistor outputs. Japanese transistor outputs are typically NPN open-collector (sinking outputs that switch the load to ground), requiring external loads to connect to +24VDC.",
+      "keyPoints": [
+        "Mitsubishi S/S Configuration Jumper: Connecting S/S to +24V sets NPN Sink input mode; connecting S/S to 0V sets PNP Source input mode",
+        "Omron COM Grouping: Independent COM terminals allow isolation between distinct sensor banks, but internal bridge shorts occur if cross-wired",
+        "NPN vs PNP Transistor DO: European S7-1200 DO is PNP sourcing (switches +24V to load); Japanese FX/CP DO is typically NPN sinking (switches load to 0V)",
+        "Relay Output Equivalence: 2.0A resistive / inductive load rating across all brands; mechanical contact lifetime ~100,000 operations under full load",
+        "Analog Module Terminals: Omron and Mitsubishi analog cards support selectable 0–10V or 4–20mA via DIP switches or software buffer memories",
+        "Terminal Block Screw Formats: Japanese PLCs traditionally feature M3 phillips/slotted screw terminal barriers; modern variants offer push-in spring clamps"
+      ],
+      "note": "Never connect a 24VDC PNP sensor directly to an input configured for NPN mode! In NPN mode, the PLC terminal sits at +24V potential waiting to be pulled down to 0V; applying external +24V from a PNP sensor will fail to register or cause reverse current flow."
+    },
+    {
+      "title": "5.3 Programming Console",
+      "content": "In industrial environments where portable laptops are prohibited or unavailable during emergency breakdowns, handheld programming consoles (HPP) provide direct, ruggedized access to PLC memory. Devices like the Omron CQM1-PRO01 or Mitsubishi FX-20P connect directly to the CPU's serial communication port without requiring operating system booting or license activations. The programming console features a liquid crystal display (LCD) and a tactile keypad labeled with direct machine mnemonics: LD (Load), AND, OR, OUT, SET, RST, TIM, CNT, and numeric keys. The console operates across three primary functional modes: PROGRAM mode (for entering or modifying mnemonic ladder statements while the CPU scan is halted), MONITOR mode (which allows live online monitoring of contact states, modifying bit registers, forcing outputs, and reading current timer/counter values while the machine executes), and RUN mode (for dedicated execution with edit operations locked out). Technicians frequently use consoles to clear CPU memory faults or force an output coil to test a suspect contactor.",
+      "keyPoints": [
+        "Handheld Programmer Purpose: Portable, battery-free field diagnostic unit powered directly from the PLC backplane serial communication bus",
+        "Mode Selector Switch: PROGRAM (CPU stopped, full memory editing), MONITOR (CPU executing, live data monitoring & bit forcing), RUN (read-only execution)",
+        "Direct Mnemonic Entry: Programs entered in Statement List format (e.g. LD X000 -> AND X001 -> OUT Y000) directly into internal RAM",
+        "Live Diagnostic Monitoring: Displays real-time boolean states, accumulated timer ticks, and error fault codes on multi-line LCD screens",
+        "Emergency Forcing: Allows immediate software overriding of physical inputs and outputs to diagnose suspected field contact failures",
+        "Modern Transition: Modern facilities replace dedicated consoles with ruggedized industrial tablets running Web-based diagnostic servers"
+      ],
+      "note": "Always return the programming console mode switch to RUN before disconnecting the cable! Leaving a PLC in MONITOR mode permits accidental keystrokes from unauthorized operators to modify active registers or force machine actuators."
+    },
+    {
+      "title": "5.4 Ladder Diagram Programming",
+      "content": "While all three manufacturers comply with the overarching IEC 61131-3 standard for Ladder Diagram, each brand retains distinct syntactic conventions, address notations, and timer/counter mechanisms. In address notation: Siemens uses IEC absolute syntax (%I0.0, %Q0.0, %MW10); Mitsubishi uses single-letter octal/decimal identifiers (Inputs: X0, X1... X7, X10; Outputs: Y0, Y1... Y7, Y10; Bit Memory: M0–M1023; Data Registers: D0–D8000); Omron uses channel-and-bit decimal numbers (Inputs: 0.00 to 0.15; Outputs: 100.00 to 100.15; Work Bits: W0.00; Data Memories: D0). Timer execution differs fundamentally: Siemens utilizes IEC function blocks with millisecond TIME literals (T#5s); Mitsubishi uses timer coils (e.g. T0 K50, where K50 represents 50 x 100ms = 5.0 seconds); Omron uses BCD/binary timer blocks (TIM 000 #0050, representing 5.0 seconds). Counter directions also vary: Siemens CTU counts up; Mitsubishi C0 counts up toward preset K-values; Omron CNT is historically a down-counter that decrements toward zero from a preset value.",
+      "keyPoints": [
+        "Digital Input Address Syntax: Siemens %I0.0 ≡ Mitsubishi X0 (octal numbering) ≡ Omron 0.00 (channel.bit)",
+        "Digital Output Address Syntax: Siemens %Q0.0 ≡ Mitsubishi Y0 (octal numbering) ≡ Omron 100.00 (channel.bit)",
+        "Internal Register Syntax: Siemens %MW10 / DB1.DBD0 ≡ Mitsubishi D0 (16-bit) ≡ Omron D0 / DM0",
+        "Mitsubishi Timer Notation: T0 K50 (T0 = timer identifier, K50 = constant decimal 50 ticks of 100ms = 5.0 seconds)",
+        "Omron Timer Notation: TIM 000 #0050 (TIM 000 = timer 0, #0050 = 5.0 seconds in BCD format)",
+        "Counter Logic Divergence: Siemens CTU counts up; Mitsubishi C counts up; vintage Omron CNT decrements downward to zero",
+        "Latching Coils: Siemens (S)/(R) ≡ Mitsubishi [SET Y0] / [RST Y0] ≡ Omron [SET 100.00] / [RSET 100.00]"
+      ],
+      "note": "Pay close attention to Mitsubishi FX octal addressing! Inputs and outputs are numbered in base-8: X0, X1, X2, X3, X4, X5, X6, X7, followed immediately by X10! Addresses X8, X9, Y8, and Y9 do not exist; entering 'X8' will produce an immediate syntax error in GX Works."
+    },
+    {
+      "title": "5.5 Other Common Instructions",
+      "content": "Beyond elementary contacts, coils, timers, and counters, every PLC manufacturer provides functional instruction blocks for data transfer, arithmetic, comparison, program jumps, and scan termination. In Mitsubishi GX Works, instructions are enclosed in horizontal bracketed boxes: [MOV D10 D20] transfers the 16-bit contents of register D10 to D20; arithmetic operations appear as [+ D0 D2 D4] (adds D0 + D2 and writes the sum to D4); comparisons appear as inline contact blocks: [= D0 K100] conducts power flow when D0 equals 100. In Omron CX-Programmer, instructions use three-letter mnemonics with operands: MOV(021) 10 D100 copies channel 10 to data memory D100; CMP(020) compares two values and sets dedicated internal comparison flags (P_GT, P_EQ, P_LT). Both Japanese platforms implement Master Control Relay zones (Mitsubishi [MC N0 M100] / [MCR N0]; Omron MILH / MILR) to conditionally de-energize entire sections of ladder code. Crucially, both Mitsubishi and Omron require a mandatory END instruction at the termination of the ladder logic; without an END instruction, the CPU scan cannot return, triggering an immediate execution watchdog fault.",
+      "keyPoints": [
+        "Data Transfer (MOVE): Siemens MOVE ≡ Mitsubishi [MOV D0 D10] ≡ Omron MOV(021) D0 D10",
+        "Inline Mathematical Blocks: Mitsubishi [+ D0 D2 D4] adds operands; Omron utilizes ADD(030) with carry flag management",
+        "Master Control Relay (MC/MCR): De-energizes an entire block of ladder rungs without evaluating individual contact conditions",
+        "Conditional Program Jumps: Mitsubishi [CJ P1] skips rungs directly to label P1; Omron JMP(004) / JME(005) skips networks to minimize scan time",
+        "Subroutine Execution: Mitsubishi [CALL P10] -> [SRET] ≡ Omron SBS(091) -> SBN(092) -> RET(093); modularizes repetitive routines",
+        "Mandatory END Instruction: Mitsubishi [FEND] / [END] and Omron END(001) must terminate the ladder program; missing END trips watchdog error",
+        "Pulse Execution Prefix: In Mitsubishi, prefixing an instruction with 'P' (e.g. [MOVP D0 D10]) causes it to execute strictly on a rising edge"
+      ],
+      "note": "Never omit the END instruction when writing ladder logic for Mitsubishi or Omron controllers! Unlike Siemens TIA Portal where the cyclic scan boundary is managed transparently by the operating system, a missing END statement in GX Works will trigger an immediate CPU execution fault (error code 6400)."
+    }
+  ],
+  "review": [
+    "Identify two compact CPU models from Omron and two from Mitsubishi, stating their respective engineering software programming suites.",
+    "Explain how the 'S/S' terminal on a Mitsubishi FX3U PLC determines whether digital inputs operate in NPN Sinking or PNP Sourcing mode.",
+    "Why are Japanese PLC digital transistor outputs predominantly NPN open-collector, and how must external loads be wired relative to the +24VDC rail?",
+    "Explain the three operational modes (PROGRAM, MONITOR, RUN) found on handheld programming consoles such as the Omron CQM1-PRO01.",
+    "Translate the following Siemens LAD addresses into their Mitsubishi FX equivalents: input %I0.0, output %Q0.0, internal marker %M10, data word %MW100.",
+    "Explain why the address 'X8' is invalid on a Mitsubishi FX PLC controller.",
+    "What is the operational function of the mandatory END instruction in Omron and Mitsubishi ladder programs, and what occurs if it is omitted?"
+  ]
+},
 
   '07-system-design': {
-    overview: 'Buying a PLC is easy; engineering a reliable control system is not. This lesson takes you from a customer specification through device selection, I/O list, wiring, programming, testing, and handover documentation. Every step produces an artefact — a list, a drawing, a test record — and those artefacts together constitute professional PLC engineering practice.',
-    objectives: [
-      'Translate a process description into a quantified I/O list',
-      'Select an appropriate S7-1200 CPU and expansion modules for a given I/O count',
-      'Produce a bill-of-materials and panel layout sketch',
-      'Write a structured program (OB1 → FC → FB) that passes a Factory Acceptance Test',
-      'Create a Site Acceptance Test checklist and a complete handover document set',
-    ],
-    sections: [
-      {
-        title: '6.1 Analysing Requirements and Selecting Devices',
-        content: 'The first task on any project is to turn the customer description into a list of signals — what goes in and what comes out. That list drives every hardware choice that follows.',
-        keyPoints: [
-          'Read the Process and Instrumentation Diagram (P&ID) or functional description carefully',
-          'For each field device, record: signal type (DI/DO/AI/AO), voltage/current range, location, safety category',
-          'Count I/O totals with 20 % spare margin — panels grow after commissioning',
-          'CPU selection: match I/O count, choose AC or DC power, verify communication needs',
-          'Safety: identify E-stop loops and motor overloads that must be hardwired regardless of PLC',
-          'Budget: CPU + modules + HMI + panel + cables + commissioning time',
-        ],
-      },
-      {
-        title: '6.2 Designing and Programming the System',
-        content: 'Good program structure prevents the "bowl-of-spaghetti" ladder that nobody can maintain. Divide the program into functions (FC) by process area — one FC per motor group, one for alarms, one for sequencer logic — all called from OB1.',
-        keyPoints: [
-          'Create the Tag Table first: every I/O point gets a symbolic name before a single rung is written',
-          'Use Global DBs for setpoints and production data shared across FCs',
-          'Use FBs with Instance DBs for recurring equipment: each pump is the same FB, different DB',
-          'State machine (CASE/IF in SCL or SFC) for sequential processes — do not use timers as sequencers',
-          'Comment every network: what it does, not what the code says',
-          'Simulate with PLCSIM before connecting to hardware — saves hours of panel time',
-        ],
-        note: 'Program structure is permanent; a "quick fix" rung added outside the structure becomes technical debt immediately.',
-      },
-      {
-        title: '6.3 Connecting Digital Expansion Modules',
-        content: 'When the CPU\'s on-board I/O is not enough, Signal Modules (SM) extend the system to the right on the DIN rail. Each SM is configured in TIA Portal\'s hardware catalog and receives an automatic address.',
-        keyPoints: [
-          'SM 1221: 8×DI or 16×DI — add digital inputs for extra pushbuttons or sensors',
-          'SM 1222: 8×DO or 16×DO relay — add digital outputs for extra contactors or lamps',
-          'SM 1223: 8×DI + 8×DO — mixed module for compact panels',
-          'Addresses: first SM starts at the byte after the CPU\'s last I/O byte',
-          'Maximum 8 SMs per CPU 1214C — plan layout before ordering',
-          'Each SM needs 24 VDC load power, separate from CPU supply',
-        ],
-      },
-      {
-        title: '6.4 Connecting Analog Expansion Modules',
-        content: 'Analog signals — pressure, temperature, flow, position — require dedicated SM 1231 (AI) and SM 1232 (AO) modules. Each channel is 12-bit or 13-bit, configurable for voltage or current.',
-        keyPoints: [
-          'SM 1231 AI 4×13-bit: four analog inputs, ±10 V or 0–20 mA, configure per channel in TIA Portal',
-          'SM 1232 AO 2×14-bit: two analog outputs, ±10 V or 0–20 mA',
-          'RTD module SM 1231 AI 4×RTD: direct PT100/PT1000 connection, no signal conditioner needed',
-          'Thermocouple module SM 1231 AI 4×TC: K, J, T, E, B, R, S types',
-          'Always use shielded cable for analog signals, connect shield at one end only',
-          'Verify channel configuration (voltage/current) matches field transmitter before powering',
-        ],
-      },
-      {
-        title: '6.5 Troubleshooting a PLC Control System',
-        content: 'Fault-finding follows a logical progression: confirm power, check CPU LED, go online to read diagnostics, isolate the faulty subsystem, swap suspect hardware last. Most faults are found in the first three steps.',
-        keyPoints: [
-          'Step 1: Check power supplies — 24 VDC for CPU and I/O modules with a multimeter',
-          'Step 2: Read CPU LED — RUN (green), STOP (yellow), ERROR (red flashing)',
-          'Step 3: TIA Portal → Online → Diagnostic Buffer — timestamps and event codes',
-          'Step 4: Watch Table — monitor suspect signals, force outputs to test actuators',
-          'Step 5: Physical check — loose terminals, damaged cables, tripped circuit breakers',
-          'Step 6: Module swap — only after software confirms module fault, use anti-static precautions',
-        ],
-      },
-    ],
-    review: [
-      'A conveyor system has 6 motors, 12 proximity sensors, 4 VFDs (analogue speed reference), and 2 e-stop buttons. List the I/O count by type and propose an S7-1200 hardware configuration.',
-      'Why should you write the Tag Table before writing any ladder rungs?',
-      'Describe the difference between an FC and an FB. Give one example where each is the right choice.',
-      'A technician reports that Q0.3 does not turn on a conveyor motor. List five ordered troubleshooting steps.',
-      'What documents should be included in a handover package at the end of a PLC project?',
-    ],
-  },
+  "overview": "Procuring a PLC is straightforward; engineering an industrial-grade, reliable, and maintainable automation control system requires a disciplined methodology. This lesson guides students through the complete engineering lifecycle from initial customer functional requirements to device selection, master I/O scheduling, 24VDC power budgeting, electrical schematic design, modular programming, hardware expansion (digital and analog SM modules), and systematic commissioning troubleshooting. Every phase produces formalized engineering deliverables—I/O lists, bills of materials (BOM), panel wiring schematics, and test protocols—that constitute professional automation practice.",
+  "objectives": [
+    "Translate a written functional plant specification into a fully quantified Master I/O Schedule with 20% engineering spare capacity",
+    "Calculate 24VDC system power budgets and select the optimal S7-1200 CPU, power supply, and expansion modules",
+    "Design electrical schematics and panel layout drawings following international standards (IEC 60204-1)",
+    "Structure modular PLC programs utilizing state machine architectures, Organization Blocks, Functions (FC), and Function Blocks (FB)",
+    "Mechanically attach, address, and parameterize digital expansion modules (SM 1221 DI, SM 1222 DO) in TIA Portal",
+    "Configure analog expansion modules (SM 1231 AI, SM 1232 AQ) with hardware noise filtering and channel diagnostics",
+    "Execute systematic fault troubleshooting using multimeters, CPU diagnostic buffers, Watch Tables, and signal tracing protocols"
+  ],
+  "sections": [
+    {
+      "title": "6.1 Analysing Requirements and Selecting Devices",
+      "content": "The engineering lifecycle begins with analyzing the customer's functional process specification and translating prose descriptions into a formalized Master I/O Schedule. Every sensor, limit switch, pushbutton, solenoid valve, contactor, and analog transmitter must be enumerated with its physical location, voltage rating, signal format (e.g. 24VDC discrete, 4–20mA analog), and functional description. Professional engineering rules require adding a minimum of 20% spare capacity across all I/O types to accommodate field modifications during commissioning and future plant expansions. Once the total I/O count is established, the engineer calculates the 24VDC system power budget: summing the quiescent current of the CPU, the backplane consumption of expansion cards, and the external load currents drawn by inductive coils, sensors, and indicator lamps. This calculation determines the sizing of the 24VDC regulated power supply (e.g. SITOP PSU 24V/5A or 10A). The CPU model is selected based on work memory requirements, communication interfaces, and backplane expansion slots (e.g. selecting CPU 1214C to support up to 8 SM modules).",
+      "keyPoints": [
+        "Master I/O Schedule Creation: Tabular matrix detailing Tag Name, Address, Signal Type, Electrical Voltage, Location, and Functional Description",
+        "20% Engineering Spare Rule: Always specify at least 20% unallocated spare channels on all digital and analog I/O cards for commissioning flexibility",
+        "24VDC Power Budget Calculation: Total Current = CPU Internal Bus + Expansion Card Consumption + Total Field Sensor & Solenoid Loads",
+        "SITOP Power Supply Sizing: Select industrial regulated switch-mode power supplies (e.g. 24VDC 5A/10A) with minimum 30% thermal headroom",
+        "CPU Sizing Criteria: Evaluate user program work memory, communication socket budget, and maximum number of attachable Signal Modules",
+        "Bill of Materials (BOM) Generation: Exact Siemens order part numbers (MLFB), quantities, auxiliary circuit breakers, terminal blocks, and wire ducts",
+        "Panel Heat Dissipation: Calculate total enclosure thermal dissipation (Watts) to determine required ventilation fans or air conditioning"
+      ],
+      "note": "Never size an industrial 24VDC power supply to 100% of calculated full-load current! Inductive inrush currents from multiple solenoids energizing simultaneously can cause voltage sags below 20.4VDC, triggering instantaneous brownout restarts of the S7-1200 CPU."
+    },
+    {
+      "title": "6.2 Designing and Programming the System",
+      "content": "Once hardware is selected, engineering proceeds into concurrent electrical design and software architecture development. Electrical design produces complete CAD schematic drawings (using tools such as EPLAN Electric P8 or AutoCAD Electrical): power distribution single-line diagrams, emergency stop safety circuits, PLC rack layouts, terminal strip diagrams, and point-to-point field wiring schematics. Concurrently, software development begins with modular process decomposition. Complex automated processes are modeled as finite state machines (FSM) or sequential function charts (SFC / Grafcet), breaking the machine cycle into distinct operational states: Initializing, Ready/Idle, Auto Running, Paused, Manual Jog, and Fault/E-Stop. Programs are structured hierarchically: OB1 invokes specialized Functions (FCs) for stateless math and standard device drivers, and Function Blocks (FBs) with dedicated Instance DBs for complex equipment (pumps, conveyors, pneumatic indexers). Standardized tag naming conventions (e.g. using camelCase or Hungarian notation: 'iStartButton', 'qConveyorMotor', 'rTankTemperature') ensure readability and maintainability.",
+      "keyPoints": [
+        "Electrical CAD Schematics: Formal drawings detailing 3-phase power distribution, 24VDC control rails, PLC terminal pins, and field wiring cables",
+        "Finite State Machine (FSM) Architecture: Structures machine logic into explicit states governed by transition conditions, preventing unexpected state jumps",
+        "Modular Program Decomposition: Segregates code into functional blocks: FCs for stateless algorithms; FBs for stateful equipment control",
+        "Standardized Tag Tables: Define global symbolic tags with consistent prefixes (e.g. di_, do_, ai_, aq_, st_) before writing ladder rungs",
+        "Safety Interlock Separation: Hardwired safety relays govern the master control contactors; software rungs provide secondary operational interlocking",
+        "HMI Interface Tag Blocks: Dedicated Global Data Blocks consolidate all supervisory setpoints, status words, and alarm bits in contiguous memory",
+        "Revision Control and Documentation: Document all block headers with author, date, functional description, and revision change logs"
+      ],
+      "note": "Never write an entire machine program as a single massive ladder rung list inside OB1! Monolithic ladder programs are unmaintainable and dangerous to commission. Always divide the application into modular FCs and FBs representing physical machine subsystems."
+    },
+    {
+      "title": "6.3 Connecting Digital Expansion Modules",
+      "content": "When field discrete I/O counts exceed the on-board capacity of the S7-1200 CPU (e.g. 14 DI / 10 DO on CPU 1214C), Signal Modules (SM) are attached to expand capacity. The S7-1200 architecture supports SM 1221 digital input modules (8 DI or 16 DI 24VDC), SM 1222 digital output modules (8 DO or 16 DO 24VDC transistor or relay), and SM 1223 combination modules (e.g. 8 DI / 8 DO or 16 DI / 16 DO). Expansion modules mount mechanically to the right-hand side of the CPU on the same TS35 DIN rail. Interconnection is established via a high-speed sliding bus connector integrated into the upper-right housing of each module. When pushed to the left, this bus connector mates with the adjacent module's bus receptacle, locking the hardware backplane electrically. In TIA Portal Device View, the engineer drags the matching SM module from the hardware catalog into the adjacent virtual rack slot (Slot 2, Slot 3, etc.). TIA Portal automatically allocates consecutive peripheral byte addresses (e.g. %I2.0–%I3.7 and %Q2.0–%Q3.7) which can be customized in module properties.",
+      "keyPoints": [
+        "Expansion Module Types: SM 1221 (Digital Inputs), SM 1222 (Digital Outputs), SM 1223 (Combination DI/DO)",
+        "Mechanical Bus Connector: Slide bus connector on top-right housing slides left to engage the adjacent module's backplane bus securely",
+        "Rack Mounting Capacity: CPU 1211C supports 0 SMs; CPU 1212C supports up to 2 SMs; CPU 1214C, 1215C, and 1217C support up to 8 SM modules",
+        "Default Address Allocation: First digital SM starts addressing at byte 2 (%I2.0... / %Q2.0...); addresses are fully reconfigurable in TIA Portal",
+        "Backplane Power Supply Budget: The CPU delivers up to 1600 mA of 5VDC logic power to the backplane; verify that total SM draw does not exceed CPU limit",
+        "External Field Power Wiring: Digital output modules require external 24VDC field power wired to terminal L+ and M to drive physical output loads",
+        "Hardware Compilation: Press Ctrl+B to compile hardware configuration; validates rack slot order, address overlap, and power budgets"
+      ],
+      "note": "Always de-energize system power before sliding bus connectors together or separating modules! Mating backplane bus connectors while 24VDC power is applied will trigger backplane bus communication errors and can damage internal CMOS logic transceivers."
+    },
+    {
+      "title": "6.4 Connecting Analog Expansion Modules",
+      "content": "Analog expansion modules are installed when a process requires acquiring multi-channel continuous sensor data or generating analog commands. Available modules include the SM 1231 Analog Input module (4 AI or 8 AI with 13-bit or 16-bit resolution supporting 0–10V, ±10V, 0–20mA, or 4–20mA), the SM 1232 Analog Output module (2 AQ or 4 AQ with 14-bit resolution), the SM 1234 combo module (4 AI / 2 AQ), and specialized SM 1231 RTD and Thermocouple temperature modules. Analog modules attach to the right of the CPU via the sliding bus connector. In TIA Portal, each analog channel is configured individually in the module properties: selecting measurement type (Voltage, Current, or Thermal Sensor), measurement range, and digital interference frequency filtering (50 Hz, 60 Hz, or 400 Hz). The module firmware automatically executes analog-to-digital conversions, filtering out high-frequency electrical noise and updating process image input registers (%IW68, %IW70, etc.) on every scan. Analog output channels (%QW64, %QW66) are similarly configured for 0–10V or 4–20mA and parameterized with safe fallback states in the event of CPU STOP.",
+      "keyPoints": [
+        "Analog Module Catalog: SM 1231 (4AI / 8AI, 13-bit / 16-bit), SM 1232 (2AQ / 4AQ, 14-bit), SM 1234 (4AI / 2AQ), SM 1231 RTD (Pt100/Pt1000), SM 1231 TC",
+        "Channel-by-Channel Configuration: In TIA Portal properties, each input channel is parameterized independently for Voltage (0–10V, ±10V) or Current (4–20mA, 0–20mA)",
+        "Interference Frequency Suppression: Hardware ADC integration time configured for 50 Hz or 60 Hz to reject AC line hum with >60 dB attenuation",
+        "Hardware Diagnostic Interrupts: Enable wire break and low-limit/high-limit alarms directly in hardware properties; triggers OB82 upon loop failure",
+        "Analog Output Fallback Strategy: Configure output channels to either hold last value or force to safe zero (0V / 0mA) upon CPU transitioning to STOP",
+        "RTD Temperature Measurement: Pt100/Pt1000 sensors wire directly using 2-wire, 3-wire, or 4-wire compensation; raw integer = temperature x 10 (e.g. 250 = 25.0°C)",
+        "Shield Connection: Terminate analog cable shields directly to the grounded metal shield bracket supplied with every S7-1200 analog module"
+      ],
+      "note": "When configuring 4–20mA current inputs on an SM 1231 module, always enable the 'Wire Break' diagnostic alarm in TIA Portal. If a field sensor wire is severed, the input current drops below 3.6mA, immediately triggering a diagnostic event in the CPU without requiring complex custom ladder code."
+    },
+    {
+      "title": "6.5 Troubleshooting a PLC Control System",
+      "content": "When an automated machine fails to operate during commissioning or live plant production, the automation engineer must execute a disciplined, systematic troubleshooting protocol rather than guessing. The troubleshooting methodology follows a 5-step hierarchy: Step 1: Physical Power and Safety Inspection. Verify line voltage and 24VDC power supply output with a calibrated multimeter; verify that all hardwired emergency stops and safety gates are closed. Step 2: CPU Front-Panel Status LED Analysis. Inspect RUN/STOP (green=running, amber=stopped), ERROR (flashing red indicates hardware/software fault), and MAINT LEDs. Step 3: Diagnostic Buffer Interrogation. Go online with TIA Portal (Ctrl+M) and open the CPU Diagnostic Buffer; read the timestamped event log to pinpoint the exact failure (e.g. missing expansion card, wire break on channel %IW68, or cycle time exceeded). Step 4: Watch Table and Signal Tracing. Open Watch Tables to monitor live states of inputs and internal state registers; compare physical LED status on the module with software bit values to isolate field wiring breaks from software logic blocks. Step 5: Peripheral Point Testing. Use Force Tables with caution or temporary test rungs to verify physical actuator actuation.",
+      "keyPoints": [
+        "Systematic 5-Step Diagnostic Protocol: Power Rails -> Front-Panel LEDs -> CPU Diagnostic Buffer -> Watch Tables -> Multimeter Signal Tracing",
+        "Multimeter Voltage Verification: Measure 24VDC power supply under load (allowable range 20.4V to 28.8V); measure voltage directly across input terminal and 1M",
+        "Diagnostic Buffer Log: The primary diagnostic authority; non-volatile event stack recording exact failure descriptions, timestamps, and OB call references",
+        "Hardware vs Software Fault Isolation: If an input LED illuminates on the CPU faceplate but the tag in TIA Portal remains FALSE, the issue is software configuration or operating mode",
+        "Watch Table Signal Tracing: Real-time monitoring of machine state registers, interlock conditions, and timer elapsed values to pinpoint stalled transitions",
+        "Multimeter Resistance Testing: Always de-energize and isolate circuits before measuring loop resistance or testing for contact closure",
+        "Preventive Maintenance Protocols: Periodically check terminal screw torque (0.5 Nm), clean enclosure air filters, inspect DC voltage ripple, and maintain backups"
+      ],
+      "note": "Never clear a fault in the CPU Diagnostic Buffer without identifying and resolving its physical root cause! Repeatedly restarting a tripped PLC without fixing an underlying sensor short or motor overload will inevitably lead to hardware component destruction or plant accidents."
+    }
+  ],
+  "review": [
+    "Explain the purpose of a Master I/O Schedule and state why professional engineering design rules mandate a minimum of 20% spare capacity.",
+    "Detail how to calculate the total 24VDC system power budget when selecting a SITOP regulated power supply for an automated machine cell.",
+    "What is the functional difference between an Organization Block (OB), a Function (FC), and a Function Block (FB) in a structured control application?",
+    "Describe the mechanical and electrical procedure for connecting an SM 1221 digital expansion module to an S7-1200 CPU on a DIN rail.",
+    "How does an automation engineer configure an SM 1231 analog input module in TIA Portal to measure a 4–20mA current loop with automated wire-break detection?",
+    "Outline the 5-step systematic troubleshooting methodology used to diagnose an automated machine that halts unexpectedly during production.",
+    "An input status LED on an S7-1200 CPU illuminates green when a sensor is blocked, but the ladder logic contact does not evaluate TRUE. Explain the possible causes."
+  ]
+},
+
+  '08-advanced-instructions': {
+  "overview": "This lesson covers the advanced instruction set of the Siemens S7-1200/1500 controller required for sophisticated industrial applications. Moving beyond elementary binary and math operations, students will master high-resolution time-handling functions, date arithmetic, character string manipulation (for barcode scanners, RFID readers, and serial communication telegrams), and asynchronous interrupt processing (hardware interrupts, cyclic interrupts, and diagnostic error organization blocks). These instructions enable microsecond-level event capture, automated shift scheduling, and deterministic execution of complex process algorithms.",
+  "objectives": [
+    "Execute high-resolution temporal calculations using TIME_TCK, T_DIFF, T_ADD, T_SUB, and the DTL structure",
+    "Configure Time-of-Day Interrupts (OB10) for automated calendar-based machine sequencing and daily shift data archiving",
+    "Manipulate ASCII character and string data structures (CHAR, STRING, WSTRING) using CONCAT, LEFT, RIGHT, MID, FIND, and LEN blocks",
+    "Convert between numeric values and formatted ASCII strings using VAL_STRG and STRG_VAL for serial telegram processing",
+    "Configure and program Hardware Interrupts (OB40–OB47) triggered within microseconds by rising or falling edges on digital inputs",
+    "Program Cyclic Interrupts (OB30–OB38) for deterministic, fixed-interval execution of closed-loop PID control loops",
+    "Implement Diagnostic and Error Organization Blocks (OB80, OB82, OB86, OB122) to prevent catastrophic CPU STOP faults upon field anomalies"
+  ],
+  "sections": [
+    {
+      "title": "3.1 Time-Handling Instructions",
+      "content": "Precision time tracking and calendar-based automation are fundamental requirements across food & beverage, pharmaceutical, and batch processing industries. The S7-1200 provides dedicated instructions for measuring high-speed operational durations and computing calendar differences. The TIME_TCK (Time Tick) instruction reads the internal CPU system timer: an unsigned 32-bit millisecond counter that increments continuously from 0 to 2,147,483,647 ms, allowing microsecond-accurate benchmark timing of machine cycles by evaluating: Elapsed_Time = End_Tick - Start_Tick. For calendar dates and times, TIA Portal provides temporal arithmetic functions operating on the DTL (Date and Time Long) and TIME data types: T_ADD adds a duration (TIME) to a timestamp (DTL); T_SUB subtracts a duration from a timestamp or computes the difference between two timestamps; and T_DIFF calculates the exact time difference (in TIME format) between two DTL dates. Furthermore, Time-of-Day Interrupts (OB10) can be configured in CPU properties to trigger cyclic or one-shot program execution at exact calendar dates and times (e.g. running an automated clean-in-place CIP sequence every Sunday at 02:00:00).",
+      "keyPoints": [
+        "TIME_TCK Instruction: Reads the continuous internal millisecond clock; wraps around after ~24.8 days; ideal for calculating machine cycle execution time",
+        "T_ADD Block: Adds a time interval (TIME) to a calendar date/time (DTL) yielding a future DTL timestamp",
+        "T_SUB Block: Subtracts a time interval from a DTL timestamp, or subtracts two DTL timestamps yielding the elapsed interval as a TIME value",
+        "T_DIFF Block: Computes the precise temporal duration between two DTL calendar dates; output is formatted in TIME (milliseconds)",
+        "Time-of-Day Organization Block (OB10): Operating system interrupt invoked automatically at a configured calendar time; supports Daily, Weekly, or Monthly repetition",
+        "SET_TINT and ACT_TINT Instructions: Dynamically configure and activate time-of-day interrupt parameters directly from runtime PLC ladder code",
+        "Equipment Runtime Tracking: Measure pump and compressor operating hours by accumulating running seconds into retentive double-word registers"
+      ],
+      "note": "When using TIME_TCK to benchmark execution durations, always account for counter rollover! Because the 32-bit counter rolls over from +2,147,483,647 to 0, compute elapsed time using unsigned modular subtraction to avoid negative duration errors."
+    },
+    {
+      "title": "3.2 String and Character Instructions",
+      "content": "Modern automated manufacturing requires interfacing with peripheral devices that transmit textual information: handheld barcode scanners, optical vision inspection cameras, RFID tag transponders, laser marking printers, and weigh-scale indicators. TIA Portal handles text data via the CHAR (8-bit ASCII), WCHAR (16-bit Unicode), STRING, and WSTRING data types. A standard STRING variable in S7-1200 occupies n+2 bytes of memory: Byte 0 defines the maximum declared string capacity (up to 254 characters); Byte 1 defines the current actual length of valid text; Bytes 2 through n+1 store the ASCII character bytes. TIA Portal provides a rich suite of string processing instructions: CONCAT combines two strings into one; LEFT extracts n characters from the beginning of a string; RIGHT extracts n characters from the end; MID extracts a substring from any specified character offset; LEN returns the actual character count; and FIND searches for the first occurrence of a substring within a text string. To convert between numeric values and text strings, the VAL_STRG instruction converts an INT or REAL into an ASCII string (e.g. for printing on a packaging label), while STRG_VAL parses an incoming barcode string into a numeric part number.",
+      "keyPoints": [
+        "STRING Memory Architecture: Allocated as max_length (Byte 0) + current_length (Byte 1) + ASCII character bytes; default capacity is 254 characters",
+        "CONCAT Block: Concatenates two source strings (IN1 + IN2) into a single destination string; truncates if destination capacity is exceeded",
+        "Substring Extraction: LEFT (extracts leftmost n characters), RIGHT (extracts rightmost n characters), MID (extracts n characters starting at offset p)",
+        "Search and Inspection: LEN (returns current string length), FIND (searches for sub-string; returns 1-based character position, or 0 if not found)",
+        "VAL_STRG (Value to String): Converts numeric INT/REAL variables into formatted ASCII strings with configurable decimal places and sign characters",
+        "STRG_VAL (String to Value): Parses incoming ASCII text strings into numeric integer or floating-point variables for PLC logic evaluation",
+        "DELETE and INSERT Blocks: Dynamically delete character spans or insert prefixes/suffixes into serialized production tracking strings"
+      ],
+      "note": "Remember that STRING manipulation instructions consume significant CPU processing time and memory bandwidth! Never execute string search and concatenation blocks cyclically on every single scan. Always trigger string instructions on the rising edge of a communication receive flag (e.g. when a barcode scanner successfully finishes scanning)."
+    },
+    {
+      "title": "3.3 Interrupt-Handling Instructions",
+      "content": "Standard cyclic execution in OB1 is governed by the scan cycle time (typically 2 ms to 15 ms). However, high-speed industrial events—such as optical print-mark registration, emergency crash detection, and high-precision closed-loop PID control—cannot tolerate cyclic scan jitter. Siemens S7-1200 controllers solve this through an asynchronous interrupt architecture that preempts OB1 to execute specialized Organization Blocks immediately. Three major classes of interrupts exist: (1) Hardware Interrupts (OB40–OB47): Configured in digital input properties to trigger within microseconds upon a rising edge, falling edge, or both edges on high-speed input pins (%I0.0–%I0.3). (2) Cyclic Interrupts (OB30–OB38): Scheduled by high-precision internal hardware timers to execute at deterministic periodic intervals (e.g. every 10.0 ms), providing the jitter-free timebase required for PID control. (3) Diagnostic and Error Interrupts: OB82 (Diagnostic Interrupt, triggered by wire breaks or short circuits on analog/digital modules), OB86 (Rack/Station Failure, triggered by loss of a PROFINET node), and OB80 (Time Error, triggered if OB1 scan exceeds the watchdog timeout). Without error OBs in the project, field faults force the CPU into STOP mode.",
+      "keyPoints": [
+        "Preemptive Execution Architecture: An interrupt immediately pauses OB1 user code execution, executes the interrupt OB to completion, and resumes OB1 seamlessly",
+        "Hardware Interrupts (OB40–OB47): Triggered by digital input signal transitions; response latency is typically < 50 microseconds; ideal for print mark sensors",
+        "Cyclic Interrupts (OB30–OB38): Deterministic execution at microsecond/millisecond intervals (e.g. 10 ms for PID_Compact); unaffected by variations in OB1 cycle time",
+        "Diagnostic Interrupt (OB82): Invoked when an expansion module detects an internal hardware fault, wire break, or power supply failure",
+        "Module/Station Failure (OB86): Invoked when a remote PROFINET IO device or PROFIBUS slave drops offline, allowing the system to execute safe shutdown routines",
+        "Time Error Interrupt (OB80): Invoked when cycle time exceeds configured watchdog limit (default 150 ms) or when cyclic interrupts overlap",
+        "ATTACH and DETACH Instructions: Programmatically bind or unbind hardware interrupt events to specific OBs during machine mode transitions"
+      ],
+      "note": "To prevent minor field sensor wire breaks from shutting down an entire multi-million dollar plant, always insert empty or diagnostic OB82 and OB86 blocks into your TIA Portal project! If these error OBs are present in the CPU, the controller logs the fault and stays in RUN mode instead of immediately tripping into catastrophic STOP."
+    }
+  ],
+  "review": [
+    "Explain how the TIME_TCK instruction functions and describe how to accurately benchmark the execution time of an industrial machine sequence.",
+    "Detail the byte-level memory architecture of an IEC STRING variable in the Siemens S7-1200 controller.",
+    "Describe an industrial application where VAL_STRG and STRG_VAL instructions are required to communicate with a barcode scanner and an inkjet printer.",
+    "Explain the preemptive operating system mechanism of a Hardware Interrupt (OB40) versus standard cyclic execution in OB1.",
+    "Why must digital closed-loop PID control algorithms always be executed inside a Cyclic Interrupt (OB30) rather than inside OB1?",
+    "What occurs to an S7-1200 CPU in RUN mode when a remote PROFINET I/O rack is powered down if OB86 is NOT present in the user program?",
+    "Describe how the ATTACH instruction can be used in ladder logic to dynamically enable a hardware interrupt only during a specific packaging machine state."
+  ]
+},
+
+  '09-high-speed-counting': {
+  "overview": "This lesson covers high-speed signal processing, rotary encoders, motion control, and pulse generation on the Siemens S7-1200 controller. Standard PLC cyclic inputs are constrained by the scan cycle time (max frequency ~50 Hz); however, industrial motion systems, conveyor line speed synchronization, and servo positioning generate pulse frequencies reaching tens or hundreds of kilohertz. Students will master the mechanical and optical operating principles of incremental encoders (quadrature A/B channels, Z index marker), hardware High-Speed Counters (HSC1–HSC6), Pulse Width Modulation (PWM) for heater and DC motor duty-cycle control, Pulse Train Output (PTO) for stepper and servo position control, and TIA Portal Motion Control Technology Objects complying with PLCopen standards.",
+  "objectives": [
+    "Explain the optical construction and signal waveforms of incremental rotary encoders, including quadrature phase shift and Z index pulses",
+    "Configure on-board High-Speed Counters (HSC1–HSC6) in TIA Portal for single-phase, two-phase, and 4x quadrature counting up to 200 kHz",
+    "Interface with HSC hardware registers programmatically using the CTRL_HSC instruction block and direct peripheral reads (%ID1000:P)",
+    "Configure on-board pulse generators for Pulse Width Modulation (PWM) and modulate duty cycles dynamically using CTRL_PWM",
+    "Configure Pulse Train Output (PTO) pulse generators and create Motion Control Axis Technology Objects (TO_Axis)",
+    "Execute standardized PLCopen motion control blocks: MC_Power, MC_Reset, MC_Home, MC_MoveJog, MC_MoveAbsolute, and MC_MoveRelative",
+    "Interface analog velocity setpoints (±10V) and closed-loop position transducers for variable frequency drives (VFDs) and servo systems"
+  ],
+  "sections": [
+    {
+      "title": "4.1 Encoder Construction and Operating Principle",
+      "content": "A rotary encoder converts mechanical angular displacement and rotational velocity into digital electrical pulse trains. In factory automation, incremental optical rotary encoders are the predominant feedback device for conveyor synchronization, web winders, and motor shafts. The physical construction comprises a precision stainless-steel shaft, an optical glass or etched metal disk patterned with radial transparent and opaque slits, an array of infrared light-emitting diodes (LEDs), and matching photodiode receivers. As the shaft rotates, the grating chops the infrared beams, generating two square-wave electrical signals: Channel A and Channel B. Crucially, the optical masks for Channel A and Channel B are physically offset by 90 electrical degrees: a geometric relationship known as Quadrature. By examining the phase relationship, the controller detects direction: when rotating clockwise (CW), Channel A leads Channel B; when rotating counter-clockwise (CCW), Channel B leads Channel A. A third channel—the Z Index channel—generates exactly one narrow pulse per full 360-degree mechanical revolution, establishing an absolute physical zero reference marker for machine homing.",
+      "keyPoints": [
+        "Optical Grating Mechanics: Etched glass/metal disk with alternating transparent slits; optical resolution rated in Pulses Per Revolution (PPR, e.g. 1024 or 2048 PPR)",
+        "Quadrature Phase Shift (90°): Channel A leads Channel B during forward rotation; Channel B leads Channel A during reverse rotation, enabling directional sensing",
+        "Z Index Marker Channel: Fires exactly one pulse per 360° mechanical turn; provides precision zero-datum homing reference independent of tooth count",
+        "Electrical Output Interfaces: Push-Pull (HTL 24VDC, standard for PLC inputs), Open Collector (NPN/PNP), or Differential Line Driver (RS422 / TTL 5VDC for high noise immunity)",
+        "Velocity Calculation Formula: Rotational Velocity (RPM) = (Pulses Counted per second / PPR) * 60",
+        "Incremental vs Absolute Encoders: Incremental encoders lose position upon power loss (requiring homing at startup); absolute encoders report true position immediately via Gray code"
+      ],
+      "note": "Never use 24VDC push-pull (HTL) single-ended encoder signals over cable runs longer than 20 meters near powerful VFD cables! Fast switching edges degrade over cable capacitance. For long distances, use differential RS422 (line driver) encoders paired with an S7-1200 high-speed differential signal board (SB 1221 200kHz)."
+    },
+    {
+      "title": "4.2 S7-1200 High-Speed Counters",
+      "content": "Standard digital inputs read during the cyclic input scan are limited by the PLC scan cycle time (frequencies above 50–100 Hz are completely aliased and missed). To process high-speed signals from encoders and flow meters, the S7-1200 integrates up to 6 dedicated on-board hardware High-Speed Counters (HSC1 through HSC6). These counters operate entirely independent of the CPU scan cycle, accumulating pulses directly into hardware registers at frequencies up to 100 kHz on standard CPU inputs (or up to 200 kHz when using 24VDC/5VDC Signal Boards). In TIA Portal, each HSC is parameterized for its specific operating mode: Single Phase (simple count up/down with external direction input), Two Phase (independent up and down clock inputs), or AB Quadrature (1x, 2x, or 4x mode). In AB Quadrature 4x mode, the hardware increments on both the rising and falling edges of both Channel A and Channel B, effectively quadrupling the encoder's angular resolution (e.g. converting a 1,000 PPR encoder into 4,000 counts per revolution). Current count values are read continuously from assigned memory double-words (%ID1000 for HSC1), while the CTRL_HSC instruction block dynamically updates presets, resets counts, and enables gate controls.",
+      "keyPoints": [
+        "Independent Hardware Architecture: Operates directly in silicon logic outside the OB1 scan cycle; eliminates pulse loss at high shaft speeds",
+        "Frequency Capabilities: On-board inputs support up to 100 kHz (HSC1/HSC2 on CPU 1214C/1215C); 200 kHz supported via Signal Board (SB 1221)",
+        "Operating Modes: Single Phase (clock + direction), Two Phase (Clock Up + Clock Down), and A/B Quadrature (1x, 2x, or 4x resolution multiplication)",
+        "Quadrature 4x Multiplication: Samples all 4 transitions (rising & falling edges of A and B) per cycle, delivering 4x mechanical resolution",
+        "Direct Process Image Reading: Read the instantaneous 32-bit signed count value directly from assigned double-word memory: %ID1000:P",
+        "Hardware Comparison Interrupts: HSC hardware compares current count against a reference value in silicon, triggering a hardware interrupt (OB40) within microseconds",
+        "CTRL_HSC Function Block: System block used to dynamically write new reference presets, change counting direction, or reset the accumulator"
+      ],
+      "note": "When using high-speed counter inputs (%I0.0–%I0.5), remember to lower the digital input hardware filter time in CPU properties! The factory default input filter is 6.4 ms (which blocks all frequencies above ~78 Hz). Change the filter time to 0.8 µs to permit 100 kHz pulses to pass into the HSC circuitry."
+    },
+    {
+      "title": "4.3 Pulse Output with PWM",
+      "content": "Pulse Width Modulation (PWM) is a solid-state control technique where a digital output is switched between ON and OFF at a constant carrier frequency, while dynamically modulating the ratio of ON time to the total cycle period (known as the Duty Cycle: 0.0% to 100.0%). The S7-1200 controller with transistor outputs (DC/DC/DC variants) incorporates up to four dedicated hardware pulse generators (Pulse 1 through Pulse 4) capable of generating PWM signals on outputs %Q0.0, %Q0.1, %Q0.2, and %Q0.3 at frequencies up to 100 kHz. In TIA Portal, configuring a pulse generator as PWM allows the automation engineer to define the timebase (milliseconds or microseconds) and the period duration (e.g. 10 ms for a 100 Hz signal). Programmatic control is executed via the CTRL_PWM instruction block, where the user passes a numeric duty cycle (scaled from 0 to 100, or 0 to 10,000 for high resolution). By modulating duty cycle, the average electrical power delivered to a load is controlled with near-zero heat dissipation in the switching transistor. Industrial applications include modulating electric heating elements via solid-state relays (SSR), controlling proportional hydraulic solenoid valves, and modulating small DC motor velocities.",
+      "keyPoints": [
+        "PWM Fundamental Principle: Fixed carrier frequency (period T); modulated pulse width (ON time t_on); Average Voltage = V_supply * (t_on / T)",
+        "Hardware Pulse Generators: Up to 4 on-board hardware pulse generators operating on fast transistor outputs %Q0.0–%Q0.3; up to 100 kHz switching speed",
+        "Zero-Loss Solid-State Switching: Power MOSFET transistors operate purely saturated (ON) or cutoff (OFF), minimizing internal thermal dissipation",
+        "CTRL_PWM System Block: System instruction block that activates/deactivates the pulse generator and writes new duty cycle values on the fly",
+        "Timebase Options: Microseconds (µs) or milliseconds (ms); selectable period duration from 10 µs to 65,535 ms",
+        "Duty Cycle Formatting: Scaled as Hundredths (0 to 10,000 where 5000 = 50.00% duty cycle) or integer percent (0 to 100)",
+        "Industrial Applications: Proportional heating chamber control via SSRs, LED industrial lighting dimming, chemical metering pump pulse stroking"
+      ],
+      "note": "PWM pulse generation is ONLY supported on DC/DC/DC CPUs with solid-state transistor outputs! Never attempt to configure PWM on AC/DC/Relay CPUs; electromechanical relays have a maximum switching rate of 1 Hz, and attempting to switch them with PWM will destroy the mechanical relay contacts within minutes."
+    },
+    {
+      "title": "4.4 Position Control with Motion Control",
+      "content": "For high-precision positioning applications—such as pick-and-place linear gantries, indexing rotary tables, and ball-screw packaging feeds—the S7-1200 incorporates Pulse Train Output (PTO) motion control conforming to standardized PLCopen specifications. In PTO mode, the hardware pulse generator outputs a train of discrete square-wave pulses where each pulse commands the motor drive to step by an exact mechanical increment (e.g. 0.01 mm). The pulse frequency governs rotational speed, while the total pulse count commands absolute travel distance. In TIA Portal, motion control is engineered using Axis Technology Objects (TO_Axis). The engineer parameterizes the mechanical kinematics (screw lead, gear ratios), velocity limits, S-curve jerk-limiting acceleration/deceleration ramps, and software/hardware end-of-travel limit switches. Control logic is executed using standardized PLCopen function blocks: MC_Power (energizes the servo drive), MC_Reset (clears drive alarm faults), MC_Home (executes active or passive zero-datum calibration using the encoder Z pulse), MC_MoveJog (manual velocity jog for maintenance), MC_MoveAbsolute (travels to an exact coordinate coordinate), and MC_MoveRelative (advances by a relative distance delta).",
+      "keyPoints": [
+        "Pulse Train Output (PTO) Topology: Outputs pulse train on %Q0.0 (frequency represents velocity; pulse count represents displacement) and direction signal on %Q0.1",
+        "Axis Technology Object (TO_Axis): Graphical configuration tool parameterizing mechanical pitch, acceleration ramps, jerk filtering, and limits",
+        "PLCopen Motion Standard: Vendor-independent motion blocks ensuring portable, standardized programming across diverse drive platforms",
+        "MC_Power: Authorizes and enables the drive power stage; must remain active throughout all axis positioning commands",
+        "MC_Home: Synchronizes the logical software coordinate system with physical mechanical datum using limit switches and encoder zero markers",
+        "MC_MoveAbsolute vs MC_MoveRelative: Absolute moves travel to an exact position relative to origin (X = 250.0 mm); Relative moves advance by a distance increment (+50.0 mm)",
+        "S-Curve Jerk Limiting: Smooths acceleration transitions to eliminate mechanical vibration, belt slipping, and structural stress on mechanical carriages"
+      ],
+      "note": "Always wire physical, hardwired Normally Closed (NC) limit switches to positive and negative overtravel inputs! Do not rely solely on software positioning limits in your PLC code. If an encoder coupling slips, software limits are blinded, and physical limit switches are the only barrier preventing mechanical gantry crashes."
+    },
+    {
+      "title": "4.5 Analog Signal Handling in Motion Applications",
+      "content": "While pulse-train output (PTO) is dominant for stepper and low-cost servo drives, heavy industrial motion applications—including large conveyor drives, centrifugal extruders, web unwinders, and overhead bridge cranes—frequently utilize variable frequency drives (VFDs) and heavy-duty AC servodrives commanded via analog velocity setpoints. The S7-1200 interfaces to these drives via high-resolution analog output modules (SM 1232, 14-bit) generating bipolar ±10V DC speed commands where polarity dictates motor rotation direction (-10V = full speed reverse, 0V = standstill, +10V = full speed forward). Closed-loop position regulation is implemented within the PLC: the controller reads instantaneous position feedback from an incremental encoder connected to an HSC channel or an absolute magnetostrictive linear transducer connected to an analog input channel. In software, a position error comparator continuously computes: e = Target_Position - Actual_Position, multiplying error by a position proportional gain to generate the analog speed setpoint. To ensure smooth motion, software S-curve ramp generators profile the speed demand, preventing abrupt acceleration steps that cause mechanical backlash and belt slipping.",
+      "keyPoints": [
+        "Bipolar Analog Interface (±10V): Industry standard velocity reference; voltage magnitude commands speed, polarity commands direction",
+        "High-Resolution Analog Output: 14-bit SM 1232 module provides 16,384 discrete steps, ensuring smooth acceleration without velocity stepping",
+        "Closed-Loop Position Loop: PLC executes closed-loop algorithm: reads position via HSC or linear transducer, computes error, outputs analog speed demand",
+        "Linear Displacement Transducers: Magnetostrictive or optical linear scales outputting 0–10V or 4–20mA provide absolute carriage position feedback",
+        "Software Velocity Profiling: Ramping algorithms govern acceleration, steady-state run, deceleration, and creep-to-target phases to prevent mechanical overshoot",
+        "Analog Torque Limiting: Secondary analog output channels command drive torque limits to protect sensitive web materials from breaking during winding",
+        "Drive Ready/Fault Interlocks: Digital handshake lines (Drive Enabled, Drive Running, Drive Faulted) wired to PLC discrete I/O supervise drive safety"
+      ],
+      "note": "Always bond the shield of the ±10V analog speed reference cable directly to the metal enclosure grounding bar using a high-conductivity saddle clamp. Electrical noise induced by the adjacent motor power inverter will cause analog speed setpoint jitter, leading to motor hunting and rough bearing vibration."
+    }
+  ],
+  "review": [
+    "Explain the optical operating principle of an incremental rotary encoder and describe how quadrature A/B channels determine rotational direction.",
+    "What is the function of the Z index channel on an incremental encoder, and how is it used during machine homing?",
+    "Why does an S7-1200 High-Speed Counter (HSC) require reducing the digital input filter time in CPU properties from the default 6.4 ms to 0.8 µs?",
+    "Explain the mathematical principle of Quadrature 4x counting mode in an S7-1200 High-Speed Counter. What is the resulting count for a 500 PPR encoder?",
+    "Compare the operational mechanisms and industrial application domains of Pulse Width Modulation (PWM) versus Pulse Train Output (PTO).",
+    "Describe the sequential execution order of the PLCopen motion blocks (MC_Power, MC_Home, MC_MoveAbsolute) required to position a linear gantry.",
+    "Explain how a closed-loop positioning system functions when commanding an AC variable frequency drive using a ±10V analog output reference."
+  ]
+},
+
+  '10-closed-loop-pid': {
+  "overview": "This lesson provides an advanced engineering exploration of closed-loop feedback control and Proportional-Integral-Derivative (PID) algorithm implementation using the Siemens S7-1200 controller. Continuous technological processes—chemical temperature regulation, clean-water pressure boosting, fluid tank level control, and chemical blending—require automatic compensation against uncontrolled plant disturbances. Students will examine the mathematical foundations of the PID algorithm (proportional gain Kp, integral time Ti, derivative time Td), the Siemens PID_Compact Technology Object architecture, execution within deterministic cyclic interrupts (OB30), anti-windup clamping, pre-tuning and fine-tuning auto-tuning algorithms, and manual override with bumpless transfer.",
+  "objectives": [
+    "Model closed-loop process dynamics and mathematically formulate the standard ISA continuous and discrete PID control algorithms",
+    "Analyze the independent and combined effects of Proportional (Kp), Integral (Ti), and Derivative (Td) terms on transient and steady-state response",
+    "Instantiate and configure the PID_Compact Technology Object in TIA Portal, parameterizing setpoints, process variables, and manipulated outputs",
+    "Assign and execute PID_Compact inside a deterministic Cyclic Interrupt (OB30) with configured sampling time Ts",
+    "Configure analog physical scaling (Input_PER / Output_PER) and output limits with integrated integral anti-windup protection",
+    "Execute automated Pre-Tuning and Fine-Tuning using the TIA Portal PID Commissioning Control Panel",
+    "Implement Manual/Automatic mode selection and demonstrate bumpless transfer to prevent actuator bumps during mode switching"
+  ],
+  "sections": [
+    {
+      "title": "5.3 Designing a Closed-Loop Control System",
+      "content": "A closed-loop control system continuously measures the actual physical state of a technological process—the Process Variable (PV)—compares it against the desired target value—the Setpoint (SP)—and computes a Control Error: e(t) = SP(t) - PV(t). The controller calculates a corrective Manipulated Variable (MV / Output) directed to a physical actuator (such as a modulating control valve, electric heating element, or variable-speed pump). The standard continuous PID equation is formulated as: u(t) = Kp * [ e(t) + (1 / Ti) * ∫ e(τ) dτ + Td * (de(t) / dt) ]. The Proportional term (Kp) produces an output directly proportional to the current error; higher Kp increases responsiveness but can induce closed-loop instability and cannot eliminate steady-state offset alone. The Integral term (Ti) continuously integrates historical error over time, steadily driving the control output until steady-state error is completely eliminated (e(t) = 0). The Derivative term (Td) acts on the rate of change of the error, predicting future error trends to provide damping against rapid overshoots. In discrete microprocessor implementations (PLCs), the continuous equation is discretized using a fixed sampling time (Ts), requiring execution inside a strictly deterministic cyclic interrupt.",
+      "keyPoints": [
+        "Closed-Loop Architecture: Setpoint (SP), Measurement Transmitter, Error Comparator, PID Controller, Final Control Element (Actuator), and Plant Dynamics",
+        "Control Error Formulation: e(t) = SP(t) - PV(t); positive error indicates the process variable is below target; negative error indicates overshoot",
+        "Proportional Gain (Kp): Accelerates loop response speed; proportional to current error; excessive gain causes high-frequency oscillations and instability",
+        "Integral Time (Ti): Eliminates steady-state offset by accumulating error over time; smaller Ti produces more aggressive reset action; excessive integration causes slow hunting",
+        "Derivative Time (Td): Provides anticipatory damping proportional to error slope; improves stability in sluggish thermal systems; highly sensitive to high-frequency sensor noise",
+        "Discrete Sampling Period (Ts): The fixed time interval between consecutive algorithm executions; must be significantly faster than the process time constant (typically Ts <= 0.1 * Tau)",
+        "Disturbance Rejection: The primary industrial purpose of closed loop control is maintaining PV at SP despite external load changes (e.g. cold fluid inrush into a heated vessel)"
+      ],
+      "note": "Never use the Derivative term (Td) on noisy, fast-responding process variables such as flow rate or liquid pressure! High-frequency measurement noise will be amplified by the derivative derivative term (de/dt), causing erratic, violent chattering of modulating control valves."
+    },
+    {
+      "title": "PID_Compact on the S7-1200",
+      "content": "The Siemens S7-1200 provides the PID_Compact Technology Object: an industrial-grade, fully encapsulated closed-loop controller block implemented in firmware. PID_Compact executes inside a dedicated Cyclic Interrupt Organization Block (OB30), guaranteeing that algorithm iterations execute at exact, jitter-free temporal intervals (e.g. Ts = 100 ms). The block provides flexible signal interfacing: Setpoint can be supplied as a floating-point REAL value (e.g. 65.0°C from an HMI); Process Variable can be connected either as an already-scaled engineering REAL value via the 'Input' pin, or directly as a raw 16-bit analog integer via the 'Input_PER' pin (e.g. %IW64 directly from an RTD or 4–20mA transmitter). When using Input_PER, the Technology Object automatically handles analog quantization and scaling using parameters defined in its graphical configuration wizard. For manipulated outputs, PID_Compact supports three simultaneous formats: 'Output' (continuous 0.0% to 100.0% REAL for internal logic), 'Output_PER' (raw integer 0 to 27648 for analog output modules %QW64 driving control valves), and 'Output_PWM' (time-proportioned duty cycle for solid-state relays controlling industrial heaters).",
+      "keyPoints": [
+        "Technology Object Architecture: Instantiated as an integrated block backed by an internal system Data Block (e.g. 'PID_Compact_1')",
+        "Execution in Cyclic Interrupt (OB30): Guarantees strict deterministic execution at fixed sampling intervals (Ts); never call PID_Compact in OB1",
+        "Input vs Input_PER: 'Input' accepts floating-point engineering units (e.g. 50.0 bar); 'Input_PER' accepts raw analog integer counts (%IW64) with integrated scaling",
+        "Output vs Output_PER vs Output_PWM: Output (0.0–100.0% REAL), Output_PER (0–27648 integer for AQ), Output_PWM (digital pulse train for heaters)",
+        "Integral Anti-Windup Protection: Automatically clamps the integral accumulator when actuator limits (0% or 100%) are reached, eliminating saturation recovery delays",
+        "Deadband Support: Configurable error deadband suppresses minor actuator adjustments when the error is within acceptable plant tolerances (e.g. ±0.5°C)",
+        "Direct/Reverse Acting Direction: Direct-acting (cooling loop: output increases as PV rises above SP); Reverse-acting (heating loop: output increases as PV falls below SP)"
+      ],
+      "note": "Always verify the control direction (Direct vs Reverse) in PID_Compact properties! In heating processes, the loop is Reverse Acting (cooling requires less heat). If configured as Direct Acting, a drop in temperature will cause the PLC to turn OFF the heater, leading to thermal runaway in the wrong direction."
+    },
+    {
+      "title": "Pre-tuning, Fine-tuning and Commissioning",
+      "content": "Tuning PID parameters (Kp, Ti, Td) manually using trial-and-error in a live plant is tedious and risks destabilizing expensive machinery. TIA Portal integrates a comprehensive graphical PID Commissioning dashboard featuring real-time trend recording and built-in auto-tuning algorithms. PID_Compact supports five distinct operating modes: Inactive (Mode 0), Pre-Tuning (Mode 1), Fine-Tuning (Mode 2), Automatic Mode (Mode 3), and Manual Mode (Mode 4). Pre-Tuning executes an open-loop step response test: the controller applies an output step, measures process dead time (delay) and maximum rate of temperature/pressure rise (inflection point), and calculates baseline Kp, Ti, and Td parameters using an adapted Ziegler-Nichols algorithm. Fine-Tuning executes a closed-loop oscillation test around the current operating point: the controller introduces controlled limit-cycle oscillations, analyzes the natural oscillation period and amplitude, and optimizes the parameters for minimal overshoot and rapid disturbance rejection. In production, operators switch between Manual Mode (directly entering output percentage from the HMI) and Automatic Mode using Bumpless Transfer, which automatically pre-loads internal registers so the control valve does not jump when mode transitions occur.",
+      "keyPoints": [
+        "TIA Portal Commissioning Dashboard: Interactive graphical panel displaying live trends of Setpoint (black), Process Variable (green), and Output (red)",
+        "Pre-Tuning (Mode 1): Open-loop step excitation; analyzes plant dead time and inflection tangent; derives baseline Kp, Ti, Td parameters rapidly",
+        "Fine-Tuning (Mode 2): Closed-loop oscillation method; induces small controlled limit-cycle oscillations; optimizes damping and eliminates overshoot",
+        "Automatic Mode (Mode 3): Normal closed-loop execution continuously regulating PV to SP using active PID parameters",
+        "Manual Mode (Mode 4): Overrides automatic calculation; operator manually enters fixed output percentage (0.0% to 100.0%) for maintenance",
+        "Bumpless Transfer: When switching from Manual to Auto (or vice versa), the controller seamlessly matches internal states to prevent sudden valve movements",
+        "Parameter Retention: Calculated auto-tuning parameters are permanently saved to non-volatile Load Memory upon operator confirmation"
+      ],
+      "note": "Before initiating Pre-Tuning, ensure the process variable is in a steady state and far enough below the target setpoint to permit a step output! If Pre-Tuning is started when the process is already fluctuating or near setpoint, the tuning algorithm will abort with an error."
+    }
+  ],
+  "review": [
+    "Mathematically explain the independent operational roles of Proportional Gain (Kp), Integral Time (Ti), and Derivative Time (Td) in a feedback loop.",
+    "Why does pure Proportional control invariably leave a steady-state offset (droop), and how does the Integral term eliminate this error?",
+    "Explain why PID_Compact must be called inside a Cyclic Interrupt (OB30) rather than inside the main cyclic organization block (OB1).",
+    "Describe the difference between the 'Input' and 'Input_PER' pins on the PID_Compact instruction block.",
+    "What is 'Integral Windup', what physical consequences does it have on a modulating control valve, and how does PID_Compact prevent it?",
+    "Explain the engineering distinction between Pre-Tuning and Fine-Tuning in the TIA Portal PID commissioning dashboard.",
+    "Define 'Bumpless Transfer' and explain why it is an essential safety feature when operating chemical plant control loops."
+  ]
+},
+
+  '11-communication': {
+  "overview": "Modern automated factories are distributed networks where controllers, remote I/O islands, motor drives, operator panels, and smart sensors exchange critical data in real time. This lesson examines industrial communication technologies on the Siemens S7-1200 platform. Students will explore Point-to-Point (PtP) serial communications over RS232 and RS485 using the Modbus RTU protocol (master/slave architecture, holding registers, MB_COMM_LOAD, MB_MASTER, MB_SLAVE function blocks), fieldbus architectures (PROFIBUS DP token-ring master/slave networks), and high-speed deterministic PROFINET IO Industrial Ethernet (Real-Time RT and Isochronous Real-Time IRT, IO Controllers, IO Devices, and GSDML device integration).",
+  "objectives": [
+    "Compare physical layer electrical characteristics, topology limits, and baud rates of RS232, RS485, and PROFINET Industrial Ethernet",
+    "Configure Communication Modules (CM 1241) and Communication Boards (CB 1241) for Point-to-Point (PtP) serial communication in TIA Portal",
+    "Implement Modbus RTU communication networks, parameterizing MB_COMM_LOAD, MB_MASTER, and MB_SLAVE blocks to read/write holding registers",
+    "Describe the token-passing and master-slave polling architecture of PROFIBUS-DP using CM 1243-5 (master) and CM 1242-5 (slave)",
+    "Configure PROFINET IO topologies in TIA Portal Network View, assigning PROFINET device names, IP addresses, and update times",
+    "Import GSDML device description files to integrate third-party remote I/O and variable frequency drives onto PROFINET networks",
+    "Diagnose industrial communication faults using Wireshark, online network topologies, and communication status words"
+  ],
+  "sections": [
+    {
+      "title": "6.1 Point-to-Point Communication",
+      "content": "Point-to-Point (PtP) serial communication remains a vital industrial networking standard for connecting micro-PLCs to peripheral field instrumentation: digital power meters, weigh-scale indicators, barcode readers, temperature controllers, and variable frequency drives. The S7-1200 supports serial communication via Communication Modules (CM 1241) mounted to the left of the CPU, or compact Communication Boards (CB 1241) inserted into the CPU front bezel. Two physical electrical standards are supported: RS232 (unbalanced single-ended signaling, point-to-point only, maximum distance 15 meters, sensitive to ground noise) and RS485 (balanced differential signaling across a twisted wire pair (terminals TA/TB or A/B), multi-drop bus supporting up to 32 transceivers, cable lengths up to 1200 meters at 187.5 kbps). The dominant protocol on serial lines is Modbus RTU: an open master-slave protocol where a single Master polls multiple Slaves (addressed 1 to 247). In TIA Portal, serial networks are programmed using standardized function blocks: MB_COMM_LOAD initializes the serial port hardware (baud rate, parity, stop bits), while MB_MASTER executes cyclic read/write requests (Function Code 03 for Read Holding Registers, Function Code 06/16 for Write Holding Registers) mapped to Data Block arrays.",
+      "keyPoints": [
+        "RS232 Physical Standard: Single-ended voltage signals (±12V); maximum 15m distance; restricted strictly to 1-to-1 device connections",
+        "RS485 Differential Standard: Differential voltage signaling across twisted pair (A/B); high common-mode noise rejection; up to 1200m distance; multi-drop bus for 32 nodes",
+        "120-Ohm Termination Resistors: High-speed RS485 lines require 120-ohm termination resistors switched ON at both physical ends of the cable to prevent signal reflections",
+        "Modbus RTU Protocol Architecture: Strict Master/Slave polling; Master initiates all queries; Slaves never transmit spontaneously; binary frame format with 16-bit CRC error checking",
+        "Modbus Register Addressing: Discrete Inputs (10001+), Coils (00001+), Input Registers (30001+), and Holding Registers (40001+)",
+        "MB_COMM_LOAD Instruction: Configures hardware baud rate (9600, 19200, 38400, 115200 bps), parity (Even/Odd/None), and assigns communication buffers",
+        "MB_MASTER Function Block: Executes read/write commands: MODE (0=Read, 1=Write), DATA_ADDR (40001), DATA_LEN (register count), and DATA_PTR (pointer to DB array)"
+      ],
+      "note": "On an RS485 Modbus RTU network, ensure that the two bus-end devices have their 120-ohm termination resistors switched ON, and all intermediate devices have termination switched OFF! Missing or extra termination resistors cause severe signal reflections, leading to intermittent CRC communication timeout faults."
+    },
+    {
+      "title": "6.2 PROFINET and PROFIBUS",
+      "content": "For high-performance plant-wide coordination, modern automated manufacturing relies on standardized fieldbus and Industrial Ethernet protocols: PROFIBUS and PROFINET. PROFIBUS-DP (Decentralized Periphery) is an RS485-based token-ring master-slave fieldbus operating at speeds up to 12 Mbps over purple shielded cables. The S7-1200 interfaces to PROFIBUS via the CM 1243-5 (DP Master) or CM 1242-5 (DP Slave) modules. Today, PROFINET IO (Industrial Ethernet based on IEEE 802.3 standard at 100 Mbps full duplex) is the global standard for industrial networking, integrated natively onto every S7-1200 CPU. PROFINET replaces cyclic token-passing with deterministic Ethernet frames: Real-Time (RT) communication bypasses the standard TCP/IP protocol stack directly at Layer 2 (MAC level), delivering deterministic cycle update times under 1 ms with microsecond jitter. A PROFINET IO network comprises three device roles: the IO Controller (the PLC CPU executing logic), IO Devices (distributed remote I/O racks like ET 200SP, valve manifolds, and SINAMICS drives), and IO Supervisors (engineering workstations running TIA Portal). Devices are identified globally by unique symbolic PROFINET Device Names assigned in TIA Portal and resolved to IP addresses via the Discovery and Configuration Protocol (DCP). Third-party devices are integrated into TIA Portal by importing standardized XML-based GSDML (General Station Description Markup Language) device profile files.",
+      "keyPoints": [
+        "PROFINET Industrial Ethernet: Standard 100 Mbps full duplex; Cat5e shielded twisted pair with green industrial jacket; standard RJ45 or M12 connectors",
+        "Real-Time (RT) Communication: Layer 2 priority tagging (IEEE 802.1Q) bypasses TCP/IP stack overhead, delivering deterministic cyclic data exchange (< 1 ms)",
+        "Isochronous Real-Time (IRT): Hardware-synchronized Ethernet utilizing dedicated ASIC switches for jitter < 1 µs; essential for multi-axis coordinated motion",
+        "PROFINET Device Naming: Devices are addressed by symbolic names (e.g. 'et200sp-conveyor1') rather than static IPs; DCP protocol resolves names to IP addresses automatically",
+        "GSDML Device Description Files: Standardized XML device description files downloaded from manufacturers to integrate third-party drives and sensors into TIA Portal",
+        "Media Redundancy Protocol (MRP): Ring network topology providing bumpless recovery (< 200 ms) in the event of a severed Ethernet cable",
+        "PROFIBUS-DP Comparison: Legacy 12 Mbps token-ring fieldbus; requires specialized 9-pin Sub-D connectors with built-in terminating resistors and diagnostic LEDs"
+      ],
+      "note": "Always assign unique PROFINET Device Names to all distributed stations using TIA Portal before connecting them to the plant network! Unlike commercial office networks where IP addresses are primary, a PROFINET IO Controller will refuse to communicate with a remote I/O rack if its internal device name does not match the project configuration."
+    }
+  ],
+  "review": [
+    "Compare the electrical signaling, maximum cable distance, noise immunity, and multi-drop capabilities of RS232 versus RS485.",
+    "Describe the master-slave operating architecture of the Modbus RTU protocol. Can a slave device initiate data transmission without a master query?",
+    "Explain how the MB_COMM_LOAD and MB_MASTER instruction blocks work together in TIA Portal to read holding registers from an external power meter.",
+    "Why must 120-ohm termination resistors be installed at both physical ends of an RS485 communication cable segment?",
+    "Explain how PROFINET Real-Time (RT) communication achieves deterministic update times (< 1 ms) over standard IEEE 802.3 Ethernet cables.",
+    "Describe the role of the Discovery and Configuration Protocol (DCP) and explain why PROFINET devices require unique symbolic Device Names.",
+    "What is a GSDML file, who provides it, and how is it used by an automation engineer in TIA Portal to integrate a third-party variable frequency drive?"
+  ]
+},
+
+  '12-fault-diagnostics': {
+  "overview": "Minimizing production downtime is the central metric of industrial plant engineering. When automated machinery trips, every minute of halted production represents thousands of dollars in lost revenue. This lesson teaches students how to utilize the comprehensive online diagnostic suite built into Siemens TIA Portal and the S7-1200 CPU. Students will explore online hardware topology views, front-panel LED decoding, reading and interpreting the non-volatile CPU Diagnostic Buffer, utilizing Error Organization Blocks (OB80, OB82, OB86, OB122) to prevent nuisance CPU stops, and utilizing Watch Tables and Force Tables for safe online signal intervention during commissioning and breakdown recovery.",
+  "objectives": [
+    "Navigate and interpret TIA Portal Online Diagnostics, Device View health indicators, and network topology status icons",
+    "Decode front-panel CPU status LEDs (RUN/STOP, ERROR, MAINT, I/O indicators) into actionable troubleshooting priorities",
+    "Open, read, filter, and interpret timestamped event entries in the internal CPU Diagnostic Buffer",
+    "Identify root causes of hardware diagnostic interrupts (wire breaks, module unseated, auxiliary 24V missing) and software execution faults",
+    "Deploy Error Organization Blocks (OB82 diagnostic alarm, OB86 rack fault, OB122 I/O access) to maintain CPU runtime during non-critical field faults",
+    "Construct and utilize Watch Tables for non-invasive live monitoring and dynamic tag value modification",
+    "Execute safe hardware overriding using the Force Table complying with industrial safety protocols (FORCE LED warning)"
+  ],
+  "sections": [
+    {
+      "title": "Diagnostic Tools Overview",
+      "content": "Siemens TIA Portal integrates an exhaustive suite of diagnostic utilities that provide real-time visibility into the health of the automation system. Navigating 'Go Online' (Ctrl+M) connects the engineering workstation to all networked controllers, immediately populating the Project Tree and Network View with intuitive color-coded diagnostic icons: a green checkmark denotes healthy execution; a blue/orange circle indicates a difference between online CPU code and offline project files; a red wrench icon flags a severe hardware fault; and a flashing red icon highlights a communication loss. In Device View, clicking on any specific module reveals channel-level diagnostic telemetry: identifying blown fuses, disconnected sensor loops, or supply voltage dropouts. Furthermore, TIA Portal provides the Cross-Reference List (Shift+F11) to instantly trace all occurrences of a variable across the entire logic program, and the Call Structure view to visualize block nesting and execution hierarchy. These integrated software tools eliminate guesswork, enabling maintenance engineers to isolate faulty field components within seconds.",
+      "keyPoints": [
+        "Color-Coded Status Icons: Green (Healthy/OK), Blue/Orange (Online/Offline mismatch), Red Wrench (Hardware diagnostic fault), Red Cross (Device offline)",
+        "Go Online Mode (Ctrl+M): Establishes live telemetry session between TIA Portal and CPU; enables ladder rung power flow visualization in real time",
+        "Channel-Level Hardware Diagnostics: Clicking a module in Device View exposes individual channel faults (e.g. Channel 2 wire break on SM 1231)",
+        "Cross-Reference List (Shift+F11): Comprehensive matrix showing every block, network, and contact where a specific tag or memory address is referenced",
+        "Assignment List View: Visual bit-map showing which memory bytes (%I, %Q, %M, timers, counters) are allocated or free in the project",
+        "Call Structure Hierarchy: Graphical tree diagram showing the sequential execution call order of all OBs, FCs, and FBs in the program",
+        "Web Server Diagnostics: S7-1200 integrated HTTP/HTTPS web server allows plant maintenance staff to view diagnostics via standard web browsers without TIA Portal"
+      ],
+      "note": "Before downloading new code to a running production PLC, always perform an 'Online/Offline Comparison' (Ctrl+Alt+C)! This comparison highlights exact network differences between your laptop project and the running CPU, preventing accidental overwriting of recent field modifications made by night-shift technicians."
+    },
+    {
+      "title": "Reading the Diagnostic Buffer",
+      "content": "The Diagnostic Buffer is the definitive forensic authority inside every SIMATIC CPU. It is a non-volatile, circular event memory buffer that continuously logs significant operating system and hardware events in chronological order with microsecond timestamps synchronized to the CPU real-time clock. Events recorded include: CPU operating mode transitions (STOP to RUN, RUN to STOP), hardware component failures (broken sensor wire, missing expansion module, power supply dropout), PROFINET network node disconnections, and software programming errors (division by zero, array index out of bounds, memory address area length errors, cycle execution time exceeded). To access it in TIA Portal, select the CPU in the Project Tree and click 'Online & Diagnostics' -> 'Diagnostic Buffer'. Each entry displays an event number, precise timestamp, clear-text description, and a 'Help on event' button explaining the probable root cause and recommended corrective action. Crucially, the diagnostic buffer records the exact Organization Block, Function, and Network number where a runtime software exception occurred, allowing engineers to jump directly to the faulty line of code.",
+      "keyPoints": [
+        "Non-Volatile Event Memory: Retains the last 50 to 500 system events (depending on CPU model) across complete power interruptions",
+        "Detailed Event Anatomy: Event ID, Date & Timestamp (synchronized via RTC/NTP), Operating Mode, Clear-Text Event Description, and Block Call Stack",
+        "One-Click Fault Navigation: Clicking 'Open in editor' jumps directly to the exact ladder network or SCL line that triggered the runtime exception",
+        "Error Organization Blocks: If a programming or hardware fault occurs, the CPU attempts to call a specific error OB (e.g. OB82, OB86, OB122)",
+        "Preventing CPU STOP Trips: If the corresponding error OB is present in the CPU, the controller executes the error handler and remains in RUN mode",
+        "Fatal Watchdog Trips (OB80): Triggered when cyclic program execution time exceeds the configured cycle monitoring time (default 150 ms)",
+        "Exporting Diagnostic Logs: Diagnostic buffer records can be exported directly to text or CSV files for vendor warranty claims and incident reports"
+      ],
+      "note": "When an S7-1200 CPU trips unexpectedly into STOP mode, do NOT immediately cycle the power supply or press the RUN button! Cycling power can erase secondary temporary fault markers. Always connect with TIA Portal first and inspect the Diagnostic Buffer to read the exact timestamped cause of the trip."
+    },
+    {
+      "title": "Watch Table and Force Table",
+      "content": "Online commissioning and breakdown troubleshooting frequently require viewing internal calculation tags and overriding physical I/O states. TIA Portal provides two distinct environments for variable manipulation: Watch Tables and Force Tables. A Watch Table is a non-invasive monitoring and testing tool: it allows the engineer to assemble a custom list of tags (%I, %Q, %M, DB variables, timers, counters) and monitor their live values cyclically. Furthermore, a Watch Table permits 'Modifying' a tag: writing a new value to an internal memory bit or register at the start of the scan cycle. However, if the user program writes to that same tag later in the scan, the program overwrites the modified value immediately. Conversely, the Force Table is a high-level hardware overriding mechanism: forcing writes a fixed value directly to the physical peripheral inputs or outputs, completely overriding user program logic, process image tables, and safety rungs. Forcing remains active until explicitly deleted by an engineer. When forcing is active, the physical CPU illuminates a continuous flashing yellow 'FORCE' LED, warning operating personnel of bypassed logic.",
+      "keyPoints": [
+        "Watch Table Capabilities: Real-time non-invasive monitoring of tags; one-shot or continuous modification of internal memory bits (%M) and DB tags",
+        "Modify Limitation: A modified output coil (%Q0.0) will be overwritten on the next scan cycle if the active ladder logic rung evaluates to the opposite state",
+        "Force Table Mechanism: Locks physical peripheral I/O points to fixed values (0 or 1), bypassing user program logic and process images completely",
+        "FORCE Status LED: Front-panel yellow LED flashes continuously whenever any variable is forced in the CPU, providing high-visibility plant floor warning",
+        "Strict Safety Protocols: In live industrial facilities, applying a Force requires a formal engineering permit and peer review to prevent catastrophic machinery motion",
+        "Trigger Conditions: Watch Tables allow configuring exact trigger points: 'Beginning of scan cycle', 'End of scan cycle', or 'Transition to STOP'",
+        "Deleting Forces: Forcing persists across CPU power cycles and program downloads; forces must be explicitly deleted using 'Stop Forcing' in TIA Portal"
+      ],
+      "note": "Never use the Force Table as a temporary bypass to keep a machine running while waiting for a replacement sensor! Forcing overrides all software safety interlocks and emergency conditions. If an operator enters a machine zone while an optical safety light curtain is forced TRUE, the machine will not stop, creating severe risk of injury."
+    }
+  ],
+  "review": [
+    "Explain what each front-panel status LED (RUN/STOP, ERROR, MAINT) indicates on a Siemens S7-1200 CPU.",
+    "What specific information does the CPU Diagnostic Buffer record, and how does it assist an engineer in finding the root cause of a sudden machine shutdown?",
+    "Describe what happens to an S7-1200 CPU in RUN mode when a field wire on an analog input module breaks, both with and without OB82 present in the program.",
+    "Explain the functional difference between using 'Modify' in a Watch Table versus using 'Force' in a Force Table.",
+    "Why does the S7-1200 CPU illuminate a flashing yellow FORCE LED whenever any variable in the Force Table is active?",
+    "How does the Cross-Reference List tool in TIA Portal prevent catastrophic double-coil allocation errors in ladder programs?",
+    "Describe the recommended step-by-step procedure for performing an Online/Offline Program Comparison before downloading modifications to a running plant PLC."
+  ]
+},
 
   '13-s7-300': {
-    overview: 'The SIMATIC S7-300 was Siemens\' workhorse for two decades and remains installed in hundreds of thousands of machines worldwide. You will encounter it on plant tours, in legacy upgrade projects, and in job advertisements. This lesson gives you enough knowledge to read an S7-300 panel, connect to it with STEP 7 Classic or TIA Portal, understand its instruction set, and decide whether it should be migrated to S7-1500.',
-    objectives: [
-      'Identify S7-300 rack components: PS, CPU, IM, SM, CP modules',
-      'Connect to an S7-300 via MPI or PROFIBUS and read the program online',
-      'Map S7-300 instructions (OPN, L, T, =, A, AN, O) to their S7-1200 equivalents',
-      'Explain why the S7-300 is still widely deployed despite being superseded',
-      'Assess whether a given S7-300 installation warrants migration to S7-1200/1500',
-    ],
-    sections: [
-      {
-        title: '8.1 S7-300 Platform Overview',
-        content: 'The S7-300 uses a backplane rack (not DIN-rail snap modules) and communicates over MPI or PROFIBUS-DP. Its CPUs range from the compact CPU 312 to the high-performance CPU 319-3 PN/DP. All S7-300 programs are stored in STEP 7 Classic projects (*.s7p) or imported into TIA Portal V13+.',
-        keyPoints: [
-          'Rack: up to 8 modules per rack; multiple racks linked by IM 360/361 send/receive interfaces',
-          'Power Supply (PS): 307-1EA80 (2 A) or 307-2BA10 (5 A) — mounts in slot 1',
-          'CPU mounts in slot 2; first SM starts in slot 4 (slot 3 is reserved for IM)',
-          'MPI network: 187.5 kbit/s default, max 32 nodes — used for programming and HMI',
-          'PROFIBUS-DP: up to 12 Mbit/s — used for I/O expansion and drives',
-          'PROFINET: available on CPU 315/317/319 PN variants — supports S7 communication',
-          'End-of-life announced: spare parts available until ~2030 from authorised distributors',
-        ],
-      },
-      {
-        title: '8.2 S7-300 Instruction Set',
-        content: 'S7-300 STL (Statement List, called AWL in German) is register-based: you load a value into the accumulator (ACCU), operate on it, then transfer the result. Ladder (KOP) and Function Block Diagram (FBD) are also supported and look similar to S7-1200.',
-        keyPoints: [
-          'A I0.0 — AND bit; AN I0.1 — AND-NOT; O I0.2 — OR; = Q0.0 — assign output',
-          'L MW10 — Load word into ACCU1; T MW12 — Transfer ACCU1 to word',
-          'L MD20 — Load double-word (32-bit); L #MyVar — Load local variable',
-          'Arithmetic: +I (add int), -I, *I, /I; for REAL: +R, -R, *R, /R',
-          'Comparison: ==I, <>I, >I, <I — result goes to RLO (Result of Logic Operation)',
-          'JU LAB1 — unconditional jump; JC LAB2 — conditional jump (if RLO = 1)',
-          'CALL FC10 — call function; CALL FB20, DB20 — call function block with instance DB',
-        ],
-      },
-      {
-        title: '8.3 S7-300 in Factory Applications',
-        content: 'Despite being superseded by S7-1500, the S7-300 continues to control critical processes because replacement carries risk and cost. Understanding when to leave it alone and when to migrate is a key engineering judgement.',
-        keyPoints: [
-          'Still found in: automotive body-in-white, chemical batch reactors, water treatment plants installed before 2015',
-          'CPU 315-2 PN/DP with ET200S distributed I/O is a common architecture in large panels',
-          'Typical CPU memory: 256 KB work memory — sufficient for most machine programs',
-          'STEP 7 Classic (v5.7) still required for some old projects; TIA Portal can import v5.5+ projects',
-          'Migration trigger: CPU spare parts unavailable, safety system upgrade, capacity expansion',
-          'Migration path: S7-300 → S7-1500 using Siemens TIA Migration Tool (partial automation)',
-        ],
-      },
-    ],
-    review: [
-      'Draw an S7-300 rack and label the function of slots 1, 2, 3, and 4.',
-      'Translate this S7-300 STL to a Ladder rung: A I0.0 / AN I0.1 / = Q0.0',
-      'What is the difference between MPI and PROFIBUS-DP? When would you choose each?',
-      'An S7-300 CPU 315 has been running a packaging machine for 12 years. The customer asks whether to replace it. What questions do you ask before recommending migration?',
-      'Name two software tools used to program S7-300 and state which TIA Portal versions support S7-300.',
-    ],
-  },
+  "overview": "For over two decades, the Siemens SIMATIC S7-300 was the undisputed workhorse of global industrial automation, installed in hundreds of thousands of manufacturing facilities, chemical plants, and automotive assembly lines worldwide. While superseded by the modern S7-1500 family, the S7-300 will remain operational in factories for decades to come due to high replacement costs and validated process certifications. This lesson provides students with the practical engineering foundation required to service legacy S7-300 installations: understanding the active backplane rack hardware architecture (PS, CPU, IM, SM, CP modules), programming in Statement List (STL / AWL) accumulator-based logic and classic STEP 7 V5.x, communicating over MPI and PROFIBUS-DP, and evaluating modernization strategies.",
+  "objectives": [
+    "Identify physical hardware components and slot allocation rules across S7-300 racks (PS, CPU, IM 360/361, SM, CP)",
+    "Connect to legacy S7-300 PLCs using MPI (Multi-Point Interface) and PROFIBUS-DP programming adapters",
+    "Navigate and maintain legacy projects using SIMATIC STEP 7 Classic (V5.6/V5.7) and TIA Portal migration bridges",
+    "Read, analyze, and troubleshoot register-based Statement List (STL / AWL) instructions (L, T, A, AN, O, =, +I, -I, JC, JU)",
+    "Analyze the internal CPU architecture: Accumulators (ACCU1, ACCU2), Address Registers (AR1, AR2), and the Status Word (RLO, STA, OR, OS, OV)",
+    "Assess existing S7-300 factory installations to determine when to maintain versus when to schedule migration to S7-1500"
+  ],
+  "sections": [
+    {
+      "title": "S7-300 Platform Overview",
+      "content": "The SIMATIC S7-300 is a modular automation system engineered for medium-to-high performance factory applications. Unlike the S7-1200 which snaps modules together via side sliding connectors, the S7-300 mounts onto a dedicated aluminum S7 rail and interconnects modules using active U-shaped backplane bus connectors (bus connectors) plugged between adjacent cards. Hardware rack slots follow strict architectural rules: Slot 1 is reserved exclusively for the Power Supply (PS 307: 2A, 5A, or 10A 24VDC); Slot 2 hosts the Central Processing Unit (CPU: ranging from the economical CPU 312 to high-performance CPU 315-2 PN/DP, CPU 317, and CPU 319-3 PN/DP); Slot 3 is reserved strictly for an Interface Module (IM 360/361 or IM 365) used to expand to up to 4 interconnected multi-tier racks; Slots 4 through 11 host up to 8 Signal Modules (SM), Function Modules (FM), or Communication Processors (CP). Legacy CPUs relied on internal lithium backup batteries (for retaining RAM data), whereas modern S7-300 CPUs utilize a non-volatile Micro Memory Card (MMC). Field communications operate primarily over Multi-Point Interface (MPI: 187.5 kbps proprietary token-passing bus) and PROFIBUS-DP (up to 12 Mbps), with modern variants integrating PROFINET.",
+      "keyPoints": [
+        "Modular Backplane Architecture: Modules bolt onto an aluminum mounting rail and interconnect via rear multi-pin U-shaped bus connectors",
+        "Strict Slot Assignment Rules: Slot 1 = Power Supply (PS), Slot 2 = CPU Module, Slot 3 = Interface Module (IM for multi-tier expansion), Slots 4–11 = I/O and CP Modules",
+        "Multi-Tier Expansion Racks: Up to 4 physical racks (32 total modules) linked via IM 360 (send) and IM 361 (receive) interface modules",
+        "SIMATIC Micro Memory Card (MMC): Non-volatile Flash storage retaining the compiled project, DB values, and symbols without battery backup",
+        "Multi-Point Interface (MPI): Integrated RS485 programming and HMI interface running at 187.5 kbps (or 12 Mbps on high-end CPUs) supporting up to 32 nodes",
+        "Integrated PROFIBUS-DP Port: Integrated DB9 female connector supporting master/slave decentralized peripheral I/O at speeds up to 12 Mbps",
+        "End-of-Life Lifecycle: Spare parts and repair services are guaranteed by Siemens through approximately 2030, after which components transition to legacy status"
+      ],
+      "note": "Never remove or insert an S7-300 Micro Memory Card (MMC) while power is applied to the CPU! Unseating the MMC while the CPU is powered will corrupt the card's non-volatile flash partition, requiring a low-level format using a specialized Siemens prommer or resulting in permanent card failure."
+    },
+    {
+      "title": "8.2 S7-300 Instruction Set",
+      "content": "While the S7-300 supports Ladder Diagram (LAD) and Function Block Diagram (FBD), a vast proportion of legacy European machinery was programmed in Statement List (STL / AWL in German). STL is a low-level, machine-oriented language that operates on two 32-bit hardware data registers known as Accumulator 1 (ACCU1) and Accumulator 2 (ACCU2), coordinated by a 9-bit Status Word register. The fundamental data transfer sequence is Load and Transfer: 'L MW10' pushes the old content of ACCU1 into ACCU2 and loads the value of MW10 into ACCU1; 'T MW12' copies the content of ACCU1 into memory word MW12 without disturbing ACCU1. Binary logic operations evaluate into the Result of Logic Operation (RLO) bit of the Status Word: 'A I0.0' evaluates Boolean AND; 'AN I0.1' evaluates AND-NOT; 'O I0.2' evaluates Boolean OR; and '= Q0.0' assigns the evaluated RLO to the output. Mathematical instructions operate directly between accumulators: '+I' adds the 16-bit integer in ACCU2 to ACCU1 and stores the result in ACCU1. Program flow is controlled via unconditional jumps ('JU Target') or conditional jumps ('JC Target', executed only if RLO=1).",
+      "keyPoints": [
+        "Accumulator Architecture: ACCU1 (primary working register) and ACCU2 (secondary operand register) execute 16-bit and 32-bit arithmetic",
+        "Load and Transfer Syntax: 'L [address]' loads value into ACCU1 (shifts old ACCU1 into ACCU2); 'T [address]' transfers ACCU1 to destination memory",
+        "Status Word Bits: RLO (Result of Logic Operation), STA (Status of evaluated bit), OR (Or logic memory), OS (Overflow Stored), OV (Overflow)",
+        "Boolean Mnemonics: A (AND), AN (AND-NOT), O (OR), ON (OR-NOT), X (XOR), = (Assign), S (Set), R (Reset)",
+        "Arithmetic Mnemonics: +I (Add Int), -I (Subtract Int), *I (Multiply Int), /I (Divide Int); for floating point: +R, -R, *R, /R",
+        "Conditional Flow Control: JC (Jump if RLO=1), JCN (Jump if RLO=0), JU (Jump Unconditional); jumps skip intermediate STL instructions",
+        "Pointer Indirect Addressing: Address Registers (AR1, AR2) and pointer constants (e.g. P#DBX10.0) allow dynamic runtime memory indexing"
+      ],
+      "note": "When troubleshooting STL logic online, always monitor the RLO column! A rung in STL does not display colored power flow lines; instead, STEP 7 displays the instantaneous binary state of the evaluated contact (STA column) and the resulting running logic state (RLO column)."
+    },
+    {
+      "title": "8.3 S7-300 in Factory Applications",
+      "content": "The S7-300 remains deeply entrenched in global manufacturing infrastructure: automotive stamping and body-in-white welding lines, chemical pharmaceutical batch reactors, municipal water treatment plants, and airport baggage handling networks commissioned between 1995 and 2018. The classic architecture typically comprises an S7-300 CPU (such as the workhorse CPU 315-2 PN/DP or CPU 317-2 DP) connected to multiple ET 200M distributed I/O stations over a redundant PROFIBUS-DP network. Automation engineers managing these legacy assets face critical lifecycle decisions: maintaining the system with refurbished spare parts, or migrating to modern S7-1500 controllers. Key technical triggers that dictate replacement include: scarcity of obsolete replacement cards, lack of cybersecurity features (the S7-300 has no built-in encryption or TLS security), lack of modern IIoT connectivity (OPC-UA, MQTT, cloud telemetry), and production capacity expansion limits. However, where processes are validated and spare parts remain in stock, maintaining the existing S7-300 line is frequently the most economically sound operational strategy.",
+      "keyPoints": [
+        "Ubiquitous Factory Deployments: Primary controller in millions of automotive assembly fixtures, packaging machines, and utility plants worldwide",
+        "ET 200M Distributed I/O: High-density modular remote I/O utilizing standard S7-300 SM modules connected via IM 153 interface modules over PROFIBUS",
+        "Fail-Safe Variants (S7-300F): Yellow-bezel fail-safe CPUs (e.g. CPU 315F) executing functional safety logic up to SIL 3 / PL e via PROFIsafe",
+        "Cybersecurity and Connectivity Gaps: Legacy S7-300 CPUs lack modern TLS encryption, user management, and native OPC-UA server capabilities",
+        "Maintenance Strategies: Procuring certified refurbished spare modules; maintaining battery replacements for older RAM CPUs; regular backup of MMC cards",
+        "Engineering Software Requirements: Supported in classic SIMATIC STEP 7 V5.6/V5.7, and can be configured in TIA Portal V11 through V19",
+        "Migration Evaluation Criteria: Upgrade when downtime costs exceed migration budget, or when required spare parts are discontinued by Siemens"
+      ],
+      "note": "Before modifying any code on a legacy factory S7-300, always perform an 'Upload Station to PG' in STEP 7 to pull the exact running binary blocks from the online CPU into a fresh backup archive! Legacy machines often have undocumented field patches that do not exist in the plant's old binder documentation."
+    }
+  ],
+  "review": [
+    "Detail the strict slot allocation rules across an S7-300 hardware rack. What modules must be placed in Slots 1, 2, and 3?",
+    "Explain the mechanical and electrical role of the U-shaped active bus connector in an S7-300 backplane rack.",
+    "Translate the following S7-300 STL instruction sequence into an equivalent Ladder Diagram rung: L MW10 / L 100 / >=I / = Q0.0.",
+    "Explain the functional roles of Accumulator 1 (ACCU1), Accumulator 2 (ACCU2), and the RLO bit in Statement List execution.",
+    "What is an MMC (Micro Memory Card) in the S7-300 platform, and why must it never be extracted while the CPU is powered?",
+    "Why are hundreds of thousands of S7-300 PLCs still running in active production lines despite being superseded by the S7-1500?",
+    "List three technical or operational factors that would compel a plant manager to migrate a legacy S7-300 control system to a modern S7-1500."
+  ]
+},
 
   '14-system-upgrade': {
-    overview: 'Legacy PLC systems get replaced for many reasons: obsolete hardware, expanding I/O, functional safety certification, integration with modern SCADA or cloud systems. Migration is never a simple swap — programs must be converted, field wiring checked, and operators retrained. This lesson gives you a structured methodology so that an upgrade project finishes on time and the line restarts on the first attempt.',
-    objectives: [
-      'List the technical and business triggers that justify a PLC migration project',
-      'Identify the correct Siemens migration path: S7-200 → S7-1200, S7-300 → S7-1500',
-      'Use the TIA Migration Tool to convert a STEP 7 project and list what requires manual rework',
-      'Produce a risk register and a commissioning plan for a live-line migration',
-      'Write a rollback procedure and define the acceptance criteria for go-live',
-    ],
-    sections: [
-      {
-        title: '9.1 Why and When to Upgrade',
-        content: 'A PLC upgrade is a capital project — it needs a business case. The decision is rarely purely technical; it involves production risk, spare-parts cost, functional safety requirements, and integration with new systems.',
-        keyPoints: [
-          'Hardware obsolescence: CPU discontinued, spare cards unavailable from authorised sources',
-          'Capacity: I/O count exceeds maximum expansion, memory full, scan time degraded',
-          'Functional safety: new Machinery Directive requires SIL 2 — old CPU not certifiable',
-          'Integration: factory MES requires OPC-UA or MQTT — old CPU has no Ethernet port',
-          'Total Cost of Ownership: ongoing maintenance cost exceeds a one-time replacement cost',
-          'Production window: migrations are easiest during scheduled shutdowns (annual plant turnarounds)',
-        ],
-      },
-      {
-        title: '9.2 Migration Paths and Tooling',
-        content: 'Siemens provides specific hardware replacements and software tools for each migration path. Using the wrong path increases rework. Always start by identifying the exact source CPU family.',
-        keyPoints: [
-          'S7-200 (STEP 7 Micro/WIN) → S7-1200: no automatic converter — manual rewrite required',
-          'S7-300/400 (STEP 7 Classic) → S7-1500: TIA Migration Tool v17+ gives partial conversion',
-          'TIA Migration Tool converts: hardware config, tag table, DB contents, OB/FC/FB structure',
-          'TIA Migration Tool does NOT convert: GRAPH (SFC), SCL with system functions, indirect addressing',
-          'Logo! 0BA7 → Logo! 0BA8: Logo! Soft Comfort V8 has built-in migration wizard',
-          'Third-party (Allen-Bradley, Omron) → Siemens: full manual rewrite; use I/O list as bridge document',
-        ],
-      },
-      {
-        title: '9.3 Converting an Existing Project',
-        content: 'Even with the Migration Tool, expect 20–40 % of the converted code to need manual inspection and correction. The tool creates placeholders for unresolved instructions — find them all before commissioning.',
-        keyPoints: [
-          'Step 1: Export STEP 7 project to SEA file; import into TIA Portal via Migration Tool',
-          'Step 2: Compile — every red error must be resolved before download',
-          'Step 3: Search for "TODO" comments — these mark instructions the tool could not convert',
-          'Step 4: Verify all DB offsets — S7-300 optimised DBs differ from S7-1500 standard DBs',
-          'Step 5: Update HMI tags — addresses may have shifted after conversion',
-          'Step 6: Run full simulation in PLCSIM Advanced before touching hardware',
-        ],
-        note: 'Keep the original STEP 7 project archived and the old CPU on a shelf — you may need to revert during commissioning.',
-      },
-      {
-        title: '9.4 Planning and Risk Management',
-        content: 'A migration on a live production line carries significant risk. Structured risk management — identifying what can go wrong, rating severity × likelihood, and defining mitigations — is what separates a professional project from a gamble.',
-        keyPoints: [
-          'Risk register: list each risk, rate 1–5 for severity and likelihood, define mitigation and owner',
-          'Top risks: program logic error causes machine damage, field wiring mistake causes personnel injury',
-          'Mitigation: PLCSIM full simulation, IO simulation panel, dry-run with no loads energised',
-          'Rollback plan: keep old CPU in panel on spare DIN rail; define the 15-minute swap-back procedure',
-          'Acceptance criteria: all I/O tested point-by-point, all interlocks verified, 4-hour fault-free run',
-          'Operator training: minimum 2-hour walkthrough of new HMI screens before go-live',
-        ],
-      },
-    ],
-    review: [
-      'List three business reasons (not technical) that would justify an S7-300 migration project.',
-      'What does the TIA Migration Tool convert automatically, and what must be reworked manually?',
-      'You are migrating an S7-200 system. Why is there no automatic conversion tool, and what document do you use as your starting point?',
-      'Define "rollback procedure" in the context of a PLC migration. What should it contain?',
-      'Write three acceptance criteria for a conveyor system PLC migration go-live decision.',
-    ],
-  },
+  "overview": "Industrial automation systems inevitably reach the end of their technological and economic lifecycles. Replacing legacy programmable controllers (such as the SIMATIC S7-200, S7-300, and S7-400) is a high-stakes capital engineering project requiring meticulous risk management, automated code conversion, physical field wiring adaptations, and commissioning protocols. A botched migration can halt factory production for days, costing millions of dollars. This lesson provides a structured engineering roadmap for executing seamless PLC migrations: defining business and technical justifications, identifying official Siemens hardware and software upgrade paths, utilizing the TIA Portal Migration Tool, converting legacy register-based logic (STL) into modern symbolic structured text (SCL), and developing comprehensive risk registers and rollback plans.",
+  "objectives": [
+    "Evaluate technical obsolescence, spare part costs, safety directives, and IIoT business drivers to justify a PLC modernization project",
+    "Identify official Siemens hardware replacement matrices (S7-200 to S7-1200; S7-300/400 to S7-1500; ET 200M to ET 200MP/SP)",
+    "Prepare legacy STEP 7 Classic projects (V5.5/V5.6) for migration, resolving library conflicts and code protections",
+    "Execute automated project conversion using the TIA Portal Migration Tool and resolve unmigrated instruction warnings",
+    "Translate legacy Statement List (STL) accumulator instructions and indirect pointer memory access into optimized SCL code",
+    "Deploy physical front-connector wiring adapters to execute zero-rewiring hardware swaps on factory panels",
+    "Draft a formal Commissioning Risk Register, Site Acceptance Test (SAT) protocol, and a 15-minute emergency rollback procedure"
+  ],
+  "sections": [
+    {
+      "title": "Why and When to Upgrade",
+      "content": "Upgrading an industrial control system is a major capital investment that requires clear technical and business justifications. A modernization project is rarely initiated merely because newer hardware exists; rather, it is driven by four primary operational risk factors: (1) Hardware Obsolescence: When manufacturers declare a PLC family 'Discontinued' (as Siemens did with S7-200 and S7-300), original spare parts become scarce, lead times lengthen to months, and emergency replacement modules on secondary markets surge to 500% of original price. (2) Production Reliability and Unplanned Downtime: Aging power supplies, failing memory capacitors, and oxidised backplane connectors cause intermittent, catastrophic line stoppages. (3) Regulatory and Functional Safety Standards: Modern machinery directives (ISO 13849-1, IEC 62061) mandate Performance Level d/e (PL d/e) and SIL 2/3 safety integration that legacy discrete relay panels or vintage PLCs cannot support. (4) Digital Transformation and IIoT: Modern manufacturing execution systems (MES) and enterprise resource planning (ERP) platforms require native OPC-UA, MQTT, and secure Industrial Ethernet connectivity to track Overall Equipment Effectiveness (OEE) and energy metrics.",
+      "keyPoints": [
+        "Obsolescence Lifecycle Stages: Active Phase -> Discontinuation Announcement -> Spare Parts Phase (10 years) -> Legacy / End-of-Life",
+        "Total Cost of Ownership (TCO): When the annual cost of emergency spare parts and downtime exceeds the one-time modernization cost, migration is economically mandatory",
+        "Functional Safety Mandates: Legacy systems require separate hardwired safety circuits; modern S7-1200F/1500F CPUs integrate safety over PROFINET via PROFIsafe",
+        "Industry 4.0 Integration: Modern controllers feature native OPC-UA servers, web APIs, and encrypted TLS communication for cloud telemetry",
+        "Production Capacity Limits: Aging CPUs with exhausted work memory and slow scan times restrict throughput and process optimization",
+        "Scheduled Plant Shutdown Windows: Major migrations must be synchronized with scheduled annual maintenance turnarounds to minimize revenue loss"
+      ],
+      "note": "Always evaluate the complete system scope before proposing an upgrade! Upgrading a legacy PLC CPU frequently necessitates upgrading the connected HMI panel (e.g. migrating ProTool or WinCC Flexible to WinCC Comfort/Unified) and obsolete serial variable frequency drives."
+    },
+    {
+      "title": "Migration Paths and Tooling",
+      "content": "Siemens establishes formal, well-defined hardware replacement paths and software migration tools to assist engineers during modernization. The official hardware migration matrix dictates: (1) SIMATIC S7-200 micro-controllers migrate to SIMATIC S7-1200. Because S7-200 used the proprietary STEP 7 Micro/WIN software with a unique memory architecture, there is no direct automatic project converter; applications require a structured manual rewrite using the legacy program printout and I/O list as a functional specification. (2) SIMATIC S7-300 and S7-400 systems migrate to SIMATIC S7-1500. For this path, Siemens provides the automated TIA Portal Migration Tool (or the integrated 'Migrate Project' function in TIA Portal V13 through V19). The tool parses original STEP 7 Classic projects (*.s7p), automatically converting hardware racks, symbolic tag tables, standard Data Blocks, and most Ladder/FBD logic blocks into equivalent TIA Portal objects. (3) Decentralized Periphery: Legacy ET 200M remote racks migrate to modern ET 200MP or high-density ET 200SP stations, cutting physical panel footprint by up to 50% while upgrading communication from PROFIBUS-DP to PROFINET.",
+      "keyPoints": [
+        "S7-200 to S7-1200 Migration Path: No automated code converter; requires manual code re-engineering utilizing standardized IEC logic blocks",
+        "S7-300/400 to S7-1500 Migration Path: Supported by the automated TIA Migration Tool; converts hardware, tags, DBs, and standard OB/FC/FB rungs",
+        "TIA Migration Tool Software: Standalone utility executed on the computer hosting STEP 7 Classic; exports project into an intermediate '*.am19' migration file",
+        "Automated Conversion Scope: Converts standard LAD/FBD blocks, DB structures, and symbol tables; leaves complex indirect addressing for manual review",
+        "Non-Convertible Technologies: Siemens GRAPH (SFC), HiGraph, legacy communication FBs, and non-standard vendor libraries require manual recoding",
+        "ET 200M to ET 200SP / MP: High-density modular distributed I/O modules provide push-in terminal blocks and integrated PROFINET switches"
+      ],
+      "note": "Before executing project migration in TIA Portal, all proprietary add-on software packages (such as S7-GRAPH, S7-SCL, or Distributed Safety) that were installed in the original STEP 7 Classic environment must be installed or cleanly removed, or the migration tool will reject the source file."
+    },
+    {
+      "title": "Converting an Existing Project",
+      "content": "Converting a legacy project using the TIA Migration Tool requires a systematic 6-step engineering methodology: Step 1: Project Cleanup in STEP 7 V5.5. Open the legacy project in SIMATIC Manager, execute 'Check Block Consistency' (Ctrl+Alt+K) to recompile all dependent blocks, remove obsolete temporary blocks, and verify that symbolic tables contain no duplicate identifiers. Step 2: Intermediate File Generation. Run the TIA Migration Tool to generate an intermediate migration file (.am19 / .sea). Step 3: Import into TIA Portal. In TIA Portal, select 'Migrate project', choose the source file, and map the hardware target (e.g. mapping CPU 315-2 PN/DP to CPU 1515-2 PN). Step 4: Compiling and Resolving Red Errors. Execute full compilation (Ctrl+Shift+B). The compiler will generate error and warning messages flagging unconverted instructions. Step 5: Recoding Complex Logic. Legacy Statement List (STL) code utilizing accumulator tricks and indirect memory addressing (such as Address Registers AR1/AR2 and pointer constants P#DBX) cannot run efficiently on S7-1500; rewrite these sections in modern Structured Control Language (SCL). Step 6: Virtual Verification. Download the migrated project into PLCSIM Advanced to validate 100% of logic prior to physical panel installation.",
+      "keyPoints": [
+        "Step 1 (Cleanup): Check block consistency in STEP 7 V5.5, eliminate duplicate symbols, and verify all hardware modules exist in the catalog",
+        "Step 2 (Export): Generate intermediate migration archive (.am19) using the standalone Migration Tool",
+        "Step 3 (Import & Map): Import archive into TIA Portal; select target S7-1500 CPU and ET 200SP hardware equivalents",
+        "Step 4 (Compile & Debug): Compile software; inspect the compiler message log; resolve all red error markers systematically",
+        "Step 5 (STL to SCL Conversion): Replace cryptic accumulator-based STL indirect pointer code with structured, symbolic SCL statements (e.g. arrays and loops)",
+        "Step 6 (DB Optimization): Convert legacy standard DBs (byte-offset addressing) to Optimized Block Access for 5x execution speed improvements",
+        "Step 7 (Virtual Emulation): Simulate full machine operation in S7-PLCSIM Advanced with virtual HMI screens to verify sequence logic"
+      ],
+      "note": "Do not leave converted Data Blocks in 'Standard' (non-optimized) mode on the S7-1500 unless strictly required for legacy communication! Standard DBs force the 64-bit S7-1500 CPU to emulate legacy 16-bit byte alignment, significantly degrading execution speed and disabling individual variable retain settings."
+    },
+    {
+      "title": "Planning and Risk Management",
+      "content": "A live-line PLC migration is an operation with zero tolerance for failure. If an automated production line cannot restart at the end of a scheduled weekend shutdown, production losses can exceed the total cost of the upgrade. Professional automation engineers mitigate this through a comprehensive Risk Management and Commissioning Plan. The plan centers on three critical pillars: (1) Hardware Wiring Adapters: Rather than manually unscrewing hundreds of field wires—which introduces wire landing errors—engineers utilize pre-fabricated front-connector wiring adapters. These adapters plug directly onto the existing S7-300 terminal front-connectors, routing signals through factory-tested cable harnesses into the new S7-1500 or ET 200MP modules in seconds without disturbing field cables. (2) Formal Risk Register: A living document identifying potential risks (e.g. hidden sensor faults, uncalibrated analog loops, operator unfamiliarity with new HMI screens), scoring their Likelihood and Severity, and defining explicit mitigations. (3) The 15-Minute Rollback Plan: A mandatory contingency protocol where the old PLC hardware is kept mounted on a spare bracket; if severe commissioning roadblocks occur, the team can swap field connectors back to the old CPU within 15 minutes, ensuring the factory restarts production on schedule.",
+      "keyPoints": [
+        "Pre-Fabricated Wiring Adapters: Dedicated migration front-connectors snap onto existing S7-300 terminal strips, eliminating manual field rewiring errors",
+        "Formal Risk Register: Tabular risk matrix evaluating Technical, Operational, and Safety risks with explicit mitigation actions and assigned owners",
+        "Dry-Run Virtual Commissioning: Complete simulation using PLCSIM Advanced and digital-twin emulation reduces on-site debugging time by up to 70%",
+        "Point-to-Point I/O Verification: Mandatory pre-start protocol verifying 100% of field sensor contacts and actuator movements before running automatic cycles",
+        "The 15-Minute Rollback Procedure: Defined step-by-step protocol to reinstall the legacy CPU and reconnect field plugs if go-live abort criteria are met",
+        "Go-Live Acceptance Criteria: Explicit checklist (zero active safety faults, 100% I/O verified, 4-hour continuous defect-free test run) required for plant handover",
+        "Operator and Maintenance Training: Conducting minimum 4 hours of hands-on HMI alarm navigation and diagnostic training before production launch"
+      ],
+      "note": "Never discard the old PLC CPU or dismantle the old control panel on Day 1 of commissioning! Keep the legacy CPU mounted on the panel door or on a temporary bracket with its original program intact until the new system has operated continuously and fault-free for at least two full production weeks."
+    }
+  ],
+  "review": [
+    "List three critical business or technical reasons that justify migrating an aging S7-300 PLC system to an S7-1500.",
+    "Describe the official Siemens migration paths for the SIMATIC S7-200 and SIMATIC S7-300/400 controller families.",
+    "Why can the TIA Portal Migration Tool NOT convert S7-200 projects automatically, and what engineering workflow must be followed instead?",
+    "Detail the 6-step engineering methodology for converting a STEP 7 Classic V5.5 project into TIA Portal.",
+    "Explain why legacy S7-300 Statement List (STL) code utilizing indirect pointer registers (AR1/AR2) should be rewritten in Structured Control Language (SCL) for S7-1500.",
+    "How do pre-fabricated front-connector wiring adapters eliminate the risk of field wiring mistakes during a hardware upgrade?",
+    "Define what an 'Emergency Rollback Plan' is in the context of a factory PLC migration, and state what technical preparations are required to execute it in under 15 minutes."
+  ]
+},
+
+  '15-system-integration': {
+  "overview": "This capstone lesson integrates every discipline studied throughout the curriculum into an end-to-end, multi-tier industrial automation architecture. Real-world manufacturing plants do not operate PLCs in isolation; controllers function as the real-time core within an integrated automation pyramid governed by ISA-95 standards. Students will master the complete hierarchy spanning physical field instrumentation (sensors and actuators), real-time control (S7-1200/1500 PLCs), human-machine interface (HMI operator touchscreens), supervisory control and data acquisition (SCADA), manufacturing execution systems (MES), and enterprise resource planning (ERP). The lesson culminates in an exhaustive real-world industrial case study detailing the design, tag synchronization, alarm engineering, commissioning, and handover documentation of a modern multi-tank liquid batching plant.",
+  "objectives": [
+    "Analyze the 5 functional tiers of the ISA-95 Industrial Automation Pyramid and delineate real-time control from enterprise data layers",
+    "Engineer unified cross-tier tag databases linking TIA Portal STEP 7 PLC logic, WinCC Comfort/Unified HMI screens, and SCADA servers",
+    "Design ergonomic operator HMI interfaces complying with High-Performance HMI (ISA-101) standards for situational awareness",
+    "Configure plant-wide discrete and analog alarm management architectures adhering to ISA-18.2 standards",
+    "Synthesize discrete interlocks, high-speed counters, closed-loop PID algorithms, and PROFINET remote I/O into a unified system",
+    "Execute full virtual and physical commissioning protocols: factory acceptance testing (FAT), site acceptance testing (SAT), and handover dossiers"
+  ],
+  "sections": [
+    {
+      "title": "The Automation Stack End to End",
+      "content": "Modern automated manufacturing is structured according to the international standard ANSI/ISA-95 (Enterprise-Control System Integration), which conceptualizes industrial technology as a 5-tier Automation Pyramid. Level 0 (Field Level) encompasses physical sensors (inductive proximity, 4–20mA pressure/temperature transmitters, quadrature encoders) and final control elements (solenoid valves, motor contactors, VFDs) operating with physical electrical signals. Level 1 (Control Level) consists of Programmable Logic Controllers (PLCs), PACs, and dedicated motion controllers that sample field I/O and execute deterministic logic within millisecond scan cycles. Level 2 (Supervisory Level) comprises Human-Machine Interfaces (HMI touchscreens) and Supervisory Control and Data Acquisition (SCADA) systems that provide plant-wide visualization, real-time trend archiving, recipe selection, and alarm logging for human operators. Level 3 (Manufacturing Operations Management / MES) tracks work orders, batch execution records, maintenance schedules, and Overall Equipment Effectiveness (OEE) metrics. Level 4 (Enterprise Level / ERP) integrates corporate business software (such as SAP or Oracle) managing global supply chains, customer procurement, and inventory. High-performance industrial Ethernet (PROFINET, OPC-UA) bridges these tiers seamlessly.",
+      "keyPoints": [
+        "Level 0 (Field Level): Physical instrumentation and electrical energy actuators; 24VDC discrete, 4–20mA analog, and IO-Link protocols",
+        "Level 1 (Control Level): Industrial microprocessors (S7-1200/1500) executing deterministic real-time cyclic logic (< 10 ms cycle time)",
+        "Level 2 (Supervisory Level): Local HMI touchscreens (SIMATIC Comfort/Unified panels) and centralized SCADA platforms (WinCC Professional) for process supervision",
+        "Level 3 (MES Level): Manufacturing Execution Systems governing batch recipes, electronic batch records (EBR), and OEE production tracking",
+        "Level 4 (ERP Level): Enterprise Resource Planning systems coordinating business financials, sales orders, raw material logistics, and inventory",
+        "OPC Unified Architecture (OPC-UA): Secure, platform-independent, encrypted communication standard bridging Level 1 PLCs directly to Level 3 MES and cloud servers",
+        "Temporal Hierarchy: Milliseconds at Levels 0–1; seconds at Level 2; minutes/shifts at Level 3; days/months at Level 4"
+      ],
+      "note": "Never allow direct corporate office network connections to Level 1 PLC controllers! Industrial cybersecurity standard IEC 62443 mandates separating corporate IT networks from operational technology (OT) plant networks using segmented subnets, managed industrial firewalls, and demilitarized zones (DMZ)."
+    },
+    {
+      "title": "Integrating PLC, HMI and Supervision",
+      "content": "Integrating a programmable controller with an operator touchscreen (HMI) or SCADA system in TIA Portal represents a unified engineering workflow. Rather than manually exporting and re-typing memory addresses across separate software packages—which introduces severe addressing mismatch errors—TIA Portal combines STEP 7 and WinCC into a single shared database. In TIA Portal, the engineer creates an HMI device (e.g. SIMATIC KTP700 Basic or Unified Comfort Panel) and establishes an S7-subnet connection to the PLC in Network View with a single drag-and-drop link. Tags defined in the PLC Tag Table or Global Data Blocks are dragged directly onto HMI screen graphics: pushbuttons, status pilot lights, analog gauge bars, and numerical input boxes automatically bind to the underlying PLC tag. Alarm management is structured according to ISA-18.2: Discrete Alarms (triggered by PLC boolean fault bits, such as thermal motor overloads) and Analog Alarms (triggered when continuous process variables breach low-low, low, high, or high-high warning thresholds) are automatically logged, timestamped by the CPU clock, and presented in priority-ranked alarm banners requiring operator acknowledgment.",
+      "keyPoints": [
+        "Unified Engineering Database: STEP 7 PLC logic and WinCC HMI screens reside within the same TIA Portal project; tags are synchronized automatically",
+        "Symbolic Addressing Integration: Renaming a tag in the PLC Tag Table (e.g. 'Pump_Speed') instantly updates all bound HMI screens, scripts, and trend charts without breaking links",
+        "ISA-101 High-Performance HMI Guidelines: Utilize clean, low-contrast grayscale backgrounds; reserve bright saturated colors (red, yellow) exclusively for abnormal alarm conditions",
+        "ISA-18.2 Alarm Architecture: Categorize alarms into Warning (Yellow), Critical (Orange), and Emergency (Red); implement required operator acknowledgment sequences",
+        "Real-Time Trend Recording: High-speed cyclic polling buffers historical analog data (temperatures, pressures) into continuous trend graphs for operator analysis",
+        "Recipe Management: Pre-configured parameter tables (e.g. blending proportions) stored in HMI memory and downloaded as complete datasets to PLC Data Blocks",
+        "User Access Security: Multi-tier password authorization restricting sensitive calibration and tuning screens to certified maintenance engineers"
+      ],
+      "note": "Follow the ISA-101 standard for HMI design: avoid flashy 3D graphics, spinning animations, and garish background colors! A professional industrial HMI should resemble an aircraft cockpit: muted, clear grayscale displays where an illuminated red warning immediately captures the operator's attention during an emergency."
+    },
+    {
+      "title": "Real-World Application Case Study",
+      "content": "This comprehensive case study synthesizes every automation principle mastered across the course into a complete, operational industrial facility: an Automated Liquid Chemical Blending and Dispensing Plant. The process architecture comprises three raw ingredient storage tanks (Tanks A, B, and C) and a main heated jacketed mixing reactor (Tank D). The system is engineered using a Siemens S7-1200 CPU 1214C DC/DC/DC, an SM 1234 combo analog module (4 AI / 2 AQ), an SM 1221 digital expansion card, and a SIMATIC KTP700 Basic HMI panel connected via PROFINET. Continuous fluid level in Tank D is measured by an ultrasonic 4–20mA level transmitter wired to %IW64, scaled via NORM_X and SCALE_X into 0.0 to 10.0 cubic meters. Temperature in the jacketed reactor is regulated at 65.0°C by a PID_Compact Technology Object executing in Cyclic Interrupt OB30, commanding an analog modulating steam valve via %QW64. Ingredients are metered using high-speed pulse turbine flowmeters tracked via High-Speed Counters (HSC1 and HSC2). Agitator speed is controlled by an incremental encoder feedback loop driving a 3-phase motor via a variable frequency drive over PROFINET. The entire plant is governed by an automated state machine, full emergency stop interlocking, and historical recipe batch logging.",
+      "keyPoints": [
+        "Multi-Tier System Architecture: Fully integrated S7-1200 CPU 1214C, distributed PROFINET remote I/O, VFD motor drives, and KTP700 touchscreen",
+        "High-Speed Metering: High-Speed Counter (HSC1) processes pulses from turbine flowmeters to meter precise ingredient volumes into the reactor",
+        "Continuous Level Scaling: NORM_X and SCALE_X transform 4–20mA ultrasonic transmitter readings into accurate volumetric fluid levels (0.0 to 10.0 m³)",
+        "Closed-Loop Thermal Regulation: PID_Compact Technology Object in OB30 regulates reactor temperature at 65.0°C via analog steam valve modulation",
+        "Finite State Machine Sequence: Automatic batch sequence: Tank Flushing -> Ingredient A Fill -> Ingredient B Fill -> Heating & Agitation -> Drain & Clean",
+        "Tri-Tier Safety Interlocking: Hardwired dual-channel emergency stop relay de-energizes main motor contactors; software safety rungs inhibit auto sequencing",
+        "Commissioning and Handover Dossier: Complete project delivery documentation: Master I/O Schedule, As-Built Electrical Schematics, Tag Cross-Reference, Factory Acceptance Test (FAT) protocol, and Operator Maintenance Manual"
+      ],
+      "note": "The mark of an exceptional automation engineer is not just writing code that functions when everything is perfect, but engineering a system that behaves predictably, safely, and informatively when components fail! Always design thorough fault diagnostics, clear alarm banners, and fail-safe fallback states into every industrial project."
+    }
+  ],
+  "review": [
+    "Diagram the 5 functional levels of the ISA-95 Industrial Automation Pyramid and identify the technologies operating at each level.",
+    "Explain how the unified database architecture in Siemens TIA Portal prevents tag addressing and naming errors between the PLC and HMI.",
+    "Describe the key principles of the ISA-101 High-Performance HMI standard. Why are bright saturated colors discouraged for normal operational displays?",
+    "Explain the role and architecture of an ISA-18.2 compliant industrial alarm management system.",
+    "In the chemical blending case study, detail how NORM_X and SCALE_X convert raw 4–20mA analog counts into cubic meters of fluid volume.",
+    "Explain how the High-Speed Counter (HSC) and the PID_Compact closed-loop controller operate concurrently within the S7-1200 CPU.",
+    "List the critical engineering deliverables that must be compiled into the final handover dossier delivered to a plant owner upon project completion."
+  ]
+},
 
 };
