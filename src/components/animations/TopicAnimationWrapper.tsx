@@ -14,6 +14,10 @@ const PIDVisualizer = dynamic(() => import('@/components/animations/LessonAnimat
 const ProfinetDemo = dynamic(() => import('@/components/animations/LessonAnimationsNew').then(m => m.ProfinetDemo), { ssr: false });
 const DiagnosticPanel = dynamic(() => import('@/components/animations/LessonAnimationsNew').then(m => m.DiagnosticPanel), { ssr: false });
 const CapstoneArchitecture = dynamic(() => import('@/components/animations/LessonAnimationsNew').then(m => m.CapstoneArchitecture), { ssr: false });
+const PLCBrandTranslator = dynamic(() => import('@/components/animations/PLCBrandTranslator'), { ssr: false });
+const PowerBudgetCalculator = dynamic(() => import('@/components/animations/PowerBudgetCalculator'), { ssr: false });
+const S7300STLSimulator = dynamic(() => import('@/components/animations/S7300STLSimulator'), { ssr: false });
+const MigrationDecisionMatrix = dynamic(() => import('@/components/animations/MigrationDecisionMatrix'), { ssr: false });
 
 interface Props {
   lessonSlug: string;
@@ -125,6 +129,30 @@ export default function TopicAnimationWrapper({ lessonSlug, topicSlug, topicInde
     );
   }
 
+  // Lesson 6: Other PLC Brands
+  if (lessonSlug === '06-other-plc-brands') {
+    return (
+      <div style={{ marginTop: '24px' }}>
+        <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#a3a3a3', textTransform: 'uppercase', marginBottom: '10px' }}>
+          🌏 Multi-Brand Addressing & Syntax Cross-Translator
+        </p>
+        <PLCBrandTranslator />
+      </div>
+    );
+  }
+
+  // Lesson 7: System Design
+  if (lessonSlug === '07-system-design') {
+    return (
+      <div style={{ marginTop: '24px' }}>
+        <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#a3a3a3', textTransform: 'uppercase', marginBottom: '10px' }}>
+          ⚡ 24VDC Power Budget & Expansion Sizer
+        </p>
+        <PowerBudgetCalculator />
+      </div>
+    );
+  }
+
   // Lesson 8: Functions & FBs
   if (lessonSlug === '08-advanced-instructions') {
     return (
@@ -181,6 +209,30 @@ export default function TopicAnimationWrapper({ lessonSlug, topicSlug, topicInde
           🔍 TIA Portal Diagnostic Buffer & Watch Tables
         </p>
         <DiagnosticPanel />
+      </div>
+    );
+  }
+
+  // Lesson 13: SIMATIC S7-300
+  if (lessonSlug === '13-s7-300') {
+    return (
+      <div style={{ marginTop: '24px' }}>
+        <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#a3a3a3', textTransform: 'uppercase', marginBottom: '10px' }}>
+          🗄️ Statement List (STL / AWL) Accumulator Simulator
+        </p>
+        <S7300STLSimulator />
+      </div>
+    );
+  }
+
+  // Lesson 14: System Upgrade & Migration
+  if (lessonSlug === '14-system-upgrade') {
+    return (
+      <div style={{ marginTop: '24px' }}>
+        <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#a3a3a3', textTransform: 'uppercase', marginBottom: '10px' }}>
+          ♻️ Legacy Migration Matrix & 15-Minute Rollback Strategy
+        </p>
+        <MigrationDecisionMatrix />
       </div>
     );
   }

@@ -5,6 +5,7 @@ import { getLessonBySlug, lessons } from '@/lib/lessons';
 import { lessonContent } from '@/data/lesson-content';
 import LessonVideo from '@/components/content/LessonVideo';
 import TopicAnimationWrapper from '@/components/animations/TopicAnimationWrapper';
+import TopicQuiz from '@/components/content/TopicQuiz';
 import { asset } from '@/lib/asset';
 import type { Metadata } from 'next';
 
@@ -492,6 +493,9 @@ export default async function TopicPage({
 
                 {/* Topic-specific Interactive Simulator */}
                 <TopicAnimationWrapper lessonSlug={lesson.slug} topicSlug={topic.slug} topicIndex={topicIndex} topicTitle={topic.title} />
+
+                {/* Formative Knowledge Check Micro-Quiz */}
+                <TopicQuiz topicSlug={topic.slug} color={color} />
               </div>
             ) : (
               <div style={{
@@ -505,6 +509,7 @@ export default async function TopicPage({
                   Detailed practical laboratory guide for &ldquo;{topic.title}&rdquo;. Consult the Siemens S7-1200 System Manual and TIA Portal help files during bench wiring.
                 </p>
                 <TopicAnimationWrapper lessonSlug={lesson.slug} topicSlug={topic.slug} topicIndex={topicIndex} topicTitle={topic.title} />
+                <TopicQuiz topicSlug={topic.slug} color={color} />
               </div>
             )}
           </div>
