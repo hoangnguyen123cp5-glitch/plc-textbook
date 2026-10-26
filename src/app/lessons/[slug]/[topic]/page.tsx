@@ -5,6 +5,7 @@ import { getLessonBySlug, lessons } from '@/lib/lessons';
 import { lessonContent } from '@/data/lesson-content';
 import LessonVideo from '@/components/content/LessonVideo';
 import TopicAnimationWrapper from '@/components/animations/TopicAnimationWrapper';
+import TopicSlideDeck from '@/components/content/TopicSlideDeck';
 import TopicQuiz from '@/components/content/TopicQuiz';
 import { asset } from '@/lib/asset';
 import type { Metadata } from 'next';
@@ -400,6 +401,20 @@ export default async function TopicPage({
 
         return (
           <div style={{ marginBottom: '36px' }}>
+            {/* ── FIXED SLIDE PRESENTATION DECK ── */}
+            <TopicSlideDeck
+              lessonSlug={lesson.slug}
+              lessonTitle={lesson.title}
+              lessonIcon={lesson.icon}
+              courseCode={lesson.course}
+              color={color}
+              currentTopic={topic}
+              topics={lesson.topics}
+              currentIndex={topicIndex}
+              section={section ?? null}
+              diagram={TOPIC_DIAGRAMS[topic.slug] ?? null}
+            />
+
             {section ? (
               <div style={{
                 background: '#ffffff',
@@ -411,7 +426,7 @@ export default async function TopicPage({
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
                   <span style={{ width: 4, height: 16, background: color, borderRadius: 99 }} />
                   <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: color, textTransform: 'uppercase', margin: 0 }}>
-                    Technical Notes · {section.title}
+                    Detailed Laboratory Notes · {section.title}
                   </p>
                 </div>
 
