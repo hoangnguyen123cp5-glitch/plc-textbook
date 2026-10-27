@@ -32,7 +32,8 @@ export default function LessonSectionAnimation({ slug, sectionIndex, sectionTitl
 }
 
 /* ═════════════════════════════════════════════════════════════════════════
-   SECTION 1.1: 5 CORE FUNCTIONAL ELEMENTS OF CONTROL SYSTEMS (Light Theme)
+   SECTION 1.1: 5 CORE FUNCTIONAL ELEMENTS OF CONTROL SYSTEMS
+   MATLAB / Simulink Technical Specification Model
 ═════════════════════════════════════════════════════════════════════════ */
 function Section1_1FiveElementsAnimation() {
   const [activeId, setActiveId] = useState<number>(2); // Default to Controller
@@ -40,191 +41,258 @@ function Section1_1FiveElementsAnimation() {
   const elements = [
     {
       id: 0,
-      num: '1',
+      code: '01',
       title: 'Setpoint (SP)',
       sub: 'Reference Target',
-      icon: '🎯',
-      desc: 'The desired target value for the physical process variable (e.g., temperature, pressure, flow rate, or positioning coordinate).',
-      example: 'Temperature SP = 60.0°C | Conveyor speed SP = 1.5 m/s (Entered via Siemens KTP700 HMI)',
-      badge: 'Reference Input Signal',
-      color: '#0284c7',
+      desc: 'The desired target reference value for the physical process variable (e.g., temperature, pressure, flow rate, or positioning coordinate).',
+      signal: 'Analog / Digital SP Value',
+      hardware: 'Siemens KTP700 Basic HMI / SCADA Tag Database',
+      color: '#0072BD', // MATLAB Blue
     },
     {
       id: 1,
-      num: '2',
+      code: '02',
       title: 'Comparator',
       sub: 'Summing Junction (Σ)',
-      icon: '⚖️',
-      desc: 'Calculates the real-time instantaneous control error between target setpoint and physical feedback: e(t) = SP − PV.',
-      example: 'Control Error e(t) = 60.0°C − 42.0°C = +18.0°C ➔ Drives corrective controller response',
-      badge: 'Summing Junction (Σ)',
-      color: '#d97706',
+      desc: 'Calculates the real-time instantaneous control error between target setpoint and physical feedback: e(t) = SP(t) − PV(t).',
+      signal: 'Error Vector e(t) = SP - PV',
+      hardware: 'CPU Arithmetic Logic Unit (REAL 32-bit Floating-Point)',
+      color: '#D95319', // MATLAB Orange
     },
     {
       id: 2,
-      num: '3',
+      code: '03',
       title: 'Controller',
-      sub: 'PLC CPU (OB1 Execution)',
-      icon: '💻',
-      desc: 'The computational processing core executing control algorithms (PID, Ladder logic, safety interlocks) to compute output u(t).',
-      example: 'Siemens S7-1200 CPU 1214C DC/DC/DC executing PID_Compact FB in 1ms cyclic OB interrupt',
-      badge: 'Decision Logic / Control Core',
-      color: '#16a34a',
+      sub: 'PLC CPU (OB1 / OB30)',
+      desc: 'The computational core executing control algorithms (PID_Compact, Ladder logic interlocks) to compute the corrective output u(t).',
+      signal: 'Control Output u(t) (0.0..100.0%)',
+      hardware: 'Siemens SIMATIC S7-1200 CPU 1214C DC/DC/DC',
+      color: '#77AC30', // MATLAB Green
     },
     {
       id: 3,
-      num: '4',
+      code: '04',
       title: 'Actuator',
       sub: 'Final Control Element',
-      icon: '⚡',
-      desc: 'Transduces low-power digital/analog control signals from the PLC into high-power kinetic, thermal, or pneumatic action.',
-      example: 'SINAMICS V20 Inverter (VFD) driving AC motor, 4–20 mA proportional control valve, Solid-State Relay (SSR)',
-      badge: 'Final Control Element',
-      color: '#dc2626',
+      desc: 'Transduces low-power digital/analog control signals from the PLC into high-power kinetic, thermal, or pneumatic action upon the plant.',
+      signal: 'Power Drive / 4–20 mA Current Loop',
+      hardware: 'SINAMICS V20 VFD / Eurotherm SCR / Proportional Valve',
+      color: '#7E2F8E', // MATLAB Purple
     },
     {
       id: 4,
-      num: '5',
+      code: '05',
       title: 'Feedback Sensor',
       sub: 'Transducer / Measurement',
-      icon: '📡',
-      desc: 'Continuously measures the actual physical process variable (PV) and converts it to a standard electrical signal to close the loop.',
-      example: 'PT100 RTD temperature probe with 4–20 mA transmitter, 1024 PPR optical incremental encoder',
-      badge: 'Feedback Measurement Loop',
-      color: '#7c3aed',
+      desc: 'Continuously measures the actual physical process variable (PV) and converts it to a standardized electrical signal to close the loop.',
+      signal: 'Raw Process Image (0..27648 WORD)',
+      hardware: 'PT100 RTD with 4–20 mA Transmitter / Optical Encoder',
+      color: '#EDB120', // MATLAB Yellow
     },
   ];
 
   const current = elements[activeId];
 
+  const handleNextStep = () => {
+    setActiveId((prev) => (prev + 1) % elements.length);
+  };
+
+  const handleReset = () => {
+    setActiveId(0);
+  };
+
   return (
     <div style={{
       background: '#ffffff',
-      border: '1.5px solid #cbd5e1',
-      borderRadius: '14px',
-      padding: '18px 22px',
-      boxShadow: '0 4px 16px rgba(0,0,0,0.03)',
+      border: '1px solid #cbd5e1',
+      borderRadius: '4px',
+      padding: '16px 20px',
       fontFamily: 'system-ui, -apple-system, sans-serif',
     }}>
-      {/* Top Header */}
+      {/* Top Header Bar */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         borderBottom: '1px solid #e2e8f0',
-        paddingBottom: '12px',
-        marginBottom: '14px',
+        paddingBottom: '10px',
+        marginBottom: '12px',
         flexWrap: 'wrap',
         gap: '8px',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#0284c7', display: 'inline-block' }} />
-          <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: '#0f172a', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-            Signal Flow Architecture: 5 Core Functional Elements
+        <div>
+          <span style={{ fontSize: '10px', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            SIMULINK ARCHITECTURAL MODEL · IEC 61131-2
+          </span>
+          <h4 style={{ margin: 0, fontSize: '13.5px', fontWeight: 700, color: '#0f172a' }}>
+            5 Core Functional Elements of an Automated Control Loop
           </h4>
         </div>
-        <span style={{ fontSize: '11px', color: '#64748b', background: '#f1f5f9', padding: '3px 8px', borderRadius: '6px', fontWeight: 600 }}>
-          💡 Click any block to inspect hardware implementation & telemetry
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <button
+            onClick={handleReset}
+            style={{
+              padding: '4px 10px',
+              borderRadius: '4px',
+              border: '1px solid #cbd5e1',
+              background: '#f8fafc',
+              color: '#334155',
+              fontSize: '11px',
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            Reset sơ đồ
+          </button>
+          <button
+            onClick={handleNextStep}
+            style={{
+              padding: '4px 12px',
+              borderRadius: '4px',
+              border: '1px solid #0072BD',
+              background: '#0072BD',
+              color: '#ffffff',
+              fontSize: '11px',
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            Bước tiếp theo ({current.code}/05)
+          </button>
+        </div>
       </div>
 
-      {/* Signal Flow Block Diagram */}
+      {/* SVG Signal Flow Schematic: Orthogonal lines, no crossing, MATLAB standard */}
+      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '4px', padding: '10px', marginBottom: '12px' }}>
+        <svg width="100%" height="90" viewBox="0 0 760 90" style={{ display: 'block' }}>
+          <defs>
+            <marker id="arrow-matlab" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#475569" />
+            </marker>
+            <marker id="arrow-active" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#0072BD" />
+            </marker>
+          </defs>
+
+          {/* Forward Paths */}
+          <line x1="125" y1="35" x2="165" y2="35" stroke="#475569" strokeWidth="1.5" markerEnd="url(#arrow-matlab)" />
+          <line x1="265" y1="35" x2="305" y2="35" stroke="#475569" strokeWidth="1.5" markerEnd="url(#arrow-matlab)" />
+          <line x1="425" y1="35" x2="465" y2="35" stroke="#475569" strokeWidth="1.5" markerEnd="url(#arrow-matlab)" />
+          <line x1="585" y1="35" x2="635" y2="35" stroke="#475569" strokeWidth="1.5" markerEnd="url(#arrow-matlab)" />
+
+          {/* Plant Box on right */}
+          <rect x="635" y="15" width="115" height="40" rx="3" fill="#ffffff" stroke="#94a3b8" strokeWidth="1.5" />
+          <text x="692" y="32" fill="#0f172a" fontSize="10" fontWeight="bold" textAnchor="middle">Physical Plant</text>
+          <text x="692" y="46" fill="#64748b" fontSize="8.5" textAnchor="middle">Process Dynamics</text>
+
+          {/* Feedback Orthogonal Loop */}
+          <path d="M 692,55 L 692,75 L 425,75" fill="none" stroke="#475569" strokeWidth="1.5" />
+          <line x1="305" y1="75" x2="215" y2="75" stroke="#475569" strokeWidth="1.5" />
+          <path d="M 215,75 L 215,55" fill="none" stroke="#475569" strokeWidth="1.5" markerEnd="url(#arrow-matlab)" />
+
+          {/* 5 Functional Elements as Clickable Blocks */}
+          {[
+            { id: 0, x: 10, y: 15, w: 115, h: 40, label: '01. Setpoint (SP)', sub: 'Reference Target' },
+            { id: 1, x: 165, y: 15, w: 100, h: 40, label: '02. Comparator', sub: 'Summing Junction' },
+            { id: 2, x: 305, y: 15, w: 120, h: 40, label: '03. Controller', sub: 'PLC CPU (OB1)' },
+            { id: 3, x: 465, y: 15, w: 120, h: 40, label: '04. Actuator', sub: 'Final Element' },
+            { id: 4, x: 305, y: 58, w: 120, h: 32, label: '05. Sensor (PV)', sub: 'Feedback Transducer' },
+          ].map((b) => {
+            const isAct = activeId === b.id;
+            return (
+              <g key={b.id} onClick={() => setActiveId(b.id)} style={{ cursor: 'pointer' }}>
+                <rect
+                  x={b.x}
+                  y={b.y}
+                  width={b.w}
+                  height={b.h}
+                  rx="3"
+                  fill={isAct ? '#eff6ff' : '#ffffff'}
+                  stroke={isAct ? '#0072BD' : '#cbd5e1'}
+                  strokeWidth={isAct ? 2 : 1}
+                />
+                <text
+                  x={b.x + b.w / 2}
+                  y={b.y + (b.h === 32 ? 14 : 17)}
+                  fill={isAct ? '#0072BD' : '#0f172a'}
+                  fontSize="10"
+                  fontWeight={isAct ? 'bold' : '600'}
+                  textAnchor="middle"
+                >
+                  {b.label}
+                </text>
+                <text
+                  x={b.x + b.w / 2}
+                  y={b.y + (b.h === 32 ? 26 : 31)}
+                  fill={isAct ? '#1e40af' : '#64748b'}
+                  fontSize="8.5"
+                  textAnchor="middle"
+                >
+                  {b.sub}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+
+      {/* Parameter | Value | Hardware Implementation Table (MATLAB Structure) */}
       <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(5, 1fr)',
-        gap: '10px',
-        marginBottom: '14px',
+        background: '#ffffff',
+        border: '1px solid #cbd5e1',
+        borderRadius: '4px',
+        overflow: 'hidden',
       }}>
-        {elements.map((el) => {
-          const isActive = activeId === el.id;
-          return (
-            <button
-              key={el.id}
-              onClick={() => setActiveId(el.id)}
-              style={{
-                padding: '10px 8px',
-                borderRadius: '10px',
-                border: isActive ? `2px solid ${el.color}` : '1px solid #e2e8f0',
-                background: isActive ? '#eff6ff' : '#f8fafc',
-                cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                textAlign: 'center',
-                boxShadow: isActive ? `0 4px 12px ${el.color}25` : '0 1px 3px rgba(0,0,0,0.02)',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              <span style={{ fontSize: '22px', marginBottom: '4px' }}>{el.icon}</span>
-              <span style={{ fontSize: '12px', fontWeight: 800, color: isActive ? '#0f172a' : '#334155', lineHeight: 1.2 }}>
-                {el.num}. {el.title}
-              </span>
-              <span style={{ fontSize: '10px', color: isActive ? el.color : '#64748b', marginTop: '3px', fontWeight: 600 }}>
-                {el.sub}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Signal Flow Arrow Graphic */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '8px 16px',
-        background: '#f8fafc',
-        borderRadius: '8px',
-        border: '1px solid #e2e8f0',
-        fontSize: '11px',
-        color: '#475569',
-        fontFamily: 'Consolas, monospace',
-        marginBottom: '14px',
-        fontWeight: 600,
-        overflowX: 'auto',
-      }}>
-        <span style={{ color: '#0284c7' }}>Feedforward:</span>
-        <span style={{ color: '#0f172a' }}>SP [Target] ──▶ (Σ) [Error e(t)] ──▶ PLC CPU [OB1] ──▶ Actuator ──▶ Plant Process</span>
-        <span style={{ color: '#16a34a' }}>Feedback: ◀── Sensor [PV Transducer]</span>
-      </div>
-
-      {/* Balanced 2-Column Inspector */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-        {/* Left Column: Role & Mathematical Formulation */}
         <div style={{
-          background: '#ffffff',
-          border: '1.5px solid #e2e8f0',
-          borderRadius: '10px',
-          padding: '12px 16px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+          display: 'grid',
+          gridTemplateColumns: '1.2fr 1.5fr 2fr',
+          background: '#f1f5f9',
+          borderBottom: '1px solid #cbd5e1',
+          padding: '6px 12px',
+          fontSize: '10.5px',
+          fontWeight: 700,
+          color: '#334155',
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-            <span style={{ fontSize: '10.5px', fontWeight: 800, color: current.color, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              {current.badge}
-            </span>
-            <span style={{ fontSize: '12px', fontWeight: 800, color: '#0f172a' }}>
-              {current.num}. {current.title}
-            </span>
-          </div>
-          <p style={{ margin: 0, fontSize: '12.5px', color: '#334155', lineHeight: 1.6 }}>
-            {current.desc}
-          </p>
+          <span>Thông Số / Khối Chức Năng</span>
+          <span>Đặc Tính Tín Hiệu I/O</span>
+          <span>Thiết Bị Công Nghiệp Triển Khai</span>
         </div>
 
-        {/* Right Column: Industrial Field Hardware Implementation */}
         <div style={{
-          background: '#fffbeb',
-          border: '1.5px solid #fde68a',
-          borderRadius: '10px',
-          padding: '12px 16px',
+          display: 'grid',
+          gridTemplateColumns: '1.2fr 1.5fr 2fr',
+          padding: '10px 12px',
+          fontSize: '11.5px',
+          color: '#0f172a',
+          alignItems: 'center',
+          background: '#ffffff',
         }}>
-          <div style={{ fontSize: '10.5px', fontWeight: 800, color: '#b45309', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '6px' }}>
-            🏭 Industrial Field Hardware Implementation
+          <div>
+            <span style={{ fontFamily: 'Consolas, monospace', fontWeight: 700, color: '#0072BD', marginRight: '6px' }}>
+              [{current.code}]
+            </span>
+            <strong>{current.title}</strong>
+            <div style={{ fontSize: '10.5px', color: '#64748b' }}>{current.sub}</div>
           </div>
-          <p style={{ margin: 0, fontSize: '12.5px', color: '#78350f', lineHeight: 1.6, fontWeight: 500 }}>
-            {current.example}
-          </p>
+          <div style={{ fontFamily: 'Consolas, monospace', color: '#334155', fontSize: '11px' }}>
+            {current.signal}
+          </div>
+          <div style={{ color: '#1e293b', fontSize: '11px', lineHeight: 1.4 }}>
+            {current.hardware}
+          </div>
+        </div>
+
+        <div style={{
+          borderTop: '1px solid #e2e8f0',
+          padding: '8px 12px',
+          background: '#f8fafc',
+          fontSize: '11.5px',
+          color: '#475569',
+          lineHeight: 1.5,
+        }}>
+          <strong>Nguyên lý điều khiển:</strong> {current.desc}
         </div>
       </div>
     </div>

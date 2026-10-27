@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { getTopicVideo, formatTimestamp, buildEmbedUrl } from '@/data/video-index';
 import { TopicCaseStudy } from '@/data/topic-case-studies';
+import { IconPlay, IconPause } from '@/components/ui/TechnicalIcons';
 
 interface Props {
   lessonSlug: string;
@@ -135,25 +136,26 @@ export default function TopicVideoLabSlide({
             }}>
               {/* Virtual Screen Display */}
               <div style={{ textAlign: 'center', zIndex: 2 }}>
-                <div style={{
-                  width: 58,
-                  height: 58,
-                  borderRadius: '50%',
-                  background: isPlaying ? '#0284c7' : '#dc2626',
-                  color: '#ffffff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '24px',
-                  margin: '0 auto 12px auto',
-                  cursor: 'pointer',
-                  boxShadow: '0 0 25px rgba(220,38,38,0.4)',
-                  transition: 'all 0.2s ease',
-                }}
-                onClick={() => setIsPlaying(!isPlaying)}
+                <button
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '6px',
+                    background: '#1e293b',
+                    border: '1px solid #475569',
+                    color: '#f8fafc',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    margin: '0 auto 12px auto',
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => setIsPlaying(!isPlaying)}
                 >
-                  {isPlaying ? '⏸' : '▶'}
-                </div>
+                  {isPlaying ? <IconPause size={18} /> : <IconPlay size={18} />}
+                  <span>{isPlaying ? 'PAUSE DEMO' : 'PLAY LAB DEMO'}</span>
+                </button>
 
                 <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#f8fafc', marginBottom: '4px' }}>
                   {isPlaying ? 'NOW PLAYING LAB DEMO' : 'LAB DEMONSTRATION READY'}

@@ -319,8 +319,8 @@ export function PIDVisualizer() {
 
   return (
     <div style={{ background: '#fafafa', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '16px' }}>
-      <div style={{ fontSize: '13px', fontWeight: 700, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '16px' }}>
-        🎯 PID Step Response & Parameter Tuning
+      <div style={{ fontSize: '13px', fontWeight: 700, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '16px' }}>
+        PID Step Response & Parameter Tuning (MATLAB / Simulink Simulation Model)
       </div>
 
       {/* PID gains */}
@@ -374,7 +374,7 @@ export function PIDVisualizer() {
         {[
           { l: 'Overshoot', v: maxOvershoot > sp + 1 ? `${((maxOvershoot - sp) / sp * 100).toFixed(1)}%` : 'None', c: maxOvershoot > sp * 1.1 ? '#ef4444' : '#16a34a' },
           { l: 'Settling Time', v: settled > 0 ? `${settled * 0.1}s` : '>6s', c: settled < 30 ? '#16a34a' : '#f59e0b' },
-          { l: 'Loop Status', v: Math.abs(points[points.length - 1] - sp) < 2 ? 'Stable ✓' : 'Settling...', c: Math.abs(points[points.length - 1] - sp) < 2 ? '#16a34a' : '#ef4444' },
+          { l: 'Loop Status', v: Math.abs(points[points.length - 1] - sp) < 2 ? 'Stable (Settled)' : 'Settling...', c: Math.abs(points[points.length - 1] - sp) < 2 ? '#16a34a' : '#ef4444' },
         ].map(s => (
           <div key={s.l} style={{ flex: 1, minWidth: '80px', padding: '10px', background: '#fff', borderRadius: '8px', border: '1px solid #e5e5e5', textAlign: 'center' }}>
             <div style={{ fontSize: '14px', fontWeight: 800, color: s.c }}>{s.v}</div>
