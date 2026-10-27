@@ -18,7 +18,7 @@ const lessonSources: LessonSource[] = [
   {
     id: 1, slug: '01-programmable-control', title: 'Programmable Control Fundamentals',
     description: 'Hardwired vs programmable control, PLC architecture, scan cycle, IEC 61131-3 languages',
-    course: 'AUT206', session: 1, lab: 'Lab 1', clo: 'G1',
+    course: 'AUT206', session: 1, lab: 'Lab 1', clo: 'G1 — Explain the architecture, operating principles, and scan cycle of programmable logic controllers',
     color: '#1a3a6b', icon: '🏭',
     topics: [
       { id: 1, slug: 'control-system-basics', title: '1.1 What a Control System Is', durationMinutes: 7, parentLessonSlug: '01-programmable-control' },
@@ -35,7 +35,7 @@ const lessonSources: LessonSource[] = [
   {
     id: 2, slug: '02-s7-1200-tia-portal', title: 'S7-1200 Hardware and TIA Portal',
     description: 'S7-1200 device family, program processing, field wiring, TIA Portal installation and use',
-    course: 'AUT206', session: 1, lab: 'Lab 1', clo: 'G1',
+    course: 'AUT206', session: 1, lab: 'Lab 1', clo: 'G1 — Explain the architecture, operating principles, and scan cycle of programmable logic controllers',
     color: '#1a3a6b', icon: '💻',
     topics: [
       { id: 1, slug: 's7-1200-device', title: '1.3 The S7-1200 Programmable Controller', durationMinutes: 12, parentLessonSlug: '02-s7-1200-tia-portal' },
@@ -50,7 +50,7 @@ const lessonSources: LessonSource[] = [
   {
     id: 3, slug: '03-binary-operations', title: 'Binary Operations',
     description: 'Logic links, set/reset instructions, timers, counters and a worked application',
-    course: 'AUT206', session: 1, lab: 'Lab 2', clo: 'G2',
+    course: 'AUT206', session: 1, lab: 'Lab 2', clo: 'G2 — Write, download, and debug binary logic programs using ladder diagram, timers, and counters',
     color: '#c9a227', icon: '⚡',
     topics: [
       { id: 1, slug: 'logic-links', title: '2.1 Logic Links (AND, OR, NOT)', durationMinutes: 10, parentLessonSlug: '03-binary-operations' },

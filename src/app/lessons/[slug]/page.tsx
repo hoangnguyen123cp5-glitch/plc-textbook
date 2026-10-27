@@ -262,14 +262,17 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
         )}
       </div>
 
-      {/* Start button */}
+      {/* Start button & Slide Presentation CTA */}
       {lesson.topics.length > 0 && (
-        <div style={{ marginBottom: '48px' }}>
-          <Link href={`/lessons/${lesson.slug}/${lesson.topics[0].slug}`} className="btn-primary" style={{ background: color }}>
-            Start Lesson
+        <div style={{ marginBottom: '48px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <Link href={`/lessons/${lesson.slug}/${lesson.topics[0].slug}`} className="btn-primary" style={{ background: color, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>▶ Launch Slide Presentation Deck (Trình chiếu Slide)</span>
             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
             </svg>
+          </Link>
+          <Link href={`/lessons/${lesson.slug}/${lesson.topics[0].slug}`} className="btn-ghost" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span>Start Topic 1: {lesson.topics[0].title.slice(0, 24)}…</span>
           </Link>
         </div>
       )}

@@ -111,38 +111,40 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── DEMO VIDEO ── */}
+      {/* ── COURSE PREVIEW ── */}
       <section style={{ background: '#fafafa', borderTop: '1px solid #f0f0f0', padding: '72px 24px' }}>
         <div style={{ maxWidth: '860px', margin: '0 auto' }}>
           <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#a3a3a3', textTransform: 'uppercase', marginBottom: '12px' }}>
-            Course Introduction
+            Course Highlights
           </p>
           <h2 style={{ fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 800, letterSpacing: '-0.03em', color: '#0a0a0a', marginBottom: '28px', lineHeight: 1.2 }}>
-            Watch a sample lesson
+            What You Will Master
           </h2>
 
-          {/* Video embed placeholder — replace src with real YouTube embed */}
-          <div style={{
-            position: 'relative',
-            width: '100%',
-            paddingBottom: '56.25%', /* 16:9 */
-            borderRadius: '12px',
-            overflow: 'hidden',
-            border: '1px solid #e5e5e5',
-            background: '#f5f5f5',
-          }}>
-            <iframe
-              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
-              src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-              title="PLC Programming – Course Introduction"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+            {[
+              { icon: '🏭', title: 'Industrial Hardware', desc: 'S7-1200/1500 CPUs, digital & analog I/O modules, PROFINET wiring, and 24VDC power budgeting' },
+              { icon: '⚡', title: 'Ladder & SCL Programming', desc: 'Binary logic, timers, counters, data types, PID control, and IEC 61131-3 structured text' },
+              { icon: '📊', title: 'Analog & Motion Control', desc: '4–20mA signal conditioning, NORM_X/SCALE_X, high-speed counters, PWM, and PLCopen motion' },
+              { icon: '🌐', title: 'Networks & Diagnostics', desc: 'PROFINET/PROFIBUS, Modbus RTU, watch tables, diagnostic buffer, and HMI/SCADA integration' },
+              { icon: '🛠️', title: 'TIA Portal Mastery', desc: 'Project setup, hardware configuration, online debugging, PID commissioning, and system migration' },
+              { icon: '🏆', title: 'Capstone Integration', desc: 'Full automation stack: PLC + HMI + SCADA with a real-world blending plant case study' },
+            ].map((item) => (
+              <div key={item.title} style={{
+                padding: '20px',
+                background: '#ffffff',
+                border: '1px solid #e5e5e5',
+                borderRadius: '10px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+              }}>
+                <span style={{ fontSize: '24px' }}>{item.icon}</span>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#0a0a0a', margin: 0 }}>{item.title}</h3>
+                <p style={{ fontSize: '13px', color: '#737373', lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
+              </div>
+            ))}
           </div>
-
-          <p style={{ fontSize: '13px', color: '#a3a3a3', marginTop: '12px', textAlign: 'center' }}>
-            ↑ Replace the YouTube URL with your real intro video
-          </p>
         </div>
       </section>
 

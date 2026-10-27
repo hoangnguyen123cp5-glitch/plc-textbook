@@ -49,7 +49,7 @@ export default function TopicAnimationWrapper({ lessonSlug, topicSlug, topicInde
         </div>
       );
     }
-    if (topicSlug === 'hardwired-vs-programmable' || topicIndex === 2) {
+    if (topicSlug === 'hardwired-vs-programmable' || topicSlug === 'why-plc' || topicIndex === 2 || topicIndex === 3) {
       return (
         <div style={{ marginTop: '24px' }}>
           <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#a3a3a3', textTransform: 'uppercase', marginBottom: '10px' }}>
@@ -69,13 +69,23 @@ export default function TopicAnimationWrapper({ lessonSlug, topicSlug, topicInde
         </div>
       );
     }
-    if (topicSlug === 'plc-structure' || topicSlug === 'memory-and-leds' || topicIndex === 5 || topicIndex === 6) {
+    if (topicSlug === 'plc-structure' || topicSlug === 'memory-and-leds' || topicSlug === 'defining-plc' || topicIndex === 4 || topicIndex === 5 || topicIndex === 6) {
       return (
         <div style={{ marginTop: '24px' }}>
           <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#a3a3a3', textTransform: 'uppercase', marginBottom: '10px' }}>
             🖥️ S7-1200 Hardware Anatomy & Diagnostic LEDs
           </p>
           <S7RackExplorer />
+        </div>
+      );
+    }
+    if (topicSlug === 'languages-structure' || topicIndex === 8) {
+      return (
+        <div style={{ marginTop: '24px' }}>
+          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#a3a3a3', textTransform: 'uppercase', marginBottom: '10px' }}>
+            ⚡ IEC 61131-3 Ladder Logic Simulator
+          </p>
+          <TIALadderAnimation />
         </div>
       );
     }
