@@ -685,7 +685,7 @@ export default function TopicQuiz({ topicSlug, color, isFullscreen = false }: Pr
         Test your understanding of the technical concepts covered in this topic before proceeding:
       </p>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: questions.length > 1 ? 'repeat(auto-fit, minmax(320px, 1fr))' : '1fr', gap: '16px' }}>
         {questions.map((q, qIdx) => {
           const userChoice = selectedAnswers[qIdx];
           const isCorrect = userChoice === q.correct;

@@ -357,26 +357,11 @@ export default async function TopicPage({
   const color = getCategoryColor(lesson.id);
 
   return (
-    <div>
-      {/* Compact Breadcrumb & Meta Bar */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px', fontSize: '13px', color: '#a3a3a3', flexWrap: 'wrap', gap: '8px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-          <Link href="/lessons" style={{ color: '#a3a3a3', textDecoration: 'none' }} className="nav-link">Lessons</Link>
-          <span>/</span>
-          <Link href={`/lessons/${lesson.slug}`} style={{ color: '#a3a3a3', textDecoration: 'none' }} className="nav-link">{lesson.title}</Link>
-          <span>/</span>
-          <span style={{ color: '#0a0a0a', fontWeight: 600 }}>{topic.title}</span>
-        </div>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <span className="tag" style={{ fontSize: '11px' }}>{topic.durationMinutes} min</span>
-          <span className="tag" style={{ fontSize: '11px' }}>{lesson.lab}</span>
-        </div>
-      </div>
-
+    <div style={{ width: '100%', height: '100%' }}>
       {/* Video — tự ẩn hoàn toàn nếu topic này chưa được đánh mốc */}
       <LessonVideo lessonSlug={lesson.slug} topicSlug={topic.slug} color={color} />
 
-      {/* Content area: Detailed Technical Notes & Interactive Simulator */}
+      {/* Content area: Pure Slide-by-Slide Presentation Deck */}
       {(() => {
         const contentData = lessonContent[lesson.slug];
         const numMatch = topic.title.match(/^(\d+\.\d+)/);
@@ -402,8 +387,8 @@ export default async function TopicPage({
         );
 
         return (
-          <div style={{ marginBottom: '36px' }}>
-            {/* ── COMPLETE SLIDE-BY-SLIDE PRESENTATION ENGINE ── */}
+          <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+            {/* ── 100% PURE SLIDE PRESENTATION DECK (NO SCROLLING) ── */}
             <TopicSlideDeck
               lessonSlug={lesson.slug}
               lessonTitle={lesson.title}
@@ -421,87 +406,6 @@ export default async function TopicPage({
           </div>
         );
       })()}
-
-      {/* Progress: topics in this lesson */}
-      <div style={{ marginBottom: '40px' }}>
-        <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#a3a3a3', textTransform: 'uppercase', marginBottom: '12px' }}>
-          All Topics — {lesson.title}
-        </p>
-        <div style={{ border: '1px solid #e5e5e5', borderRadius: '10px', overflow: 'hidden' }}>
-          {lesson.topics.map((t, i) => (
-            <Link key={t.slug} href={`/lessons/${lesson.slug}/${t.slug}`}
-              className="lesson-row"
-              style={{
-                borderBottom: i === lesson.topics.length - 1 ? 'none' : '1px solid #f5f5f5',
-                background: t.slug === topicSlug ? '#f0f4ff' : undefined,
-              }}>
-              <span style={{ fontSize: '12px', fontWeight: 600, color: t.slug === topicSlug ? color : '#d4d4d4', minWidth: '22px' }}>
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <div style={{ flex: 1 }}>
-                <span style={{ fontSize: '13px', fontWeight: t.slug === topicSlug ? 600 : 450, color: t.slug === topicSlug ? '#0a0a0a' : '#525252' }}>
-                  {t.title}
-                </span>
-              </div>
-              <span style={{ fontSize: '12px', color: '#a3a3a3' }}>{t.durationMinutes} min</span>
-              {t.slug === topicSlug && (
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: color, display: 'block' }} />
-              )}
-            </Link>
-          ))}
-        </div>
-      </div>
-
-      {/* Prev / Next navigation */}
-      <div style={{ display: 'flex', gap: '12px', paddingTop: '24px', borderTop: '1px solid #f0f0f0' }}>
-        {prevTopic ? (
-          <Link href={`/lessons/${lesson.slug}/${prevTopic.slug}`}
-            className="btn-ghost" style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'flex-start' }}>
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#a3a3a3' }}>Previous</div>
-              <div style={{ fontWeight: 600, fontSize: '13px', color: '#0a0a0a' }}>{prevTopic.title}</div>
-            </div>
-          </Link>
-        ) : (
-          <Link href={`/lessons/${lesson.slug}`}
-            className="btn-ghost" style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            <div>
-              <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#a3a3a3' }}>Back</div>
-              <div style={{ fontWeight: 600, fontSize: '13px', color: '#0a0a0a' }}>{lesson.title}</div>
-            </div>
-          </Link>
-        )}
-
-        {nextTopic ? (
-          <Link href={`/lessons/${lesson.slug}/${nextTopic.slug}`}
-            className="btn-primary" style={{ background: color, flex: 1, justifyContent: 'flex-end' }}>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.06em', opacity: 0.75 }}>Next</div>
-              <div style={{ fontWeight: 600, fontSize: '13px' }}>{nextTopic.title}</div>
-            </div>
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
-        ) : (
-          <Link href={`/lessons/${lesson.slug}`}
-            className="btn-primary" style={{ background: color, flex: 1, justifyContent: 'flex-end' }}>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.06em', opacity: 0.75 }}>Finished</div>
-              <div style={{ fontWeight: 600, fontSize: '13px' }}>Back to Lesson</div>
-            </div>
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
-        )}
-      </div>
     </div>
   );
 }

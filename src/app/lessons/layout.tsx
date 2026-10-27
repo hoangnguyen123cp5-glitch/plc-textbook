@@ -167,8 +167,28 @@ export default function LessonsLayout({ children }: { children: React.ReactNode 
         </aside>
 
         {/* ── MAIN CONTENT ── */}
-        <main className="lesson-main">
-          <div className="lesson-col">{children}</div>
+        <main
+          className="lesson-main"
+          style={
+            pathname.split('/').filter(Boolean).length >= 3
+              ? { padding: '16px 20px', overflowX: 'hidden' }
+              : undefined
+          }
+        >
+          <div
+            className={
+              pathname.split('/').filter(Boolean).length >= 3
+                ? 'lesson-col-wide'
+                : 'lesson-col'
+            }
+            style={
+              pathname.split('/').filter(Boolean).length >= 3
+                ? { maxWidth: '1440px', width: '100%', margin: '0 auto' }
+                : undefined
+            }
+          >
+            {children}
+          </div>
         </main>
       </div>
     </div>
