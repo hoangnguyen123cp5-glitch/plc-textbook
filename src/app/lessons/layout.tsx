@@ -172,6 +172,8 @@ export default function LessonsLayout({ children }: { children: React.ReactNode 
           style={
             pathname.split('/').filter(Boolean).length >= 3
               ? { padding: '16px 20px', overflowX: 'hidden' }
+              : pathname.split('/').filter(Boolean).length === 2
+              ? { padding: '32px 36px', overflowX: 'hidden' }
               : undefined
           }
         >
@@ -184,6 +186,8 @@ export default function LessonsLayout({ children }: { children: React.ReactNode 
             style={
               pathname.split('/').filter(Boolean).length >= 3
                 ? { maxWidth: '1440px', width: '100%', margin: '0 auto' }
+                : pathname.split('/').filter(Boolean).length === 2
+                ? { maxWidth: '1080px', width: '100%', margin: '0 auto' }
                 : undefined
             }
           >

@@ -299,3 +299,13 @@ html, body { max-width: 100%; }
     grid-template-columns: 1fr !important;
   }
 }
+
+/* ── Topic Card Hover Effect ── */
+.topic-card-hover {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+}
+.topic-card-hover:hover {
+  border-color: #94a3b8 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06) !important;
+  transform: translateY(-2px);
+}

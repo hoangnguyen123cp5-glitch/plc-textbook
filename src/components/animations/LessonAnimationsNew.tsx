@@ -242,13 +242,13 @@ export function PWMVisualizer() {
       </div>
 
       {/* Waveform */}
-      <div style={{ background: '#0f172a', borderRadius: '10px', padding: '16px', marginBottom: '16px', overflowX: 'auto' }}>
+      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '16px', marginBottom: '16px', overflowX: 'auto' }}>
         <svg width="100%" height="80" viewBox="0 0 400 80" style={{ display: 'block' }}>
           {/* Grid lines */}
           {[0, 1, 2, 3].map(i => (
-            <line key={i} x1={i * 100} y1={0} x2={i * 100} y2={80} stroke="#1e293b" strokeWidth="1" />
+            <line key={i} x1={i * 100} y1={0} x2={i * 100} y2={80} stroke="#e2e8f0" strokeWidth="1" />
           ))}
-          <line x1={0} y1={40} x2={400} y2={40} stroke="#1e293b" strokeWidth="1" />
+          <line x1={0} y1={40} x2={400} y2={40} stroke="#e2e8f0" strokeWidth="1" />
 
           {/* PWM pulses — show 4 cycles */}
           {[0, 1, 2, 3].map(cycle => {
@@ -260,7 +260,7 @@ export function PWMVisualizer() {
                 {/* HIGH portion */}
                 <rect x={x} y={5} width={onW} height={30} fill="#ef4444" opacity={0.9} rx={2} />
                 {/* LOW portion */}
-                <rect x={x + onW} y={45} width={offW} height={30} fill="#374151" rx={2} />
+                <rect x={x + onW} y={45} width={offW} height={30} fill="#cbd5e1" rx={2} />
                 {/* Vertical lines */}
                 <line x1={x} y1={5} x2={x} y2={35} stroke="#ef4444" strokeWidth="2" />
                 {duty > 0 && <line x1={x + onW} y1={5} x2={x + onW} y2={75} stroke="#ef4444" strokeWidth="2" />}
@@ -269,8 +269,8 @@ export function PWMVisualizer() {
           })}
 
           {/* Labels */}
-          <text x={10} y={25} fill="#ef4444" fontSize="10" fontWeight="bold">HIGH ({duty}%)</text>
-          <text x={10} y={65} fill="#9ca3af" fontSize="10">LOW ({100 - duty}%)</text>
+          <text x={10} y={25} fill="#dc2626" fontSize="10" fontWeight="bold">HIGH ({duty}%)</text>
+          <text x={10} y={65} fill="#64748b" fontSize="10" fontWeight="bold">LOW ({100 - duty}%)</text>
         </svg>
       </div>
 
@@ -341,22 +341,22 @@ export function PIDVisualizer() {
       </div>
 
       {/* Response curve */}
-      <div style={{ background: '#0f172a', borderRadius: '10px', padding: '12px', marginBottom: '12px' }}>
+      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '12px', marginBottom: '12px' }}>
         <svg width="100%" height="120" viewBox="0 0 360 120" style={{ display: 'block' }}>
           {/* SP line */}
-          <line x1={0} y1={120 - sp} x2={360} y2={120 - sp} stroke="#ffffff22" strokeWidth="1" strokeDasharray="4 4" />
-          <text x={364} y={120 - sp + 4} fill="#ffffff44" fontSize="9">SP={sp}</text>
+          <line x1={0} y1={120 - sp} x2={360} y2={120 - sp} stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="4 4" />
+          <text x={310} y={120 - sp - 4} fill="#64748b" fontSize="10" fontWeight="bold">SP={sp}</text>
 
           {/* Response curve */}
           <polyline
             points={points.map((p, i) => `${i * 6},${120 - p}`).join(' ')}
-            fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinejoin="round" />
+            fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinejoin="round" />
 
           {/* Overshoot marker */}
           {maxOvershoot > sp + 2 && (
             <>
-              <circle cx={points.indexOf(maxOvershoot) * 6} cy={120 - maxOvershoot} r={4} fill="#ef4444" />
-              <text x={points.indexOf(maxOvershoot) * 6 + 6} y={120 - maxOvershoot} fill="#ef4444" fontSize="9">
+              <circle cx={points.indexOf(maxOvershoot) * 6} cy={120 - maxOvershoot} r={4} fill="#dc2626" />
+              <text x={points.indexOf(maxOvershoot) * 6 + 6} y={120 - maxOvershoot} fill="#dc2626" fontSize="10" fontWeight="bold">
                 OS={((maxOvershoot - sp) / sp * 100).toFixed(0)}%
               </text>
             </>
@@ -364,7 +364,7 @@ export function PIDVisualizer() {
 
           {/* Settled marker */}
           {settled > 0 && (
-            <line x1={settled * 6} y1={0} x2={settled * 6} y2={120} stroke="#f59e0b" strokeWidth="1" strokeDasharray="3 3" />
+            <line x1={settled * 6} y1={0} x2={settled * 6} y2={120} stroke="#d97706" strokeWidth="1.5" strokeDasharray="3 3" />
           )}
         </svg>
       </div>
@@ -451,12 +451,12 @@ export function ProfinetDemo() {
       </div>
 
       {/* Packet log */}
-      <div style={{ background: '#0f172a', borderRadius: '10px', padding: '10px 12px', minHeight: '60px' }}>
+      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '10px 12px', minHeight: '60px' }}>
         {packets.length === 0 ? (
-          <div style={{ color: '#4b5563', fontSize: '12px', textAlign: 'center', paddingTop: '8px' }}>Click ▶ Start to observe cyclic PROFINET real-time data packets</div>
+          <div style={{ color: '#64748b', fontSize: '12px', textAlign: 'center', paddingTop: '8px' }}>Click ▶ Start to observe cyclic PROFINET real-time data packets</div>
         ) : packets.map(p => (
-          <div key={p.id} style={{ fontSize: '11px', color: '#22c55e', fontFamily: 'monospace', marginBottom: '2px' }}>
-            [{String(p.id).padStart(4, '0')}] {p.from} → {p.to} <span style={{ color: '#60a5fa' }}>PROFINET cyclic data frame</span>
+          <div key={p.id} style={{ fontSize: '11px', color: '#16a34a', fontFamily: 'monospace', marginBottom: '2px', fontWeight: 600 }}>
+            [{String(p.id).padStart(4, '0')}] {p.from} → {p.to} <span style={{ color: '#0284c7' }}>PROFINET cyclic data frame</span>
           </div>
         ))}
       </div>
@@ -485,36 +485,36 @@ export function HMIScreenBuilder() {
         🖥️ HMI Simulator — Operator Interface Mockup
       </div>
 
-      {/* HMI Screen */}
-      <div style={{ background: '#1a1a2e', borderRadius: '12px', padding: '16px', border: '3px solid #374151', marginBottom: '12px' }}>
+      {/* HMI Screen (Industrial Light Style) */}
+      <div style={{ background: '#f1f5f9', borderRadius: '12px', padding: '16px', border: '2px solid #cbd5e1', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)', marginBottom: '12px' }}>
         {/* HMI Title bar */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', paddingBottom: '10px', borderBottom: '1px solid #374151' }}>
-          <span style={{ color: '#94a3b8', fontSize: '12px', fontWeight: 700 }}>PLANT OVERVIEW — Workshop A</span>
-          <span style={{ color: '#22c55e', fontSize: '11px' }}>● ONLINE</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', paddingBottom: '10px', borderBottom: '1px solid #cbd5e1' }}>
+          <span style={{ color: '#1e293b', fontSize: '12px', fontWeight: 800, letterSpacing: '0.04em' }}>SIMATIC HMI COMFORT — Plant Overview</span>
+          <span style={{ color: '#16a34a', background: '#dcfce7', border: '1px solid #86efac', padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 700 }}>● ONLINE</span>
         </div>
 
         {/* Alarm banner */}
         {showAlarm && (
-          <div style={{ background: '#7f1d1d', border: '1px solid #ef4444', borderRadius: '6px', padding: '8px 12px', marginBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ color: '#fca5a5', fontSize: '12px', fontWeight: 700 }}>⚠️ ALARM: High Temperature Threshold Exceeded — {temp}°C {'>'} 90°C</span>
-            <button onClick={() => setShowAlarm(false)} style={{ background: 'none', border: '1px solid #ef4444', color: '#fca5a5', padding: '2px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '11px' }}>ACK</button>
+          <div style={{ background: '#fef2f2', border: '1px solid #f87171', borderRadius: '6px', padding: '8px 12px', marginBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ color: '#991b1b', fontSize: '12px', fontWeight: 700 }}>⚠️ CẢNH BÁO: Quá ngưỡng nhiệt độ an toàn — {temp}°C {'>'} 90°C</span>
+            <button onClick={() => setShowAlarm(false)} style={{ background: '#ffffff', border: '1px solid #ef4444', color: '#b91c1c', padding: '3px 10px', borderRadius: '4px', cursor: 'pointer', fontSize: '11px', fontWeight: 700 }}>ACK</button>
           </div>
         )}
 
         {/* Process values */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
-          <div style={{ background: '#0f172a', borderRadius: '8px', padding: '12px' }}>
-            <div style={{ color: '#60a5fa', fontSize: '10px', fontWeight: 700, marginBottom: '4px' }}>🌡️ TEMPERATURE</div>
-            <div style={{ color: temp > 90 ? '#ef4444' : '#22c55e', fontSize: '28px', fontWeight: 800 }}>{temp}°C</div>
-            <div style={{ height: '6px', background: '#1e293b', borderRadius: '3px', marginTop: '6px' }}>
-              <div style={{ height: '100%', width: `${temp}%`, background: temp > 90 ? '#ef4444' : '#22c55e', borderRadius: '3px', transition: 'width 0.3s' }} />
+          <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '12px', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>
+            <div style={{ color: '#0284c7', fontSize: '11px', fontWeight: 700, marginBottom: '4px' }}>🌡️ TEMPERATURE (PV)</div>
+            <div style={{ color: temp > 90 ? '#dc2626' : '#15803d', fontSize: '28px', fontWeight: 800 }}>{temp}°C</div>
+            <div style={{ height: '6px', background: '#e2e8f0', borderRadius: '3px', marginTop: '6px' }}>
+              <div style={{ height: '100%', width: `${temp}%`, background: temp > 90 ? '#dc2626' : '#16a34a', borderRadius: '3px', transition: 'width 0.3s' }} />
             </div>
           </div>
-          <div style={{ background: '#0f172a', borderRadius: '8px', padding: '12px' }}>
-            <div style={{ color: '#60a5fa', fontSize: '10px', fontWeight: 700, marginBottom: '4px' }}>💧 LIQUID LEVEL</div>
-            <div style={{ color: level < 20 ? '#ef4444' : '#22c55e', fontSize: '28px', fontWeight: 800 }}>{level}%</div>
-            <div style={{ height: '6px', background: '#1e293b', borderRadius: '3px', marginTop: '6px' }}>
-              <div style={{ height: '100%', width: `${level}%`, background: '#3b82f6', borderRadius: '3px', transition: 'width 0.3s' }} />
+          <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '12px', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>
+            <div style={{ color: '#0284c7', fontSize: '11px', fontWeight: 700, marginBottom: '4px' }}>💧 LIQUID LEVEL (PV)</div>
+            <div style={{ color: level < 20 ? '#dc2626' : '#0284c7', fontSize: '28px', fontWeight: 800 }}>{level}%</div>
+            <div style={{ height: '6px', background: '#e2e8f0', borderRadius: '3px', marginTop: '6px' }}>
+              <div style={{ height: '100%', width: `${level}%`, background: '#0284c7', borderRadius: '3px', transition: 'width 0.3s' }} />
             </div>
           </div>
         </div>
@@ -522,12 +522,12 @@ export function HMIScreenBuilder() {
         {/* Control buttons */}
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           <button onClick={() => setMotorOn(m => !m)}
-            style={{ flex: 1, padding: '10px 8px', borderRadius: '8px', border: `2px solid ${motorOn ? '#22c55e' : '#4b5563'}`, background: motorOn ? '#14532d' : '#1e293b', color: motorOn ? '#22c55e' : '#9ca3af', fontWeight: 700, fontSize: '12px', cursor: 'pointer', transition: 'all 0.2s' }}>
-            {motorOn ? '🟢' : '🔴'} MOTOR
+            style={{ flex: 1, padding: '10px 8px', borderRadius: '8px', border: `2px solid ${motorOn ? '#16a34a' : '#cbd5e1'}`, background: motorOn ? '#dcfce7' : '#ffffff', color: motorOn ? '#15803d' : '#475569', fontWeight: 700, fontSize: '12px', cursor: 'pointer', transition: 'all 0.2s', boxShadow: motorOn ? '0 1px 3px rgba(22,163,74,0.2)' : 'none' }}>
+            {motorOn ? '🟢' : '⚪'} MOTOR {motorOn ? 'RUNNING' : 'STOP'}
           </button>
           <button onClick={() => setPump(p => !p)}
-            style={{ flex: 1, padding: '10px 8px', borderRadius: '8px', border: `2px solid ${pump ? '#22c55e' : '#4b5563'}`, background: pump ? '#14532d' : '#1e293b', color: pump ? '#22c55e' : '#9ca3af', fontWeight: 700, fontSize: '12px', cursor: 'pointer', transition: 'all 0.2s' }}>
-            {pump ? '🟢' : '🔴'} PUMP
+            style={{ flex: 1, padding: '10px 8px', borderRadius: '8px', border: `2px solid ${pump ? '#16a34a' : '#cbd5e1'}`, background: pump ? '#dcfce7' : '#ffffff', color: pump ? '#15803d' : '#475569', fontWeight: 700, fontSize: '12px', cursor: 'pointer', transition: 'all 0.2s', boxShadow: pump ? '0 1px 3px rgba(22,163,74,0.2)' : 'none' }}>
+            {pump ? '🟢' : '⚪'} PUMP {pump ? 'RUNNING' : 'STOP'}
           </button>
         </div>
       </div>
@@ -643,12 +643,12 @@ export function DiagnosticPanel() {
         ))}
       </div>
 
-      {/* LED panel */}
-      <div style={{ background: '#1e293b', borderRadius: '10px', padding: '16px', display: 'flex', gap: '16px', justifyContent: 'center', marginBottom: '12px' }}>
+      {/* LED panel (Light CPU Bezel) */}
+      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '16px', display: 'flex', gap: '24px', justifyContent: 'center', marginBottom: '12px' }}>
         {sc.leds.map((led, i) => (
           <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-            <div style={{ width: 18, height: 18, borderRadius: '50%', background: led.color, boxShadow: led.color !== '#e5e5e5' ? `0 0 10px ${led.color}` : 'none', transition: 'all 0.3s' }} />
-            <span style={{ fontSize: '9px', fontWeight: 700, color: '#94a3b8', textAlign: 'center' }}>{led.name}</span>
+            <div style={{ width: 18, height: 18, borderRadius: '50%', background: led.color, border: '1px solid rgba(0,0,0,0.15)', boxShadow: led.color !== '#e5e5e5' ? `0 0 10px ${led.color}` : 'none', transition: 'all 0.3s' }} />
+            <span style={{ fontSize: '10px', fontWeight: 800, color: '#334155', textAlign: 'center' }}>{led.name}</span>
           </div>
         ))}
       </div>

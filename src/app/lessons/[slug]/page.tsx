@@ -2,11 +2,10 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getLessonBySlug, lessons } from '@/lib/lessons';
 import { lessonContent } from '@/data/lesson-content';
-import LessonAnimationWrapper from '@/components/animations/LessonAnimationWrapper';
-import LessonSectionAnimation from '@/components/animations/LessonSectionAnimation';
 import LessonMathBlock from '@/components/ui/LessonMathBlock';
 import LessonDownloads from '@/components/content/LessonDownloads';
 import LessonVideo from '@/components/content/LessonVideo';
+import LessonAnimationWrapper from '@/components/animations/LessonAnimationWrapper';
 
 function getCategoryColor(id: number) {
   if (id <= 3)  return '#1a3a6b';
@@ -28,278 +27,382 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
   const color = getCategoryColor(lesson.id);
   const prevLesson = lessons.find(l => l.id === lesson.id - 1);
   const nextLesson = lessons.find(l => l.id === lesson.id + 1);
+  const c = lessonContent[lesson.slug];
+  const firstTopicSlug = lesson.topics[0]?.slug;
 
   return (
-    <div>
+    <div style={{ maxWidth: '1100px', margin: '0 auto', paddingBottom: '60px' }}>
       {/* Breadcrumb */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '13px', color: '#a3a3a3' }}>
-        <Link href="/lessons" style={{ color: '#a3a3a3', textDecoration: 'none' }} className="nav-link">Lessons</Link>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', fontSize: '13px', color: '#64748b' }}>
+        <Link href="/lessons" style={{ color: '#64748b', textDecoration: 'none', fontWeight: 500 }} className="nav-link">
+          Chương trình bài học
+        </Link>
         <span>/</span>
-        <span style={{ color: '#0a0a0a', fontWeight: 500 }}>Lesson {lesson.id}</span>
+        <span style={{ color: '#0f172a', fontWeight: 600 }}>Bài {lesson.id}</span>
       </div>
 
-      {/* Header */}
-      <div style={{ marginBottom: '32px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-          <span style={{ width: 4, height: 32, borderRadius: 99, background: color, display: 'block' }} />
-          <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#a3a3a3', textTransform: 'uppercase' }}>
-            Lesson {String(lesson.id).padStart(2, '0')} · {lesson.lab}
+      {/* Hero Presentation Header */}
+      <div style={{
+        background: '#ffffff',
+        border: '1px solid #e2e8f0',
+        borderRadius: '16px',
+        padding: '32px',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.03)',
+        marginBottom: '28px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+          <span style={{ width: 4, height: 28, borderRadius: 99, background: color, display: 'block' }} />
+          <span style={{ fontSize: '12px', fontWeight: 800, letterSpacing: '0.08em', color: color, textTransform: 'uppercase' }}>
+            Bài giảng {String(lesson.id).padStart(2, '0')} · {lesson.lab}
           </span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', marginBottom: '12px' }}>
-          <span style={{ fontSize: '40px', lineHeight: 1, flexShrink: 0 }}>{lesson.icon}</span>
-          <h1 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', fontWeight: 800, letterSpacing: '-0.03em', color: '#0a0a0a', lineHeight: 1.1, margin: 0 }}>
-            {lesson.title}
-          </h1>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '24px', flexWrap: 'wrap', marginBottom: '16px' }}>
+          <div style={{ flex: 1, minWidth: '280px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '12px' }}>
+              <span style={{ fontSize: '38px', lineHeight: 1 }}>{lesson.icon}</span>
+              <h1 style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.25rem)', fontWeight: 800, letterSpacing: '-0.02em', color: '#0f172a', lineHeight: 1.2, margin: 0 }}>
+                {lesson.title}
+              </h1>
+            </div>
+            <p style={{ fontSize: '15px', color: '#475569', lineHeight: 1.65, margin: 0 }}>
+              {lesson.description}
+            </p>
+          </div>
+
+          {/* Quick Launch CTA Card */}
+          {firstTopicSlug && (
+            <div style={{
+              background: '#f8fafc',
+              border: `1.5px solid ${color}40`,
+              borderRadius: '12px',
+              padding: '20px 24px',
+              minWidth: '280px',
+              maxWidth: '340px',
+              flex: '1',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+            }}>
+              <div style={{ fontSize: '11px', fontWeight: 800, color: color, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>
+                Trình chiếu Slide bài giảng
+              </div>
+              <div style={{ fontSize: '13px', color: '#334155', marginBottom: '14px', lineHeight: 1.5 }}>
+                Định dạng <strong>Slide cố định</strong> gồm sơ đồ, tóm tắt kỹ thuật, mô phỏng & micro-quiz.
+              </div>
+              <Link
+                href={`/lessons/${lesson.slug}/${firstTopicSlug}`}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  background: color,
+                  color: '#ffffff',
+                  fontWeight: 700,
+                  fontSize: '14px',
+                  padding: '12px 18px',
+                  borderRadius: '8px',
+                  textDecoration: 'none',
+                  boxShadow: `0 4px 12px ${color}33`,
+                  transition: 'all 0.2s',
+                }}
+              >
+                <span>▶ Bắt đầu học Slide 1</span>
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </div>
+          )}
         </div>
 
-        <p style={{ fontSize: '15px', color: '#737373', lineHeight: 1.7, maxWidth: '600px', marginBottom: '20px' }}>
-          {lesson.description}
-        </p>
-
-        {/* Meta row */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+        {/* Badges / Meta row */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', paddingTop: '16px', borderTop: '1px solid #f1f5f9' }}>
           {[
-            { label: `${lesson.totalTopics} topics` },
-            { label: `${lesson.durationMinutes} min` },
-            { label: lesson.lab },
-            { label: lesson.session === 2 ? '2 sessions' : '1 session' },
+            { label: `${lesson.totalTopics} Chuyên đề (Topics)` },
+            { label: `Thời lượng ~${lesson.durationMinutes} phút` },
+            { label: `Hình thức: ${lesson.lab}` },
+            { label: lesson.session === 2 ? '2 Buổi học' : '1 Buổi học' },
           ].map(m => (
-            <span key={m.label} className="tag">{m.label}</span>
+            <span key={m.label} style={{
+              fontSize: '12px',
+              fontWeight: 600,
+              color: '#334155',
+              background: '#f1f5f9',
+              border: '1px solid #e2e8f0',
+              padding: '4px 10px',
+              borderRadius: '6px',
+            }}>
+              {m.label}
+            </span>
           ))}
         </div>
       </div>
 
-      {/* CLO */}
-      <div style={{ padding: '16px 20px', borderRadius: '8px', background: '#f8f9ff', border: `1px solid ${color}22`, marginBottom: '32px' }}>
-        <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', color: color, textTransform: 'uppercase', marginBottom: '6px' }}>
-          Learning Outcome
-        </p>
-        <p style={{ fontSize: '14px', color: '#525252', lineHeight: 1.6, margin: 0 }}>{lesson.clo}</p>
-      </div>
-
-      {/* ── VIDEO (tự ẩn nếu bài này chưa quay) — độc lập với lessonContent ── */}
-      <LessonVideo lessonSlug={slug} color={color} />
-
-      {/* Vietnamese content from slides */}
-      {lessonContent[lesson.slug] && (() => {
-        const c = lessonContent[lesson.slug];
-        return (
-          <div style={{ marginBottom: '40px' }}>
-            {/* Overview */}
-            <div style={{ marginBottom: '28px' }}>
-              <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#a3a3a3', textTransform: 'uppercase', marginBottom: '10px' }}>Overview</p>
-              <p style={{ fontSize: '15px', color: '#404040', lineHeight: 1.75, borderLeft: `3px solid ${color}`, paddingLeft: '16px' }}>
-                {c.overview.split('. ').slice(0, 3).join('. ') + '.'}
+      {/* CLO & Learning Objectives */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+        gap: '20px',
+        marginBottom: '28px',
+      }}>
+        {/* CLO */}
+        <div style={{
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
+          borderRadius: '12px',
+          padding: '20px 24px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+            <span style={{ fontSize: '18px' }}>🎯</span>
+            <span style={{ fontSize: '12px', fontWeight: 800, letterSpacing: '0.08em', color: color, textTransform: 'uppercase' }}>
+              Chuẩn đầu ra (Course Learning Outcome - CLO)
+            </span>
+          </div>
+          <p style={{ fontSize: '13.5px', color: '#334155', lineHeight: 1.65, margin: 0 }}>
+            {lesson.clo}
+          </p>
+          {c?.overview && (
+            <div style={{ marginTop: '14px', paddingTop: '14px', borderTop: '1px solid #f1f5f9' }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
+                Tổng quan chương
+              </span>
+              <p style={{ fontSize: '13px', color: '#475569', lineHeight: 1.6, margin: 0 }}>
+                {c.overview.split('. ').slice(0, 2).join('. ') + '.'}
               </p>
             </div>
+          )}
+        </div>
 
-            {/* ── TẢI PHẦN MỀM (nếu bài này cần cài đặt gì đó) ── */}
-            <LessonDownloads slug={slug} />
-
-            {/* Objectives */}
-            <div style={{ marginBottom: '28px', padding: '20px 24px', background: '#fafafa', border: '1px solid #e5e5e5', borderRadius: '10px' }}>
-              <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#a3a3a3', textTransform: 'uppercase', marginBottom: '14px' }}>Learning Objectives</p>
-              <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {c.objectives.map((obj, i) => (
-                  <li key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', fontSize: '14px', color: '#404040', lineHeight: 1.6 }}>
-                    <span style={{ minWidth: 20, height: 20, borderRadius: '50%', background: color, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700, flexShrink: 0, marginTop: '1px' }}>{i + 1}</span>
-                    {obj}
-                  </li>
-                ))}
-              </ul>
+        {/* Objectives */}
+        {c?.objectives && (
+          <div style={{
+            background: '#ffffff',
+            border: '1px solid #e2e8f0',
+            borderRadius: '12px',
+            padding: '20px 24px',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+              <span style={{ fontSize: '18px' }}>📋</span>
+              <span style={{ fontSize: '12px', fontWeight: 800, letterSpacing: '0.08em', color: '#0f172a', textTransform: 'uppercase' }}>
+                Mục tiêu trọng tâm cần đạt
+              </span>
             </div>
-
-            {/* ── ANIMATION (nếu có cho bài này) — Interactive Demo after Objectives ── */}
-            <LessonAnimationWrapper slug={slug} />
-
-            {/* Sections */}
-            {/* Math formulas for relevant lessons */}
-            <LessonMathBlock slug={slug} />
-
-            <div style={{ marginBottom: '28px' }}>
-              <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#a3a3a3', textTransform: 'uppercase', marginBottom: '16px' }}>Lesson Content</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                {c.sections.map((sec, i) => {
-                  const hasAnimation = (slug === '01-programmable-control' && [0, 1, 2, 7].includes(i));
-                  return (
-                    <div key={i} style={{ border: '1px solid #e5e5e5', borderRadius: '12px', overflow: 'hidden', marginBottom: '0' }}>
-                      {/* Section header - compact */}
-                      <div style={{ padding: '12px 20px', background: `${color}08`, borderBottom: '1px solid #eee', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ width: 3, height: 16, background: color, borderRadius: 99, flexShrink: 0 }} />
-                        <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#0a0a0a', margin: 0 }}>{sec.title}</h3>
-                      </div>
-
-                      {/* Body: 2-column if has animation */}
-                      <div
-                        className={hasAnimation ? 'section-body-2col' : ''}
-                        style={hasAnimation ? {} : { padding: '16px 20px' }}
-                      >
-                        {hasAnimation ? (
-                          /* Left column: concise principle + key takeaways */
-                          <div className="section-col-left" style={{ padding: '20px 24px', borderRight: '1px solid #f0f0f0', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                            <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: color, marginBottom: '8px' }}>
-                              Core Principle
-                            </div>
-                            <p style={{ fontSize: '13.5px', color: '#404040', lineHeight: 1.7, margin: '0 0 14px 0' }}>
-                              {sec.content.split('. ').slice(0, 2).join('. ') + '.'}
-                            </p>
-                            {sec.keyPoints && (
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                {sec.keyPoints.slice(0, 3).map((kp, j) => {
-                                  const parts = kp.split(':');
-                                  const title = parts[0];
-                                  const desc = parts.slice(1).join(':').trim();
-                                  return (
-                                    <div key={j} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '12.5px', color: '#525252', lineHeight: 1.5 }}>
-                                      <span style={{ color: color, fontWeight: 700, flexShrink: 0, marginTop: '1px' }}>▸</span>
-                                      <div>
-                                        <strong style={{ color: '#171717', fontWeight: 600 }}>{title}</strong>
-                                        {desc ? <span style={{ color: '#737373' }}>: {desc.slice(0, 75)}{desc.length > 75 ? '…' : ''}</span> : null}
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            )}
-                          </div>
-                        ) : (
-                          <>
-                            <p style={{ fontSize: '13.5px', color: '#404040', lineHeight: 1.7, marginBottom: sec.keyPoints ? '14px' : 0 }}>
-                              {sec.content.split('. ').slice(0, 3).join('. ') + '.'}
-                            </p>
-                            {sec.keyPoints && (
-                              <div className="kp-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 20px' }}>
-                                {sec.keyPoints.map((kp, j) => {
-                                  const parts = kp.split(':');
-                                  const title = parts[0];
-                                  const desc = parts.slice(1).join(':').trim();
-                                  return (
-                                    <div key={j} style={{ display: 'flex', alignItems: 'flex-start', gap: '7px', fontSize: '12px', color: '#525252', lineHeight: 1.5 }}>
-                                      <span style={{ color: color, fontWeight: 700, flexShrink: 0, marginTop: '1px' }}>▸</span>
-                                      <div>
-                                        <strong style={{ color: '#171717', fontWeight: 600 }}>{title}</strong>
-                                        {desc ? <span style={{ color: '#737373' }}>: {desc.slice(0, 65)}{desc.length > 65 ? '…' : ''}</span> : null}
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            )}
-                          </>
-                        )}
-
-                        {/* Right column: Animation */}
-                        {hasAnimation && (
-                          <div style={{ padding: '16px', background: '#f8fafc', display: 'flex', alignItems: 'center' }}>
-                            <div style={{ width: '100%' }}>
-                              <LessonSectionAnimation slug={slug} sectionIndex={i} sectionTitle={sec.title} />
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Note (if any) */}
-                      {sec.note && (
-                        <div style={{ margin: '0 20px 16px', padding: '10px 14px', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '6px', fontSize: '12px', color: '#92400e', lineHeight: 1.6 }}>
-                          💡 {sec.note}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Review questions */}
-            {c.review && (
-              <div style={{ padding: '20px 24px', background: '#f0f4ff', border: '1px solid #c7d7ff', borderRadius: '10px' }}>
-                <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#3b5bdb', textTransform: 'uppercase', marginBottom: '14px' }}>❓ Review Questions</p>
-                <ol style={{ margin: 0, paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {c.review.map((q, i) => (
-                    <li key={i} style={{ fontSize: '14px', color: '#1a2f6b', lineHeight: 1.6 }}>{q}</li>
-                  ))}
-                </ol>
-              </div>
-            )}
-          </div>
-        );
-      })()}
-
-      {/* Topics */}
-      <div style={{ marginBottom: '40px' }}>
-        <h2 style={{ fontSize: '1.1rem', fontWeight: 700, letterSpacing: '-0.02em', color: '#0a0a0a', marginBottom: '16px' }}>
-          Topics in this Lesson
-        </h2>
-
-        {lesson.topics.length > 0 ? (
-          <div style={{ border: '1px solid #e5e5e5', borderRadius: '10px', overflow: 'hidden' }}>
-            {lesson.topics.map((topic, i) => (
-              <Link key={topic.slug} href={`/lessons/${lesson.slug}/${topic.slug}`}
-                className="lesson-row"
-                style={{ borderBottom: i === lesson.topics.length - 1 ? 'none' : '1px solid #f5f5f5' }}
-              >
-                <span style={{ fontSize: '12px', fontWeight: 600, color: '#d4d4d4', minWidth: '22px' }}>
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: '14px', fontWeight: 500, color: '#0a0a0a' }}>{topic.title}</div>
-                </div>
-                <span style={{ fontSize: '12px', color: '#a3a3a3', flexShrink: 0 }}>{topic.durationMinutes} min</span>
-                <span className="lesson-arrow">
-                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </span>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <div style={{ padding: '40px 24px', textAlign: 'center', border: '1px dashed #e5e5e5', borderRadius: '10px', color: '#a3a3a3', fontSize: '14px' }}>
-            Content coming soon — lessons are being added.
+            <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {c.objectives.map((obj, i) => (
+                <li key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', fontSize: '13px', color: '#334155', lineHeight: 1.5 }}>
+                  <span style={{
+                    minWidth: 20,
+                    height: 20,
+                    borderRadius: '50%',
+                    background: `${color}18`,
+                    color: color,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '11px',
+                    fontWeight: 800,
+                    flexShrink: 0,
+                    marginTop: '1px',
+                  }}>
+                    {i + 1}
+                  </span>
+                  <span>{obj}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         )}
       </div>
 
-      {/* Start button & Slide Presentation CTA */}
-      {lesson.topics.length > 0 && (
-        <div style={{ marginBottom: '48px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-          <Link href={`/lessons/${lesson.slug}/${lesson.topics[0].slug}`} className="btn-primary" style={{ background: color, display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span>▶ Launch Slide Presentation Deck (Trình chiếu Slide)</span>
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
-          <Link href={`/lessons/${lesson.slug}/${lesson.topics[0].slug}`} className="btn-ghost" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span>Start Topic 1: {lesson.topics[0].title.slice(0, 24)}…</span>
-          </Link>
+      {/* Topics in this Lesson (Slide Decks Directory) */}
+      <div style={{ marginBottom: '32px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
+          <div>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: '0 0 4px 0' }}>
+              Danh mục các chuyên đề Slide (Topic Slides)
+            </h2>
+            <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>
+              Mỗi chuyên đề được thiết kế theo cấu trúc chuẩn 5 Slide cố định (Sơ đồ · Trọng tâm · Ghi chú Lab · Mô phỏng · Micro-Quiz).
+            </p>
+          </div>
+          {firstTopicSlug && (
+            <Link
+              href={`/lessons/${lesson.slug}/${firstTopicSlug}`}
+              style={{
+                fontSize: '12.5px',
+                fontWeight: 700,
+                color: color,
+                textDecoration: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+              }}
+            >
+              <span>Xem toàn bộ Slide</span>
+              <span>➔</span>
+            </Link>
+          )}
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '14px' }}>
+          {lesson.topics.map((topic, i) => (
+            <Link
+              key={topic.slug}
+              href={`/lessons/${lesson.slug}/${topic.slug}`}
+              style={{
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                borderRadius: '12px',
+                padding: '18px 20px',
+                textDecoration: 'none',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
+              }}
+              className="topic-card-hover"
+            >
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <span style={{
+                    fontSize: '11px',
+                    fontWeight: 800,
+                    color: color,
+                    background: `${color}14`,
+                    padding: '3px 8px',
+                    borderRadius: '6px',
+                  }}>
+                    CHUYÊN ĐỀ {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span style={{ fontSize: '11.5px', color: '#64748b', fontWeight: 600 }}>
+                    ⏱️ ~{topic.durationMinutes} phút
+                  </span>
+                </div>
+                <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: '0 0 10px 0', lineHeight: 1.4 }}>
+                  {topic.title}
+                </h3>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '12px', borderTop: '1px solid #f1f5f9' }}>
+                <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span>✓</span> 5 Slide tương tác & Quiz
+                </span>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: color, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span>Vào học</span>
+                  <span>➔</span>
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Video & Software Downloads */}
+      <div style={{ marginBottom: '28px' }}>
+        <LessonVideo lessonSlug={slug} color={color} />
+        <LessonDownloads slug={slug} />
+        <LessonMathBlock slug={slug} />
+      </div>
+
+      {/* Featured Interactive Simulator Preview */}
+      <div style={{ marginBottom: '32px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+          <span style={{ fontSize: '18px' }}>⚡</span>
+          <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+            Mô phỏng tương tác thực hành tiêu biểu của chương
+          </h3>
+        </div>
+        <LessonAnimationWrapper slug={slug} />
+      </div>
+
+      {/* Review Questions */}
+      {c?.review && (
+        <div style={{
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
+          borderRadius: '12px',
+          padding: '24px',
+          marginBottom: '36px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+            <span style={{ fontSize: '18px' }}>❓</span>
+            <h3 style={{ fontSize: '14px', fontWeight: 800, letterSpacing: '0.04em', color: '#1a3a6b', textTransform: 'uppercase', margin: 0 }}>
+              Câu hỏi củng cố & Ôn tập cuối chương
+            </h3>
+          </div>
+          <ol style={{ margin: 0, paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {c.review.map((q, i) => (
+              <li key={i} style={{ fontSize: '13.5px', color: '#334155', lineHeight: 1.6 }}>
+                {q}
+              </li>
+            ))}
+          </ol>
         </div>
       )}
 
-      {/* Prev / Next */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '24px', borderTop: '1px solid #f0f0f0', gap: '12px' }}>
+      {/* Prev / Next Lesson Navigation */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '24px', borderTop: '1px solid #e2e8f0', gap: '14px' }}>
         {prevLesson ? (
-          <Link href={`/lessons/${prevLesson.slug}`} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#737373', padding: '10px 16px', border: '1px solid #e5e5e5', borderRadius: '8px', transition: 'border-color 0.15s', flex: 1 }}
-            className="btn-ghost">
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <Link
+            href={`/lessons/${prevLesson.slug}`}
+            style={{
+              textDecoration: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '12px 18px',
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: '10px',
+              transition: 'all 0.15s',
+              flex: 1,
+            }}
+          >
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: '#64748b', flexShrink: 0 }}>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             <div>
-              <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#a3a3a3', marginBottom: '2px' }}>Previous</div>
-              <div style={{ fontWeight: 600, color: '#0a0a0a', fontSize: '13px' }}>{prevLesson.title}</div>
+              <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748b', marginBottom: '2px', fontWeight: 700 }}>
+                Bài trước
+              </div>
+              <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '13.5px' }}>
+                {prevLesson.title}
+              </div>
             </div>
           </Link>
         ) : <div />}
 
         {nextLesson && (
-          <Link href={`/lessons/${nextLesson.slug}`} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px', fontSize: '13px', color: '#737373', padding: '10px 16px', border: '1px solid #e5e5e5', borderRadius: '8px', transition: 'border-color 0.15s', flex: 1, textAlign: 'right' }}
-            className="btn-ghost">
+          <Link
+            href={`/lessons/${nextLesson.slug}`}
+            style={{
+              textDecoration: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              gap: '10px',
+              padding: '12px 18px',
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: '10px',
+              transition: 'all 0.15s',
+              flex: 1,
+              textAlign: 'right',
+            }}
+          >
             <div>
-              <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#a3a3a3', marginBottom: '2px' }}>Next</div>
-              <div style={{ fontWeight: 600, color: '#0a0a0a', fontSize: '13px' }}>{nextLesson.title}</div>
+              <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748b', marginBottom: '2px', fontWeight: 700 }}>
+                Bài tiếp theo
+              </div>
+              <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '13.5px' }}>
+                {nextLesson.title}
+              </div>
             </div>
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: '#64748b', flexShrink: 0 }}>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </Link>

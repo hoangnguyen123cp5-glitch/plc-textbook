@@ -89,8 +89,8 @@ export default function S7300STLSimulator() {
         Step through a classic register-based instruction sequence. Watch how data shifts between 32-bit hardware accumulators (ACCU1 and ACCU2) and how the Status Word RLO controls output coils:
       </p>
 
-      {/* Code Editor View */}
-      <div style={{ background: '#0f172a', borderRadius: '8px', padding: '12px 16px', marginBottom: '16px', fontFamily: 'Consolas, monospace', fontSize: '12.5px' }}>
+      {/* Code Editor View (Clean Light IDE) */}
+      <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '12px 16px', marginBottom: '16px', fontFamily: 'Consolas, monospace', fontSize: '12.5px' }}>
         {STL_STEPS.slice(1).map((s, idx) => {
           const isActive = stepIdx === idx + 1;
           return (
@@ -99,15 +99,16 @@ export default function S7300STLSimulator() {
               style={{
                 padding: '4px 8px',
                 borderRadius: '4px',
-                background: isActive ? '#1e293b' : 'transparent',
-                borderLeft: isActive ? '3px solid #38bdf8' : '3px solid transparent',
-                color: isActive ? '#38bdf8' : '#94a3b8',
+                background: isActive ? '#eff6ff' : 'transparent',
+                borderLeft: isActive ? '3px solid #0284c7' : '3px solid transparent',
+                color: isActive ? '#1d4ed8' : '#64748b',
+                fontWeight: isActive ? 700 : 500,
                 display: 'flex',
                 justifyContent: 'space-between',
               }}
             >
               <span>{s.instr}</span>
-              {isActive && <span style={{ color: '#fbbf24', fontSize: '11px' }}>◀ Active Instruction</span>}
+              {isActive && <span style={{ color: '#d97706', fontSize: '11px', fontWeight: 700 }}>◀ Active Instruction</span>}
             </div>
           );
         })}
