@@ -661,27 +661,27 @@ export default function TopicQuiz({ topicSlug, color, isFullscreen = false }: Pr
 
   return (
     <div style={{
-      background: isFullscreen ? '#0f172a' : '#ffffff',
-      border: isFullscreen ? '1px solid #1e293b' : '1px solid #e2e8f0',
+      background: '#ffffff',
+      border: '1px solid #e2e8f0',
       borderRadius: '12px',
-      padding: isFullscreen ? '28px 32px' : '24px',
-      boxShadow: isFullscreen ? 'none' : '0 2px 8px rgba(0,0,0,0.04)',
+      padding: '24px 28px',
+      boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
       fontFamily: 'system-ui, -apple-system, sans-serif',
       width: '100%',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ fontSize: '18px' }}>📝</span>
-          <h4 style={{ margin: 0, fontSize: isFullscreen ? '16px' : '14px', fontWeight: 700, color: isFullscreen ? '#ffffff' : '#0f172a' }}>
+          <h4 style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#0f172a' }}>
             Formative Knowledge Check · Self-Assessment
           </h4>
         </div>
-        <span style={{ fontSize: '11px', fontWeight: 600, color: isFullscreen ? '#38bdf8' : color, background: isFullscreen ? '#1e293b' : `${color}15`, padding: '4px 8px', borderRadius: '4px' }}>
+        <span style={{ fontSize: '11px', fontWeight: 700, color: color, background: `${color}12`, padding: '4px 10px', borderRadius: '6px', border: `1px solid ${color}30` }}>
           {questions.length} Questions
         </span>
       </div>
 
-      <p style={{ fontSize: isFullscreen ? '13.5px' : '12.5px', color: isFullscreen ? '#94a3b8' : '#64748b', marginBottom: '20px', lineHeight: 1.5 }}>
+      <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '18px', lineHeight: 1.5 }}>
         Test your understanding of the technical concepts covered in this topic before proceeding:
       </p>
 
@@ -691,31 +691,31 @@ export default function TopicQuiz({ topicSlug, color, isFullscreen = false }: Pr
           const isCorrect = userChoice === q.correct;
 
           return (
-            <div key={qIdx} style={{ background: isFullscreen ? '#1e293b' : '#f8fafc', border: isFullscreen ? '1px solid #334155' : '1px solid #e2e8f0', borderRadius: '8px', padding: '16px' }}>
-              <p style={{ fontSize: isFullscreen ? '14px' : '13px', fontWeight: 600, color: isFullscreen ? '#f1f5f9' : '#1e293b', marginBottom: '12px', lineHeight: 1.5 }}>
+            <div key={qIdx} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '16px 18px' }}>
+              <p style={{ fontSize: '13.5px', fontWeight: 700, color: '#1e293b', marginBottom: '12px', lineHeight: 1.5 }}>
                 {qIdx + 1}. {q.question}
               </p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {q.options.map((opt, oIdx) => {
-                  let optBg = isFullscreen ? '#0f172a' : '#ffffff';
-                  let optBorder = isFullscreen ? '#334155' : '#cbd5e1';
-                  let optColor = isFullscreen ? '#cbd5e1' : '#334155';
+                  let optBg = '#ffffff';
+                  let optBorder = '#cbd5e1';
+                  let optColor = '#334155';
 
                   if (submitted) {
                     if (oIdx === q.correct) {
-                      optBg = isFullscreen ? '#064e3b' : '#dcfce7';
-                      optBorder = '#10b981';
-                      optColor = isFullscreen ? '#a7f3d0' : '#166534';
+                      optBg = '#dcfce7';
+                      optBorder = '#86efac';
+                      optColor = '#166534';
                     } else if (userChoice === oIdx) {
-                      optBg = isFullscreen ? '#7f1d1d' : '#fee2e2';
-                      optBorder = '#ef4444';
-                      optColor = isFullscreen ? '#fca5a5' : '#991b1b';
+                      optBg = '#fee2e2';
+                      optBorder = '#fca5a5';
+                      optColor = '#991b1b';
                     }
                   } else if (userChoice === oIdx) {
-                    optBg = isFullscreen ? `${color}30` : `${color}15`;
+                    optBg = `${color}15`;
                     optBorder = color;
-                    optColor = isFullscreen ? '#38bdf8' : color;
+                    optColor = color;
                   }
 
                   return (
@@ -724,31 +724,31 @@ export default function TopicQuiz({ topicSlug, color, isFullscreen = false }: Pr
                       onClick={() => handleSelect(qIdx, oIdx)}
                       style={{
                         padding: '10px 14px',
-                        borderRadius: '6px',
+                        borderRadius: '8px',
                         border: `1px solid ${optBorder}`,
                         background: optBg,
                         color: optColor,
-                        fontSize: isFullscreen ? '13px' : '12.5px',
+                        fontSize: '12.5px',
                         textAlign: 'left',
                         cursor: submitted ? 'default' : 'pointer',
                         fontWeight: userChoice === oIdx ? 600 : 450,
                         transition: 'all 0.15s ease',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '8px',
+                        gap: '10px',
                       }}
                     >
                       <span style={{
-                        width: 18, height: 18, borderRadius: '50%',
+                        width: 20, height: 20, borderRadius: '50%',
                         border: `1px solid ${userChoice === oIdx ? color : '#cbd5e1'}`,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '10px', fontWeight: 700, flexShrink: 0,
-                        background: userChoice === oIdx ? color : 'transparent',
+                        fontSize: '11px', fontWeight: 700, flexShrink: 0,
+                        background: userChoice === oIdx ? color : '#ffffff',
                         color: userChoice === oIdx ? '#ffffff' : '#64748b',
                       }}>
                         {String.fromCharCode(65 + oIdx)}
                       </span>
-                      <span>{opt}</span>
+                      <span style={{ lineHeight: 1.4 }}>{opt}</span>
                     </button>
                   );
                 })}
@@ -757,13 +757,13 @@ export default function TopicQuiz({ topicSlug, color, isFullscreen = false }: Pr
               {submitted && (
                 <div style={{
                   marginTop: '12px',
-                  padding: '10px 12px',
-                  borderRadius: '6px',
+                  padding: '10px 14px',
+                  borderRadius: '8px',
                   fontSize: '12.5px',
                   lineHeight: 1.5,
-                  background: isCorrect ? (isFullscreen ? '#064e3b' : '#f0fdf4') : (isFullscreen ? '#7f1d1d' : '#fef2f2'),
-                  borderLeft: `3px solid ${isCorrect ? '#16a34a' : '#dc2626'}`,
-                  color: isCorrect ? (isFullscreen ? '#a7f3d0' : '#166534') : (isFullscreen ? '#fca5a5' : '#991b1b'),
+                  background: isCorrect ? '#f0fdf4' : '#fef2f2',
+                  borderLeft: `4px solid ${isCorrect ? '#16a34a' : '#dc2626'}`,
+                  color: isCorrect ? '#166534' : '#991b1b',
                 }}>
                   <strong>{isCorrect ? '✓ Correct Answer!' : '✗ Review Concept:'}</strong> {q.explanation}
                 </div>
@@ -779,34 +779,35 @@ export default function TopicQuiz({ topicSlug, color, isFullscreen = false }: Pr
             onClick={() => setSubmitted(true)}
             disabled={Object.keys(selectedAnswers).length === 0}
             style={{
-              padding: '8px 20px',
-              borderRadius: '6px',
+              padding: '9px 22px',
+              borderRadius: '8px',
               border: 'none',
               background: color,
               color: '#ffffff',
-              fontSize: '12.5px',
+              fontSize: '13px',
               fontWeight: 600,
               cursor: Object.keys(selectedAnswers).length === 0 ? 'not-allowed' : 'pointer',
               opacity: Object.keys(selectedAnswers).length === 0 ? 0.6 : 1,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
             }}
           >
             Check Answers & Explanations
           </button>
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: '13px', fontWeight: 700, color: score === questions.length ? '#16a34a' : '#d97706' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <span style={{ fontSize: '13.5px', fontWeight: 700, color: score === questions.length ? '#16a34a' : '#d97706' }}>
               Your Score: {score}/{questions.length} ({Math.round((score / questions.length) * 100)}%)
             </span>
             <button
               onClick={() => { setSubmitted(false); setSelectedAnswers({}); }}
               style={{
-                padding: '6px 14px',
-                borderRadius: '6px',
-                border: isFullscreen ? '1px solid #334155' : '1px solid #cbd5e1',
-                background: isFullscreen ? '#1e293b' : '#ffffff',
-                fontSize: '12px',
+                padding: '7px 16px',
+                borderRadius: '8px',
+                border: '1px solid #cbd5e1',
+                background: '#ffffff',
+                fontSize: '12.5px',
                 fontWeight: 600,
-                color: isFullscreen ? '#f1f5f9' : '#475569',
+                color: '#475569',
                 cursor: 'pointer',
               }}
             >

@@ -150,14 +150,16 @@ export default function TopicSlideDeck({
     return () => document.removeEventListener('fullscreenchange', handleFsChange);
   }, []);
 
+  const progressPercentage = ((currentSlide + 1) / SLIDE_TABS.length) * 100;
+
   return (
     <div
       ref={slideRef}
       style={{
-        background: isFullscreen ? '#070b14' : '#ffffff',
+        background: isFullscreen ? '#f1f5f9' : '#ffffff',
         border: isFullscreen ? 'none' : '1px solid #e2e8f0',
         borderRadius: isFullscreen ? 0 : '16px',
-        boxShadow: isFullscreen ? 'none' : '0 4px 28px rgba(0,0,0,0.08)',
+        boxShadow: isFullscreen ? 'none' : '0 8px 30px rgba(0,0,0,0.06)',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
@@ -173,28 +175,40 @@ export default function TopicSlideDeck({
         transition: 'all 0.2s ease',
       }}
     >
-      {/* ── Top Header Bar: Breadcrumb, Topic Navigation & Projector Mode ── */}
+      {/* ── Slide Progress Bar (Top Accent) ── */}
+      <div style={{ width: '100%', height: '3px', background: '#e2e8f0', flexShrink: 0 }}>
+        <div
+          style={{
+            width: `${progressPercentage}%`,
+            height: '100%',
+            background: color,
+            transition: 'width 0.25s ease',
+          }}
+        />
+      </div>
+
+      {/* ── Top Header Bar: Light, crisp, academic ── */}
       <div
         style={{
-          padding: '10px 20px',
-          background: isFullscreen ? '#0f172a' : `${color}08`,
-          borderBottom: isFullscreen ? '1px solid #1e293b' : '1px solid #e2e8f0',
+          padding: '10px 24px',
+          background: '#ffffff',
+          borderBottom: '1px solid #e2e8f0',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
-          gap: '8px',
+          gap: '10px',
           flexShrink: 0,
         }}
       >
         {/* Left: Breadcrumb / Topic Info */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ fontSize: '18px' }}>{lessonIcon}</span>
-          <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', color: isFullscreen ? '#94a3b8' : color, textTransform: 'uppercase' }}>
+          <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', color: color, textTransform: 'uppercase' }}>
             {courseCode} · {lessonTitle}
           </span>
-          <span style={{ color: isFullscreen ? '#475569' : '#cbd5e1' }}>/</span>
-          <span style={{ fontSize: '12px', fontWeight: 700, color: isFullscreen ? '#f1f5f9' : '#0f172a' }}>
+          <span style={{ color: '#cbd5e1' }}>/</span>
+          <span style={{ fontSize: '12.5px', fontWeight: 700, color: '#0f172a' }}>
             Topic {currentIndex + 1}/{topics.length}: {currentTopic.title}
           </span>
         </div>
@@ -206,14 +220,15 @@ export default function TopicSlideDeck({
               onClick={() => router.push(`/lessons/${lessonSlug}/${prevTopic.slug}`)}
               title={`Previous Topic: ${prevTopic.title}`}
               style={{
-                padding: '5px 10px',
+                padding: '5px 12px',
                 borderRadius: '6px',
-                border: isFullscreen ? '1px solid #334155' : '1px solid #cbd5e1',
-                background: isFullscreen ? '#1e293b' : '#ffffff',
-                color: isFullscreen ? '#cbd5e1' : '#475569',
-                fontSize: '11px',
+                border: '1px solid #cbd5e1',
+                background: '#ffffff',
+                color: '#475569',
+                fontSize: '11.5px',
                 fontWeight: 600,
                 cursor: 'pointer',
+                transition: 'background 0.15s ease',
               }}
             >
               ◀ Prev Topic
@@ -225,14 +240,15 @@ export default function TopicSlideDeck({
               onClick={() => router.push(`/lessons/${lessonSlug}/${nextTopic.slug}`)}
               title={`Next Topic: ${nextTopic.title}`}
               style={{
-                padding: '5px 10px',
+                padding: '5px 12px',
                 borderRadius: '6px',
-                border: isFullscreen ? '1px solid #334155' : '1px solid #cbd5e1',
-                background: isFullscreen ? '#1e293b' : '#ffffff',
-                color: isFullscreen ? '#cbd5e1' : '#475569',
-                fontSize: '11px',
+                border: '1px solid #cbd5e1',
+                background: '#ffffff',
+                color: '#475569',
+                fontSize: '11.5px',
                 fontWeight: 600,
                 cursor: 'pointer',
+                transition: 'background 0.15s ease',
               }}
             >
               Next Topic ▶
@@ -245,15 +261,15 @@ export default function TopicSlideDeck({
             style={{
               padding: '5px 12px',
               borderRadius: '6px',
-              border: isFullscreen ? '1px solid #334155' : '1px solid #cbd5e1',
-              background: drawerOpen ? (isFullscreen ? '#38bdf8' : color) : (isFullscreen ? '#1e293b' : '#ffffff'),
-              color: drawerOpen ? '#ffffff' : (isFullscreen ? '#cbd5e1' : '#0f172a'),
-              fontSize: '11px',
+              border: `1px solid ${drawerOpen ? color : '#cbd5e1'}`,
+              background: drawerOpen ? `${color}15` : '#ffffff',
+              color: drawerOpen ? color : '#0f172a',
+              fontSize: '11.5px',
               fontWeight: 600,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '5px',
+              gap: '6px',
             }}
           >
             <span>📋</span>
@@ -266,19 +282,19 @@ export default function TopicSlideDeck({
             style={{
               padding: '5px 12px',
               borderRadius: '6px',
-              border: isFullscreen ? '1px solid #38bdf8' : '1px solid #cbd5e1',
-              background: isFullscreen ? '#1e293b' : '#ffffff',
-              color: isFullscreen ? '#38bdf8' : '#0f172a',
-              fontSize: '11px',
-              fontWeight: 600,
+              border: `1px solid ${color}40`,
+              background: `${color}0c`,
+              color: color,
+              fontSize: '11.5px',
+              fontWeight: 700,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
             }}
           >
-            <span>{isFullscreen ? '✕ Exit' : '⛶ Projector Mode'}</span>
-            <span style={{ fontSize: '10px', opacity: 0.7 }}>(F)</span>
+            <span>{isFullscreen ? '✕ Exit Fullscreen' : '⛶ Presentation Mode'}</span>
+            <span style={{ fontSize: '10.5px', opacity: 0.7 }}>(F)</span>
           </button>
         </div>
       </div>
@@ -289,9 +305,9 @@ export default function TopicSlideDeck({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '8px 20px',
-          background: isFullscreen ? '#0b1120' : '#f8fafc',
-          borderBottom: isFullscreen ? '1px solid #1e293b' : '1px solid #e2e8f0',
+          padding: '8px 24px',
+          background: '#f8fafc',
+          borderBottom: '1px solid #e2e8f0',
           gap: '8px',
           flexWrap: 'wrap',
           flexShrink: 0,
@@ -307,15 +323,16 @@ export default function TopicSlideDeck({
                 style={{
                   padding: '6px 14px',
                   borderRadius: '8px',
-                  border: isActive ? `1px solid ${color}` : (isFullscreen ? '1px solid #1e293b' : '1px solid #e2e8f0'),
-                  background: isActive ? (isFullscreen ? `${color}25` : `${color}15`) : (isFullscreen ? '#0f172a' : '#ffffff'),
-                  color: isActive ? (isFullscreen ? '#38bdf8' : color) : (isFullscreen ? '#94a3b8' : '#64748b'),
+                  border: isActive ? `1.5px solid ${color}` : '1px solid #e2e8f0',
+                  background: isActive ? `${color}15` : '#ffffff',
+                  color: isActive ? color : '#64748b',
                   fontSize: '12px',
                   fontWeight: isActive ? 700 : 500,
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
+                  boxShadow: isActive ? '0 1px 4px rgba(0,0,0,0.04)' : 'none',
                   transition: 'all 0.15s ease',
                 }}
               >
@@ -326,8 +343,8 @@ export default function TopicSlideDeck({
           })}
         </div>
 
-        <div style={{ fontSize: '11px', color: isFullscreen ? '#64748b' : '#94a3b8' }}>
-          Hotkeys: <strong>1, 2, 3, 4, 5</strong> · <strong>← / →</strong> or <strong>Space</strong>
+        <div style={{ fontSize: '11.5px', color: '#64748b' }}>
+          Keys: <strong>1..5</strong> · <strong>← / →</strong> or <strong>Space</strong>
         </div>
       </div>
 
@@ -335,9 +352,9 @@ export default function TopicSlideDeck({
       <div
         style={{
           flex: 1,
-          padding: isFullscreen ? '28px 48px' : '20px 32px',
+          padding: isFullscreen ? '28px 48px' : '22px 32px',
           overflow: 'hidden',
-          background: isFullscreen ? '#070b14' : '#ffffff',
+          background: '#ffffff',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -368,7 +385,7 @@ export default function TopicSlideDeck({
                   style={{
                     fontSize: isFullscreen ? '28px' : '22px',
                     fontWeight: 800,
-                    color: isFullscreen ? '#ffffff' : '#0f172a',
+                    color: '#0f172a',
                     lineHeight: 1.25,
                     margin: 0,
                     letterSpacing: '-0.02em',
@@ -381,19 +398,20 @@ export default function TopicSlideDeck({
               {/* Core Principle Paragraph */}
               <div
                 style={{
-                  background: isFullscreen ? '#0f172a' : '#f8fafc',
-                  border: isFullscreen ? '1px solid #1e293b' : '1px solid #e2e8f0',
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
                   borderRadius: '10px',
                   padding: '16px 20px',
+                  borderLeft: `4px solid ${color}`,
                 }}
               >
-                <div style={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.08em', color: isFullscreen ? '#38bdf8' : color, textTransform: 'uppercase', marginBottom: '8px' }}>
+                <div style={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.08em', color: color, textTransform: 'uppercase', marginBottom: '8px' }}>
                   Core Automation Principle:
                 </div>
                 <p
                   style={{
                     fontSize: isFullscreen ? '15px' : '13.5px',
-                    color: isFullscreen ? '#cbd5e1' : '#334155',
+                    color: '#334155',
                     lineHeight: 1.65,
                     margin: 0,
                   }}
@@ -407,11 +425,12 @@ export default function TopicSlideDeck({
                 <div
                   style={{
                     padding: '12px 16px',
-                    background: isFullscreen ? '#261c0c' : '#fffbeb',
+                    background: '#fffbeb',
+                    border: '1px solid #fde68a',
                     borderLeft: '4px solid #f59e0b',
                     borderRadius: '0 8px 8px 0',
                     fontSize: isFullscreen ? '13px' : '12px',
-                    color: isFullscreen ? '#fde68a' : '#92400e',
+                    color: '#92400e',
                     lineHeight: 1.5,
                   }}
                 >
@@ -427,8 +446,8 @@ export default function TopicSlideDeck({
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: isFullscreen ? '#0f172a' : '#f8fafc',
-                border: isFullscreen ? '1px solid #1e293b' : '1px solid #e2e8f0',
+                background: '#f8fafc',
+                border: '1px solid #e2e8f0',
                 borderRadius: '12px',
                 padding: '16px',
                 height: '100%',
@@ -468,7 +487,7 @@ export default function TopicSlideDeck({
                   <p
                     style={{
                       fontSize: '11.5px',
-                      color: isFullscreen ? '#94a3b8' : '#64748b',
+                      color: '#64748b',
                       marginTop: '8px',
                       fontStyle: 'italic',
                       textAlign: 'center',
@@ -480,7 +499,7 @@ export default function TopicSlideDeck({
                   </p>
                 </>
               ) : (
-                <div style={{ padding: '40px 20px', textAlign: 'center', color: isFullscreen ? '#64748b' : '#94a3b8' }}>
+                <div style={{ padding: '40px 20px', textAlign: 'center', color: '#94a3b8' }}>
                   <span style={{ fontSize: '36px', display: 'block', marginBottom: '8px' }}>📊</span>
                   <span style={{ fontSize: '13px' }}>Technical Schematic for {currentTopic.title}</span>
                 </div>
@@ -492,14 +511,14 @@ export default function TopicSlideDeck({
         {/* ── SLIDE 2: Key Engineering Points (Split cleanly into visual cards) ── */}
         {currentSlide === 1 && (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
-            <div style={{ borderBottom: isFullscreen ? '1px solid #1e293b' : '1px solid #e2e8f0', paddingBottom: '10px' }}>
+            <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                 <span style={{ width: 4, height: 16, background: color, borderRadius: 99 }} />
                 <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: color, textTransform: 'uppercase' }}>
                   Core Engineering Standards & Key Takeaways
                 </span>
               </div>
-              <h2 style={{ fontSize: isFullscreen ? '24px' : '20px', fontWeight: 800, color: isFullscreen ? '#ffffff' : '#0f172a', margin: 0 }}>
+              <h2 style={{ fontSize: isFullscreen ? '24px' : '20px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
                 Key Principles · {currentTopic.title}
               </h2>
             </div>
@@ -524,23 +543,31 @@ export default function TopicSlideDeck({
                     <div
                       key={idx}
                       style={{
-                        background: isFullscreen ? '#0f172a' : '#f8fafc',
-                        border: isFullscreen ? '1px solid #1e293b' : '1px solid #e2e8f0',
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0',
                         borderRadius: '10px',
                         padding: '12px 16px',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'center',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-                        <span style={{ color: color, fontWeight: 700 }}>▸</span>
-                        <strong style={{ color: isFullscreen ? '#f1f5f9' : '#0f172a', fontSize: isFullscreen ? '14px' : '13px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                        <span style={{
+                          width: 20, height: 20, borderRadius: '50%',
+                          background: `${color}15`, color: color,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: '11px', fontWeight: 700, flexShrink: 0
+                        }}>
+                          {idx + 1}
+                        </span>
+                        <strong style={{ color: '#0f172a', fontSize: isFullscreen ? '14px' : '13px' }}>
                           {title}
                         </strong>
                       </div>
                       {desc && (
-                        <div style={{ color: isFullscreen ? '#94a3b8' : '#475569', fontSize: isFullscreen ? '13px' : '12px', lineHeight: 1.5, paddingLeft: '14px' }}>
+                        <div style={{ color: '#475569', fontSize: isFullscreen ? '13px' : '12px', lineHeight: 1.5, paddingLeft: '28px' }}>
                           {desc}
                         </div>
                       )}
@@ -552,7 +579,7 @@ export default function TopicSlideDeck({
               )}
             </div>
 
-            <div style={{ fontSize: '11px', color: isFullscreen ? '#64748b' : '#94a3b8', textAlign: 'right' }}>
+            <div style={{ fontSize: '11.5px', color: '#64748b', textAlign: 'right' }}>
               Slide 2 of 5 · Press <strong>Space</strong> or <strong>→</strong> to continue to Laboratory Notes
             </div>
           </div>
@@ -561,14 +588,14 @@ export default function TopicSlideDeck({
         {/* ── SLIDE 3: Detailed Technical Lab Notes & Guidelines ── */}
         {currentSlide === 2 && (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
-            <div style={{ borderBottom: isFullscreen ? '1px solid #1e293b' : '1px solid #e2e8f0', paddingBottom: '10px' }}>
+            <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                 <span style={{ width: 4, height: 16, background: color, borderRadius: 99 }} />
                 <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: color, textTransform: 'uppercase' }}>
                   Laboratory Bench Specifications & Practical Theory
                 </span>
               </div>
-              <h2 style={{ fontSize: isFullscreen ? '24px' : '20px', fontWeight: 800, color: isFullscreen ? '#ffffff' : '#0f172a', margin: 0 }}>
+              <h2 style={{ fontSize: isFullscreen ? '24px' : '20px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
                 In-Depth Engineering Theory · {currentTopic.title}
               </h2>
             </div>
@@ -587,8 +614,8 @@ export default function TopicSlideDeck({
               {/* Left: Complete Theory Write-up */}
               <div
                 style={{
-                  background: isFullscreen ? '#0f172a' : '#f8fafc',
-                  border: isFullscreen ? '1px solid #1e293b' : '1px solid #e2e8f0',
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
                   borderRadius: '10px',
                   padding: '20px 24px',
                   height: '100%',
@@ -597,10 +624,10 @@ export default function TopicSlideDeck({
                   justifyContent: 'center',
                 }}
               >
-                <h4 style={{ fontSize: '11.5px', fontWeight: 700, letterSpacing: '0.08em', color: isFullscreen ? '#38bdf8' : color, textTransform: 'uppercase', marginBottom: '8px', margin: '0 0 8px 0' }}>
+                <h4 style={{ fontSize: '11.5px', fontWeight: 700, letterSpacing: '0.08em', color: color, textTransform: 'uppercase', marginBottom: '8px', margin: '0 0 8px 0' }}>
                   Theoretical Process Dynamics:
                 </h4>
-                <p style={{ fontSize: isFullscreen ? '14.5px' : '13px', color: isFullscreen ? '#cbd5e1' : '#334155', lineHeight: 1.7, margin: 0 }}>
+                <p style={{ fontSize: isFullscreen ? '14.5px' : '13px', color: '#334155', lineHeight: 1.7, margin: 0 }}>
                   {section?.content}
                 </p>
               </div>
@@ -618,13 +645,13 @@ export default function TopicSlideDeck({
                 {section?.note ? (
                   <div
                     style={{
-                      background: isFullscreen ? '#261c0c' : '#fffbeb',
-                      border: isFullscreen ? '1px solid #78350f' : '1px solid #fde68a',
+                      background: '#fffbeb',
+                      border: '1px solid #fde68a',
                       borderLeft: '5px solid #f59e0b',
                       borderRadius: '8px',
                       padding: '16px 18px',
                       fontSize: isFullscreen ? '13.5px' : '12.5px',
-                      color: isFullscreen ? '#fde68a' : '#92400e',
+                      color: '#92400e',
                       lineHeight: 1.6,
                     }}
                   >
@@ -635,16 +662,16 @@ export default function TopicSlideDeck({
 
                 <div
                   style={{
-                    background: isFullscreen ? '#0f172a' : '#ffffff',
-                    border: isFullscreen ? '1px solid #1e293b' : '1px solid #e2e8f0',
+                    background: '#ffffff',
+                    border: '1px solid #e2e8f0',
                     borderRadius: '8px',
                     padding: '14px 18px',
                     fontSize: isFullscreen ? '13px' : '12px',
-                    color: isFullscreen ? '#94a3b8' : '#475569',
+                    color: '#475569',
                     lineHeight: 1.5,
                   }}
                 >
-                  <strong style={{ color: isFullscreen ? '#ffffff' : '#0f172a' }}>Commissioning Checklist:</strong>
+                  <strong style={{ color: '#0f172a' }}>Commissioning Checklist:</strong>
                   <ul style={{ margin: '6px 0 0 0', paddingLeft: '18px' }}>
                     <li>Verify 24VDC polarity before applying line power to the CPU rack.</li>
                     <li>Ensure PE grounding busbar resistance is &lt; 10 ohms.</li>
@@ -654,7 +681,7 @@ export default function TopicSlideDeck({
               </div>
             </div>
 
-            <div style={{ fontSize: '11px', color: isFullscreen ? '#64748b' : '#94a3b8', textAlign: 'right' }}>
+            <div style={{ fontSize: '11.5px', color: '#64748b', textAlign: 'right' }}>
               Slide 3 of 5 · Press <strong>Space</strong> or <strong>→</strong> to continue to Interactive Simulator
             </div>
           </div>
@@ -663,14 +690,14 @@ export default function TopicSlideDeck({
         {/* ── SLIDE 4: Interactive Live Simulator ── */}
         {currentSlide === 3 && (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
-            <div style={{ borderBottom: isFullscreen ? '1px solid #1e293b' : '1px solid #e2e8f0', paddingBottom: '8px' }}>
+            <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                 <span style={{ width: 4, height: 16, background: color, borderRadius: 99 }} />
                 <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: color, textTransform: 'uppercase' }}>
                   Interactive Engineering Bench · Live Logic Simulation
                 </span>
               </div>
-              <h2 style={{ fontSize: isFullscreen ? '22px' : '18px', fontWeight: 800, color: isFullscreen ? '#ffffff' : '#0f172a', margin: 0 }}>
+              <h2 style={{ fontSize: isFullscreen ? '22px' : '18px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
                 Live Execution Stage: {currentTopic.title}
               </h2>
             </div>
@@ -692,7 +719,7 @@ export default function TopicSlideDeck({
               </div>
             </div>
 
-            <div style={{ fontSize: '11px', color: isFullscreen ? '#64748b' : '#94a3b8', textAlign: 'right' }}>
+            <div style={{ fontSize: '11.5px', color: '#64748b', textAlign: 'right' }}>
               Slide 4 of 5 · Press <strong>Space</strong> or <strong>→</strong> to continue to Knowledge Check
             </div>
           </div>
@@ -701,14 +728,14 @@ export default function TopicSlideDeck({
         {/* ── SLIDE 5: Formative Knowledge Check Micro-Quiz ── */}
         {currentSlide === 4 && (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
-            <div style={{ borderBottom: isFullscreen ? '1px solid #1e293b' : '1px solid #e2e8f0', paddingBottom: '8px' }}>
+            <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                 <span style={{ width: 4, height: 16, background: color, borderRadius: 99 }} />
                 <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: color, textTransform: 'uppercase' }}>
                   Formative Self-Assessment · Classroom Knowledge Check
                 </span>
               </div>
-              <h2 style={{ fontSize: isFullscreen ? '22px' : '18px', fontWeight: 800, color: isFullscreen ? '#ffffff' : '#0f172a', margin: 0 }}>
+              <h2 style={{ fontSize: isFullscreen ? '22px' : '18px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
                 Test Your Understanding: {currentTopic.title}
               </h2>
             </div>
@@ -730,7 +757,7 @@ export default function TopicSlideDeck({
               </div>
             </div>
 
-            <div style={{ fontSize: '11px', color: isFullscreen ? '#64748b' : '#94a3b8', textAlign: 'right' }}>
+            <div style={{ fontSize: '11.5px', color: '#64748b', textAlign: 'right' }}>
               Slide 5 of 5 · Press <strong>Space</strong> or <strong>→</strong> to advance to next topic
             </div>
           </div>
@@ -741,8 +768,8 @@ export default function TopicSlideDeck({
       <div
         style={{
           padding: '10px 24px',
-          background: isFullscreen ? '#0f172a' : '#f8fafc',
-          borderTop: isFullscreen ? '1px solid #1e293b' : '1px solid #e2e8f0',
+          background: '#f8fafc',
+          borderTop: '1px solid #e2e8f0',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -757,15 +784,16 @@ export default function TopicSlideDeck({
           style={{
             padding: '7px 16px',
             borderRadius: '8px',
-            border: isFullscreen ? '1px solid #334155' : '1px solid #cbd5e1',
-            background: isFullscreen ? '#1e293b' : '#ffffff',
-            color: isFullscreen ? '#f1f5f9' : '#0f172a',
+            border: '1px solid #cbd5e1',
+            background: '#ffffff',
+            color: '#0f172a',
             fontSize: '12px',
             fontWeight: 600,
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
           }}
         >
           <span>◀</span>
@@ -774,7 +802,7 @@ export default function TopicSlideDeck({
 
         {/* Slide Indicator Dots (Showing current slide out of 5) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <span style={{ fontSize: '11px', fontWeight: 700, color: isFullscreen ? '#94a3b8' : '#64748b' }}>
+          <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748b' }}>
             Slide {currentSlide + 1} / {SLIDE_TABS.length}
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -790,7 +818,7 @@ export default function TopicSlideDeck({
                     height: 10,
                     borderRadius: 99,
                     border: 'none',
-                    background: isCurrent ? color : (isFullscreen ? '#334155' : '#cbd5e1'),
+                    background: isCurrent ? color : '#cbd5e1',
                     cursor: 'pointer',
                     padding: 0,
                     transition: 'all 0.2s ease',
@@ -816,6 +844,7 @@ export default function TopicSlideDeck({
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
           }}
         >
           <span>{currentSlide < SLIDE_TABS.length - 1 ? `Next: ${SLIDE_TABS[currentSlide + 1].shortLabel}` : (nextTopic ? `Next Topic: ${nextTopic.title.slice(0, 20)}…` : 'Complete Lesson 🏁')}</span>
@@ -823,7 +852,7 @@ export default function TopicSlideDeck({
         </button>
       </div>
 
-      {/* ── Topics Drawer Sidebar (Pop-out navigation) ── */}
+      {/* ── Topics Drawer Sidebar (Pop-out navigation, pure light mode) ── */}
       {drawerOpen && (
         <div
           style={{
@@ -832,9 +861,9 @@ export default function TopicSlideDeck({
             right: 0,
             bottom: 0,
             width: '320px',
-            background: isFullscreen ? '#090d16' : '#ffffff',
-            borderLeft: isFullscreen ? '1px solid #1e293b' : '1px solid #e2e8f0',
-            boxShadow: '-4px 0 20px rgba(0,0,0,0.15)',
+            background: '#ffffff',
+            borderLeft: '1px solid #e2e8f0',
+            boxShadow: '-4px 0 24px rgba(0,0,0,0.1)',
             zIndex: 999999,
             display: 'flex',
             flexDirection: 'column',
@@ -842,14 +871,15 @@ export default function TopicSlideDeck({
         >
           <div
             style={{
-              padding: '16px',
-              borderBottom: isFullscreen ? '1px solid #1e293b' : '1px solid #e2e8f0',
+              padding: '16px 20px',
+              borderBottom: '1px solid #e2e8f0',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
+              background: '#f8fafc',
             }}
           >
-            <div style={{ fontWeight: 700, fontSize: '13px', color: isFullscreen ? '#ffffff' : '#0f172a' }}>
+            <div style={{ fontWeight: 700, fontSize: '13px', color: '#0f172a' }}>
               Lesson Topics ({topics.length})
             </div>
             <button
@@ -859,14 +889,14 @@ export default function TopicSlideDeck({
                 background: 'transparent',
                 cursor: 'pointer',
                 fontSize: '16px',
-                color: isFullscreen ? '#94a3b8' : '#64748b',
+                color: '#64748b',
               }}
             >
               ✕
             </button>
           </div>
 
-          <div style={{ flex: 1, overflowY: 'auto', padding: '8px' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '10px' }}>
             {topics.map((t, idx) => {
               const isCurrent = idx === currentIndex;
               return (
@@ -878,11 +908,11 @@ export default function TopicSlideDeck({
                   }}
                   style={{
                     width: '100%',
-                    padding: '10px 12px',
+                    padding: '10px 14px',
                     borderRadius: '8px',
-                    border: 'none',
-                    background: isCurrent ? (isFullscreen ? '#1e293b' : '#f0f4ff') : 'transparent',
-                    color: isCurrent ? (isFullscreen ? '#38bdf8' : color) : (isFullscreen ? '#cbd5e1' : '#334155'),
+                    border: isCurrent ? `1px solid ${color}40` : '1px solid transparent',
+                    background: isCurrent ? `${color}12` : 'transparent',
+                    color: isCurrent ? color : '#334155',
                     textAlign: 'left',
                     fontSize: '12.5px',
                     fontWeight: isCurrent ? 700 : 500,
@@ -891,6 +921,7 @@ export default function TopicSlideDeck({
                     alignItems: 'center',
                     gap: '10px',
                     marginBottom: '4px',
+                    transition: 'all 0.15s ease',
                   }}
                 >
                   <span
@@ -898,8 +929,8 @@ export default function TopicSlideDeck({
                       width: 22,
                       height: 22,
                       borderRadius: '50%',
-                      background: isCurrent ? color : (isFullscreen ? '#1e293b' : '#e2e8f0'),
-                      color: isCurrent ? '#ffffff' : (isFullscreen ? '#94a3b8' : '#64748b'),
+                      background: isCurrent ? color : '#e2e8f0',
+                      color: isCurrent ? '#ffffff' : '#64748b',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -911,7 +942,7 @@ export default function TopicSlideDeck({
                     {idx + 1}
                   </span>
                   <div style={{ flex: 1 }}>{t.title}</div>
-                  <span style={{ fontSize: '11px', color: isFullscreen ? '#64748b' : '#94a3b8' }}>
+                  <span style={{ fontSize: '11px', color: '#94a3b8' }}>
                     {t.durationMinutes}m
                   </span>
                 </button>
@@ -928,7 +959,8 @@ export default function TopicSlideDeck({
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(0,0,0,0.88)',
+            background: 'rgba(15, 23, 42, 0.8)',
+            backdropFilter: 'blur(4px)',
             zIndex: 9999999,
             display: 'flex',
             flexDirection: 'column',
@@ -946,7 +978,7 @@ export default function TopicSlideDeck({
               maxHeight: '85vh',
               objectFit: 'contain',
               borderRadius: '8px',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
               background: '#ffffff',
             }}
           />
