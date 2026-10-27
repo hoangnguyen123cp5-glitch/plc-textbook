@@ -7,6 +7,7 @@ import LessonVideo from '@/components/content/LessonVideo';
 import TopicAnimationWrapper from '@/components/animations/TopicAnimationWrapper';
 import TopicSlideDeck from '@/components/content/TopicSlideDeck';
 import TopicQuiz from '@/components/content/TopicQuiz';
+import { TOPIC_CASE_STUDIES, getTopicCaseStudy } from '@/data/topic-case-studies';
 import { asset } from '@/lib/asset';
 import type { Metadata } from 'next';
 
@@ -386,6 +387,8 @@ export default async function TopicPage({
           <TopicQuiz topicSlug={topic.slug} color={color} />
         );
 
+        const caseStudy = getTopicCaseStudy(lesson.slug, topic.slug, topic.title);
+
         return (
           <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
             {/* ── 100% PURE SLIDE PRESENTATION DECK (NO SCROLLING) ── */}
@@ -400,6 +403,11 @@ export default async function TopicPage({
               currentIndex={topicIndex}
               section={section ?? null}
               diagram={TOPIC_DIAGRAMS[topic.slug] ?? null}
+              allSections={contentData?.sections ?? []}
+              chapterOverview={contentData?.overview ?? ''}
+              chapterObjectives={contentData?.objectives ?? []}
+              allDiagrams={TOPIC_DIAGRAMS}
+              caseStudy={caseStudy}
               simulatorNode={simulatorNode}
               quizNode={quizNode}
             />
