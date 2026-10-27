@@ -42,55 +42,55 @@ function Section1_1FiveElementsAnimation() {
       id: 0,
       num: '1',
       title: 'Setpoint (SP)',
-      sub: 'Giá trị Đặt Chuẩn',
+      sub: 'Reference Target',
       icon: '🎯',
-      desc: 'Giá trị mục tiêu mong muốn mà đại lượng vật lý cần đạt (nhiệt độ, áp suất, vận tốc, vị trí).',
-      example: 'Nhiệt độ cài đặt SP = 60.0°C | Tốc độ băng tải SP = 1.5 m/s (Nhập từ màn hình HMI)',
-      badge: 'Tín hiệu Đầu vào (Input Signal)',
+      desc: 'The desired target value for the physical process variable (e.g., temperature, pressure, flow rate, or positioning coordinate).',
+      example: 'Temperature SP = 60.0°C | Conveyor speed SP = 1.5 m/s (Entered via Siemens KTP700 HMI)',
+      badge: 'Reference Input Signal',
       color: '#0284c7',
     },
     {
       id: 1,
       num: '2',
-      title: 'Khâu So sánh',
-      sub: 'Bộ Tính Sai số (Σ)',
+      title: 'Comparator',
+      sub: 'Summing Junction (Σ)',
       icon: '⚖️',
-      desc: 'Tính toán độ lệch tức thời giữa tín hiệu đặt và phản hồi thực tế: e(t) = SP − PV.',
-      example: 'Sai số e(t) = 60°C − 42°C = +18°C ➔ Cần tăng công suất gia nhiệt cấp tốc',
-      badge: 'Điểm Cộng Trừ (Summing Junction)',
+      desc: 'Calculates the real-time instantaneous control error between target setpoint and physical feedback: e(t) = SP − PV.',
+      example: 'Control Error e(t) = 60.0°C − 42.0°C = +18.0°C ➔ Drives corrective controller response',
+      badge: 'Summing Junction (Σ)',
       color: '#d97706',
     },
     {
       id: 2,
       num: '3',
-      title: 'Bộ Điều khiển',
-      sub: 'PLC CPU (OB1)',
+      title: 'Controller',
+      sub: 'PLC CPU (OB1 Execution)',
       icon: '💻',
-      desc: 'Bộ não xử lý thuật toán (PID, Logic Ladder, liên động an toàn) để tính ra tín hiệu điều khiển u(t).',
-      example: 'Siemens S7-1200 CPU 1214C DC/DC/DC quét chu kỳ 1ms chạy khối PID_Compact FB',
-      badge: 'Khối Xử lý Quyết định (Decision Logic)',
+      desc: 'The computational processing core executing control algorithms (PID, Ladder logic, safety interlocks) to compute output u(t).',
+      example: 'Siemens S7-1200 CPU 1214C DC/DC/DC executing PID_Compact FB in 1ms cyclic OB interrupt',
+      badge: 'Decision Logic / Control Core',
       color: '#16a34a',
     },
     {
       id: 3,
       num: '4',
-      title: 'Cơ cấu Chấp hành',
-      sub: 'Actuator Công suất',
+      title: 'Actuator',
+      sub: 'Final Control Element',
       icon: '⚡',
-      desc: 'Chuyển đổi tín hiệu điện áp/dòng điện nhỏ từ PLC thành cơ năng/nhiệt năng/áp suất vật lý.',
-      example: 'Biến tần VFD SINAMICS V20 điều khiển motor, van điều khiển tỉ lệ 4–20mA, SSR heater',
-      badge: 'Thiết bị Chấp hành (Final Element)',
+      desc: 'Transduces low-power digital/analog control signals from the PLC into high-power kinetic, thermal, or pneumatic action.',
+      example: 'SINAMICS V20 Inverter (VFD) driving AC motor, 4–20 mA proportional control valve, Solid-State Relay (SSR)',
+      badge: 'Final Control Element',
       color: '#dc2626',
     },
     {
       id: 4,
       num: '5',
-      title: 'Cảm biến Phản hồi',
-      sub: 'Transducer / Sensor',
+      title: 'Feedback Sensor',
+      sub: 'Transducer / Measurement',
       icon: '📡',
-      desc: 'Đo lường liên tục trạng thái vật lý thực (PV) và truyền ngược về khâu so sánh để khép kín vòng.',
-      example: 'Cảm biến nhiệt độ PT100 + Bộ chuyển đổi 4–20mA, Encoder đo góc 1024 xung/vòng',
-      badge: 'Vòng Phản hồi (Feedback Loop)',
+      desc: 'Continuously measures the actual physical process variable (PV) and converts it to a standard electrical signal to close the loop.',
+      example: 'PT100 RTD temperature probe with 4–20 mA transmitter, 1024 PPR optical incremental encoder',
+      badge: 'Feedback Measurement Loop',
       color: '#7c3aed',
     },
   ];
@@ -120,11 +120,11 @@ function Section1_1FiveElementsAnimation() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#0284c7', display: 'inline-block' }} />
           <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: '#0f172a', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-            Sơ đồ Dòng Tín hiệu 5 Khối Cốt lõi của Hệ thống Điều khiển
+            Signal Flow Architecture: 5 Core Functional Elements
           </h4>
         </div>
         <span style={{ fontSize: '11px', color: '#64748b', background: '#f1f5f9', padding: '3px 8px', borderRadius: '6px', fontWeight: 600 }}>
-          💡 Nhấp vào từng khối để xem phân tích phần cứng & tín hiệu
+          💡 Click any block to inspect hardware implementation & telemetry
         </span>
       </div>
 
@@ -182,15 +182,16 @@ function Section1_1FiveElementsAnimation() {
         fontFamily: 'Consolas, monospace',
         marginBottom: '14px',
         fontWeight: 600,
+        overflowX: 'auto',
       }}>
-        <span style={{ color: '#0284c7' }}>Dòng Tiến (Feedforward):</span>
-        <span style={{ color: '#0f172a' }}>SP [Đặt] ──▶ (Σ) [Sai số] ──▶ PLC CPU [OB1] ──▶ Actuator [Cơ cấu] ──▶ Plant [Đối tượng]</span>
-        <span style={{ color: '#16a34a' }}>Hồi tiếp: ◀── Sensor [Đo lường]</span>
+        <span style={{ color: '#0284c7' }}>Feedforward:</span>
+        <span style={{ color: '#0f172a' }}>SP [Target] ──▶ (Σ) [Error e(t)] ──▶ PLC CPU [OB1] ──▶ Actuator ──▶ Plant Process</span>
+        <span style={{ color: '#16a34a' }}>Feedback: ◀── Sensor [PV Transducer]</span>
       </div>
 
       {/* Balanced 2-Column Inspector */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-        {/* Left Column: Role & Formula */}
+        {/* Left Column: Role & Mathematical Formulation */}
         <div style={{
           background: '#ffffff',
           border: '1.5px solid #e2e8f0',
@@ -211,7 +212,7 @@ function Section1_1FiveElementsAnimation() {
           </p>
         </div>
 
-        {/* Right Column: Industrial Equipment Example */}
+        {/* Right Column: Industrial Field Hardware Implementation */}
         <div style={{
           background: '#fffbeb',
           border: '1.5px solid #fde68a',
@@ -219,7 +220,7 @@ function Section1_1FiveElementsAnimation() {
           padding: '12px 16px',
         }}>
           <div style={{ fontSize: '10.5px', fontWeight: 800, color: '#b45309', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '6px' }}>
-            🏭 Thiết Bị Phần Cứng Thực Tế Trong Nhà Máy
+            🏭 Industrial Field Hardware Implementation
           </div>
           <p style={{ margin: 0, fontSize: '12.5px', color: '#78350f', lineHeight: 1.6, fontWeight: 500 }}>
             {current.example}
@@ -259,7 +260,7 @@ function Section1_2LoopAnimation() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#0284c7', display: 'inline-block' }} />
           <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: '#0f172a', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-            Mô Phỏng Thực Tế: Hệ Thống Điều Khiển Vòng Hở (Open-Loop) vs Vòng Kín (Closed-Loop)
+            Industrial Bench: Open-Loop vs Closed-Loop Control System
           </h4>
         </div>
 
@@ -278,7 +279,7 @@ function Section1_2LoopAnimation() {
               transition: 'all 0.15s ease',
             }}
           >
-            💡 Đèn Chiếu Sáng Đô Thị
+            💡 Municipal Lighting
           </button>
           <button
             onClick={() => setActiveScenario('oven')}
@@ -294,7 +295,7 @@ function Section1_2LoopAnimation() {
               transition: 'all 0.15s ease',
             }}
           >
-            🔥 Lò Gia Nhiệt Công Nghiệp
+            🔥 Industrial Metallurgy Furnace
           </button>
         </div>
       </div>
@@ -337,7 +338,7 @@ function StreetLightScenario() {
             textAlign: 'center',
           }}
         >
-          ⏱️ Chế Độ VÒNG HỞ (Bộ Định Giờ Timer Cố Định 18h–06h)
+          ⏱️ Open-Loop Mode (Fixed Timer Schedule 18:00–06:00)
         </button>
         <button
           onClick={() => setIsClosedLoop(true)}
@@ -353,7 +354,7 @@ function StreetLightScenario() {
             textAlign: 'center',
           }}
         >
-          📡 Chế Độ VÒNG KÍN (Cảm Biến Ánh Sáng Quang Trở LDR Hồi Tiếp)
+          📡 Closed-Loop Mode (LDR Lux Sensor Feedback)
         </button>
       </div>
 
@@ -362,7 +363,7 @@ function StreetLightScenario() {
         {/* Left: Plant & Environmental Controls */}
         <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '14px 16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-            <span style={{ fontSize: '12px', fontWeight: 700, color: '#334155' }}>Thời gian trong ngày:</span>
+            <span style={{ fontSize: '12px', fontWeight: 700, color: '#334155' }}>Time of Day:</span>
             <span style={{ fontSize: '14px', fontWeight: 800, fontFamily: 'monospace', color: '#0284c7' }}>{timeHour}:00</span>
           </div>
           <input
@@ -390,7 +391,7 @@ function StreetLightScenario() {
               marginBottom: '12px',
             }}
           >
-            {isStormy ? '⛈️ Nhiễu: Giông bão bất ngờ (Trời tối sầm lại)' : '☀️ Thời tiết: Bình thường (Trời sáng quang đãng)'}
+            {isStormy ? '⛈️ Disturbance: Sudden Thunderstorm (Sky Darkens)' : '☀️ Weather: Normal Clear Daylight'}
           </button>
 
           {/* Lamp Visual Graphic */}
@@ -420,7 +421,7 @@ function StreetLightScenario() {
               {lampState ? '💡' : '⚪'}
             </div>
             <span style={{ fontSize: '12px', fontWeight: 800, marginTop: '8px', color: lampState ? '#16a34a' : '#64748b' }}>
-              Trạng thái Đèn: {lampState ? 'BẬT SÁNG (ON)' : 'TẮT (OFF)'}
+              Lamp State: {lampState ? 'ENERGIZED (ON)' : 'DE-ENERGIZED (OFF)'}
             </span>
           </div>
         </div>
@@ -429,15 +430,15 @@ function StreetLightScenario() {
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '10px' }}>
           <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '14px 16px' }}>
             <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
-              Dữ Liệu Đo Lường Quá Trình (Telemetry):
+              Process Measurement Telemetry:
             </span>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
               <div style={{ padding: '8px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px' }}>
-                <span style={{ fontSize: '10px', color: '#64748b', display: 'block' }}>Quang độ Thực PV:</span>
+                <span style={{ fontSize: '10px', color: '#64748b', display: 'block' }}>Ambient Lux (PV):</span>
                 <span style={{ fontSize: '16px', fontWeight: 800, color: '#0f172a', fontFamily: 'monospace' }}>{daylightLux} Lux</span>
               </div>
               <div style={{ padding: '8px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px' }}>
-                <span style={{ fontSize: '10px', color: '#64748b', display: 'block' }}>Ngưỡng Bật SP:</span>
+                <span style={{ fontSize: '10px', color: '#64748b', display: 'block' }}>Setpoint Threshold (SP):</span>
                 <span style={{ fontSize: '16px', fontWeight: 800, color: '#0284c7', fontFamily: 'monospace' }}>60 Lux</span>
               </div>
             </div>
@@ -467,12 +468,12 @@ function StreetLightScenario() {
           }}>
             {!isClosedLoop ? (
               isStormy && timeHour < 18 ? (
-                <span>❌ <strong>Nhược điểm Vòng Hở:</strong> Bão đen trời lúc ban ngày, nhưng bộ Timer vẫn chờ đúng 18h mới bật ➔ Đường phố tối đen nguy hiểm!</span>
+                <span>❌ <strong>Open-Loop Limitation:</strong> Thunderstorm plunges the street into darkness during daytime, but timer logic remains blind until 18:00 ➔ Hazardous blackout!</span>
               ) : (
-                <span>⚠️ <strong>Hệ Vòng Hở:</strong> Chạy theo kịch bản thời gian cố định. Không có khả năng tự khử nhiễu khi môi trường thay đổi.</span>
+                <span>⚠️ <strong>Open-Loop Architecture:</strong> Executes rigid schedule regardless of environmental changes. Cannot sense or reject unmodelled disturbances.</span>
               )
             ) : (
-              <span>✅ <strong>Ưu điểm Vòng Kín:</strong> Cảm biến LDR phát hiện ánh sáng tụt xuống &lt; 60 Lux ➔ PLC lập tức bật đèn tự động khử nhiễu thành công!</span>
+              <span>✅ <strong>Closed-Loop Advantage:</strong> LDR lux sensor detects ambient light dropping below 60 Lux ➔ PLC immediately energizes the streetlights to reject disturbance!</span>
             )}
           </div>
         </div>
@@ -514,7 +515,7 @@ function HeatingOvenScenario() {
             textAlign: 'center',
           }}
         >
-          ⚡ VÒNG HỞ: Công Suất Điện Trở Cố Định 50%
+          ⚡ Open-Loop: Fixed 50% Heating Power
         </button>
         <button
           onClick={() => setIsClosedLoop(true)}
@@ -530,7 +531,7 @@ function HeatingOvenScenario() {
             textAlign: 'center',
           }}
         >
-          📡 VÒNG KÍN: Cảm Biến PT100 + Thuật Toán PID Tự Động
+          📡 Closed-Loop: PT100 Sensor + PID Algorithm
         </button>
       </div>
 
@@ -552,7 +553,7 @@ function HeatingOvenScenario() {
               marginBottom: '12px',
             }}
           >
-            {doorOpen ? '🚪 Cửa Lò BỊ MỞ (Gió lạnh lùa vào làm sụt nhiệt)' : '🚪 Cửa Lò ĐANG ĐÓNG KÍN (Cách nhiệt tốt)'}
+            {doorOpen ? '🚪 Oven Door OPEN (Cold Draft Thermal Inrush)' : '🚪 Oven Door CLOSED (Optimal Enclosure Insulation)'}
           </button>
 
           <div style={{
@@ -569,7 +570,7 @@ function HeatingOvenScenario() {
               {temperature.toFixed(1)}°C
             </span>
             <span style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', fontWeight: 600 }}>
-              Nhiệt độ Đặt Mục tiêu (SP): {targetTemp}°C
+              Target Setpoint (SP): {targetTemp}°C
             </span>
           </div>
         </div>
@@ -578,17 +579,17 @@ function HeatingOvenScenario() {
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '10px' }}>
           <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '14px 16px' }}>
             <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
-              Phản ứng của Bộ Điều Khiển:
+              Controller Real-Time Response:
             </span>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               <div style={{ padding: '8px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px' }}>
-                <span style={{ fontSize: '10px', color: '#64748b', display: 'block' }}>Công Suất Gia Nhiệt:</span>
+                <span style={{ fontSize: '10px', color: '#64748b', display: 'block' }}>Heating Drive Output:</span>
                 <span style={{ fontSize: '16px', fontWeight: 800, color: '#d97706', fontFamily: 'monospace' }}>
-                  {!isClosedLoop ? '50% (Cố định)' : doorOpen ? '95% (Tăng áp)' : '52% (Ổn định)'}
+                  {!isClosedLoop ? '50% (Static)' : doorOpen ? '95% (High Drive)' : '52% (Steady)'}
                 </span>
               </div>
               <div style={{ padding: '8px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px' }}>
-                <span style={{ fontSize: '10px', color: '#64748b', display: 'block' }}>Sai Số e(t) = SP − PV:</span>
+                <span style={{ fontSize: '10px', color: '#64748b', display: 'block' }}>Control Error e(t) = SP − PV:</span>
                 <span style={{ fontSize: '16px', fontWeight: 800, color: '#0284c7', fontFamily: 'monospace' }}>
                   {(targetTemp - temperature).toFixed(1)}°C
                 </span>
@@ -619,12 +620,12 @@ function HeatingOvenScenario() {
           }}>
             {!isClosedLoop ? (
               doorOpen ? (
-                <span>❌ <strong>Thất bại khi mở cửa:</strong> Nhiệt độ tụt mạnh xuống {temperature}°C vì công suất 50% cố định không bù được nhiệt thất thoát!</span>
+                <span>❌ <strong>Open-Loop Collapse:</strong> Temperature falls drastically to {temperature}°C because static 50% power cannot compensate for cold draft heat losses!</span>
               ) : (
-                <span>⚠️ <strong>Vòng Hở:</strong> Không có cảm biến giám sát. Nếu điện lưới chập chờn hoặc phòng quá lạnh sẽ bị sai lệch nhiệt.</span>
+                <span>⚠️ <strong>Open-Loop Limitation:</strong> No feedback measurement. Mains voltage sag or ambient chills produce permanent steady-state temperature offsets.</span>
               )
             ) : (
-              <span>🎯 <strong>PID Vòng Kín Phản Ứng:</strong> Cảm biến PT100 báo nhiệt giảm ➔ PLC lập tức bơm công suất lên 95%, nhanh chóng đưa nhiệt độ về đúng 60°C!</span>
+              <span>🎯 <strong>Closed-Loop PID Response:</strong> PT100 senses the temperature drop ➔ PLC increases drive to 95%, swiftly restoring process temperature to 60.0°C!</span>
             )}
           </div>
         </div>
@@ -662,7 +663,7 @@ function Section1_3RelayVsPlcMiniAnimation() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#d97706', display: 'inline-block' }} />
           <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: '#0f172a', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-            So Sánh Kiến Trúc: Tủ Rơ Le Cố Định (Hardwired) vs Khả Trình PLC S7-1200
+            Architecture Comparison: Hardwired Relay Panel vs S7-1200 PLC
           </h4>
         </div>
         <button
@@ -679,7 +680,7 @@ function Section1_3RelayVsPlcMiniAnimation() {
             transition: 'all 0.15s ease',
           }}
         >
-          {testingChange ? '🔄 Khôi Phục Ban Đầu' : '⚡ Thử Nghiệm Đổi Yêu Cầu Công Nghệ'}
+          {testingChange ? '🔄 Reset Specification Baseline' : '⚡ Simulate Engineering Spec Change'}
         </button>
       </div>
 
@@ -693,12 +694,12 @@ function Section1_3RelayVsPlcMiniAnimation() {
           padding: '16px',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, color: '#b45309', marginBottom: '10px', fontSize: '13.5px' }}>
-            <span>🗄️</span> Tủ Điều Khiển Rơ Le Cố Định (Hardwired Relay)
+            <span>🗄️</span> Hardwired Relay Control Panel
           </div>
           <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '12.5px', color: '#78350f', lineHeight: 1.7, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <li>• <strong>Phương thức liên kết logic:</strong> Dây đồng vật lý đấu nối giữa cuộn hút & tiếp điểm.</li>
-            <li>• <strong>Độ tin cậy:</strong> Tiếp điểm cơ khí mòn cơ học, dễ phóng điện hồ quang làm rỗ tiếp điểm.</li>
-            <li>• <strong>Kích thước tủ:</strong> Tủ thép kích thước lớn (1200 × 800 mm) để chứa hàng chục rơ le & rơ le thời gian.</li>
+            <li>• <strong>Logic Interconnection:</strong> Rigid point-to-point copper wiring between coils and mechanical contacts.</li>
+            <li>• <strong>Reliability & MTBF:</strong> Mechanical contact wear, contact bounce, and electric arc pitting degrade contacts.</li>
+            <li>• <strong>Panel Enclosure:</strong> Heavy steel floor-standing enclosure (1200 × 800 mm) housing dozens of mechanical relays.</li>
           </ul>
           {testingChange && (
             <div style={{
@@ -711,7 +712,7 @@ function Section1_3RelayVsPlcMiniAnimation() {
               fontSize: '11.5px',
               lineHeight: 1.5,
             }}>
-              ⚠️ <strong>Hệ quả khi đổi công nghệ:</strong> Phải cắt nguồn toàn nhà máy, khoan cắt tủ, tháo lắp rơ le, đi lại toàn bộ dây đồng ➔ <strong>Ngừng máy 6–8 giờ</strong>, rủi ro đấu sai dây cực cao!
+              ⚠️ <strong>Impact of Spec Change:</strong> Full plant shutdown required, drilling enclosure, unstringing bundles, rewiring ➔ <strong>6–8 hours downtime</strong>, high risk of human wiring mistakes!
             </div>
           )}
         </div>
@@ -724,12 +725,12 @@ function Section1_3RelayVsPlcMiniAnimation() {
           padding: '16px',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, color: '#1d4ed8', marginBottom: '10px', fontSize: '13.5px' }}>
-            <span>💻</span> Hệ Thống Điều Khiển PLC Siemens S7-1200
+            <span>💻</span> Siemens SIMATIC S7-1200 PLC System
           </div>
           <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '12.5px', color: '#1e3a8a', lineHeight: 1.7, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <li>• <strong>Phương thức liên kết logic:</strong> Thuật toán phần mềm nạp trong bộ nhớ RAM/ROM của CPU.</li>
-            <li>• <strong>Độ tin cậy:</strong> Mạch bán dẫn thể rắn (Solid-State), tuổi thọ MTBF hàng trăm nghìn giờ.</li>
-            <li>• <strong>Kích thước tủ:</strong> Nhỏ gọn gắn thanh ray DIN TS35 (chỉ 110 × 100 mm), tiết kiệm 80% không gian.</li>
+            <li>• <strong>Logic Interconnection:</strong> Software algorithm executed in CPU RAM/work memory (OB1 cyclic evaluation).</li>
+            <li>• <strong>Reliability & MTBF:</strong> Solid-state microprocessor architecture with MTBF exceeding hundreds of thousands of hours.</li>
+            <li>• <strong>Panel Enclosure:</strong> Ultra-compact TS35 DIN-rail mounting (110 × 100 mm), reducing panel footprint by &gt;80%.</li>
           </ul>
           {testingChange && (
             <div style={{
@@ -742,7 +743,7 @@ function Section1_3RelayVsPlcMiniAnimation() {
               fontSize: '11.5px',
               lineHeight: 1.5,
             }}>
-              ✅ <strong>Hệ quả khi đổi công nghệ:</strong> Chỉ cần mở TIA Portal, sửa mạng lệnh Ladder / SCL và ấn Download xuống PLC trong <strong>5 giây</strong> ➔ Không cần chạm vào dây điện!
+              ✅ <strong>Impact of Spec Change:</strong> Simply open TIA Portal, modify Ladder / SCL networks, and download to PLC in <strong>5 seconds</strong> ➔ Zero physical rewiring required!
             </div>
           )}
         </div>
@@ -761,30 +762,30 @@ function Section1_8ScanCycleMiniAnimation() {
   const phases = [
     {
       num: 1,
-      title: 'Đọc Ngõ Vào',
+      title: 'Read Inputs',
       mem: 'DI ➔ PII',
-      desc: 'CPU quét tức thời toàn bộ chân đấu nối vật lý và ghi ảnh chụp vào Vùng Đệm Ngõ Vào (Process Image Input).',
+      desc: 'CPU scans all physical input channels simultaneously and snapshots their states into the Process Image Input (PII) table.',
       icon: '📥',
     },
     {
       num: 2,
-      title: 'Thực Thi Logic',
+      title: 'Execute Logic',
       mem: 'OB1 Evaluation',
-      desc: 'CPU chạy tuần tự từng Network lệnh trong chương trình người dùng từ trên xuống dưới theo giá trị PII.',
+      desc: 'CPU executes user program networks sequentially from top to bottom, evaluating rung logic based on static PII values.',
       icon: '⚙️',
     },
     {
       num: 3,
-      title: 'Truyền Thông & Tự Kiểm',
+      title: 'Comms & Diagnostics',
       mem: 'Comms & Diag',
-      desc: 'CPU xử lý trao đổi dữ liệu mạng PROFINET, giao tiếp màn hình HMI và tự chẩn đoán lỗi phần cứng.',
+      desc: 'CPU services PROFINET network exchanges, updates HMI graphic tags, and executes internal hardware self-diagnostics.',
       icon: '🛡️',
     },
     {
       num: 4,
-      title: 'Ghi Ngõ Ra',
+      title: 'Write Outputs',
       mem: 'PIQ ➔ DO',
-      desc: 'CPU đồng loạt sao chép toàn bộ Vùng Đệm Ngõ Ra (Process Image Output) ra các rơ le / transistor vật lý.',
+      desc: 'CPU copies the entire Process Image Output (PIQ) table to the physical output drivers (relays/transistors) concurrently.',
       icon: '📤',
     },
   ];
@@ -822,7 +823,7 @@ function Section1_8ScanCycleMiniAnimation() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} />
           <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: '#0f172a', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-            Chu Kỳ Quét Xác Định Của PLC (Deterministic Scan Cycle)
+            Deterministic PLC Scan Cycle Pipeline
           </h4>
         </div>
 
@@ -840,7 +841,7 @@ function Section1_8ScanCycleMiniAnimation() {
               cursor: 'pointer',
             }}
           >
-            {autoPlay ? '⏸ Tạm Dừng Quét' : '▶ Tự Động Quét'}
+            {autoPlay ? '⏸ Pause Scan' : '▶ Auto Cycle'}
           </button>
           <button
             onClick={() => {
@@ -858,7 +859,7 @@ function Section1_8ScanCycleMiniAnimation() {
               cursor: 'pointer',
             }}
           >
-            Bước Kế Tiếp ❯
+            Next Phase ❯
           </button>
         </div>
       </div>
@@ -912,7 +913,7 @@ function Section1_8ScanCycleMiniAnimation() {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
             <span style={{ fontSize: '10.5px', fontWeight: 800, color: '#0284c7', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Giai Đoạn Đang Thực Hiện: Bước {cur.num}/4
+              Active Execution Phase: Step {cur.num} of 4
             </span>
             <span style={{ fontSize: '11px', fontWeight: 800, color: '#0f172a', fontFamily: 'monospace' }}>
               {cur.mem}
@@ -931,10 +932,10 @@ function Section1_8ScanCycleMiniAnimation() {
           padding: '12px 16px',
         }}>
           <div style={{ fontSize: '10.5px', fontWeight: 800, color: '#b45309', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '6px' }}>
-            ⏱️ Đảm Bảo Tính Xác Định Thời Gian Thực
+            ⏱️ Deterministic Real-Time Guarantee
           </div>
           <p style={{ margin: 0, fontSize: '12px', color: '#78350f', lineHeight: 1.6 }}>
-            Thời gian quét chu kỳ $T_{'{scan}'}$ thường từ <strong>1 đến 10 ms</strong>. Lệnh chỉ đọc ảnh chụp PII cố định, tránh hiện tượng nhiễu rung tiếp điểm cơ khí.
+            Scan time $T_{'{scan}'}$ typically ranges from <strong>1 to 10 ms</strong>. Program logic evaluates static PII snapshots, completely immune to mechanical contact bounce during execution.
           </p>
         </div>
       </div>

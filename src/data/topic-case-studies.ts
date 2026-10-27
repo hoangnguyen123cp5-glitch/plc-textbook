@@ -1,7 +1,7 @@
 /**
  * Deep-dive Engineering Case Studies & Field Parameters
- * Specially crafted for LMS Lecture Recording (Video Bài Giảng Chuẩn Quốc Tế)
- * 100% relevant to each topic, providing rich, non-empty, broadcast-quality content.
+ * Specially crafted for LMS Lecture Recording (International University Curriculum)
+ * 100% relevant to each topic, providing rich, non-empty, broadcast-quality content in English.
  */
 
 export interface TopicCaseStudy {
@@ -16,151 +16,151 @@ export interface TopicCaseStudy {
 export const TOPIC_CASE_STUDIES: Record<string, TopicCaseStudy> = {
   // ── LESSON 01: PROGRAMMABLE CONTROL FUNDAMENTALS ──
   'control-system-basics': {
-    caseTitle: 'Ứng Dụng 5 Khối Cốt Lõi Trong Dây Chuyền Chiết Rót Nước Giải Khát Tự Động',
-    industryApplication: 'Dây chuyền chiết rót 120 chai/phút yêu cầu định lượng chính xác 500ml ± 2ml. Hệ thống phân chia rõ ràng 5 khối: Setpoint (500ml từ màn hình HMI), Cảm biến (Encoder đo góc trục quay + loadcell cân định lượng), Khâu so sánh (Tính sai số thể tích tức thời), Bộ điều khiển (PLC S7-1200 tính toán thời điểm ngắt van), Cơ cấu chấp hành (Van điện từ khí nén điều khiển piston hành trình).',
+    caseTitle: 'Application of the 5 Core Elements in High-Speed Beverage Bottling Lines',
+    industryApplication: 'A modern bottling facility operating at 120 bottles/minute requires precise volumetric filling of 500 ml ± 2 ml. The anatomical architecture delineates into the 5 universal building blocks: Reference Input / Setpoint (500 ml calibrated target via HMI), Measurement Element / Sensor (High-resolution optical neck detection sensor + dynamic loadcell), Error Detector / Comparator (Real-time deviation calculation e(t) = SP − PV), Controller (Siemens S7-1200 CPU executing cyclic logic algorithms), and Actuator (Pneumatic solenoid valve commanding the liquid dosing cylinder).',
     fieldHardware: [
-      'Bộ điều khiển: Siemens S7-1200 CPU 1214C DC/DC/DC',
-      'Cảm biến: Cảm biến quang thu phát Sick W16 + Loadcell HBM',
-      'Cơ cấu chấp hành: Van khí nén Festo VTUG + Xylanh định lượng',
-      'Tín hiệu giao tiếp: 24VDC PNP, 4–20 mA Analog, PROFINET',
+      'Controller: Siemens SIMATIC S7-1200 CPU 1214C DC/DC/DC',
+      'Sensors: Sick W16 Retro-reflective Optical Sensor + HBM Digital Loadcell',
+      'Actuator: Festo VTUG High-Speed Solenoid Valve & Guided Pneumatic Cylinder',
+      'Industrial Interfaces: 24VDC PNP Discrete I/O, 4–20 mA Analog, PROFINET RT',
     ],
-    keyFormulaOrMetric: 'Sai số điều khiển: e(t) = SP(t) − PV(t) | Thời gian đáp ứng ngắt < 2 ms',
-    commonPitfall: 'Nhầm lẫn giữa Cơ cấu chấp hành (Actuator) và Bộ điều khiển (PLC): PLC chỉ xử lý tín hiệu điều khiển công suất nhỏ (24VDC/0.5A), bắt buộc phải qua Rơ le trung gian/Khởi động từ/Biến tần để kéo tải công suất lớn.',
-    speakingCue: 'Giảng viên nhấn mạnh: Mọi hệ thống tự động hoá từ chiếc điều hoà gia đình đến nhà máy hoá chất đều quy về 5 khối này. PLC đóng vai trò là "Bộ điều khiển" thông minh ở giữa.',
+    keyFormulaOrMetric: 'Control Error Formulation: e(t) = SP(t) − PV(t) | Interrupt Response Time < 2 ms',
+    commonPitfall: 'Confusing the Actuator with the Controller: The PLC CPU is purely a low-power digital decision engine (0.5A/24VDC rating). It never directly drives heavy physical loads without interposing actuators such as contactors, variable frequency drives, or solid-state relays.',
+    speakingCue: 'Instructor Cue: Emphasize to students that whether examining a home bimetallic thermostat or an automated refinery, every control system maps directly onto these 5 universal functional blocks.',
   },
 
   'loop-types': {
-    caseTitle: 'Kiểm Soát Nhiệt Độ Lò Nung Thép Hợp Kim: Vòng Hở vs Vòng Kín PID',
-    industryApplication: 'Lò nung nhiệt luyện thép yêu cầu duy trì 850°C ± 2°C. Nếu dùng vòng hở (bật công suất 70% cố định), khi công nhân mở cửa lò đưa phôi lạnh vào sẽ làm nhiệt sụt 150°C mà hệ thống không hề biết ➔ Hỏng toàn bộ mẻ thép. Với vòng kín: Cặp nhiệt điện Type K đo PV thực tế đưa về PLC, khối PID_Compact tự động kích mở góc van khí đốt lên 95% để bù nhiệt tức thời.',
+    caseTitle: 'Thermal Heat Treatment Furnace: Open-Loop vs Closed-Loop PID Dynamics',
+    industryApplication: 'An industrial steel hardening furnace must maintain internal temperature at 850°C ± 2°C. Under open-loop control (static 70% thyristor firing angle on a timer schedule), when an operator opens the door to load cold alloy billets, temperature plunges by 150°C without the controller ever detecting the drop, ruining the entire metallurgy batch. In closed-loop mode, an Inconel-sheathed Type K thermocouple continuously transmits PV feedback to the S7-1200 PID_Compact block, which automatically boosts power to 95% to reject the thermal draft disturbance.',
     fieldHardware: [
-      'Cảm biến nhiệt độ: Can nhiệt Thermocouple K bọc Inconel (0–1200°C)',
-      'Module đọc tín hiệu: SM 1231 AI 4 × 16 bit cặp nhiệt',
-      'Cơ cấu chấp hành: Bộ điều áp Thyristor SCR / Van tỉ lệ Siemens VGD',
-      'Khối thuật toán: PID_Compact FB trong thư viện TIA Portal',
+      'Temperature Sensor: Inconel Mineral-Insulated Type K Thermocouple (0–1200°C)',
+      'Signal Module: Siemens SM 1231 AI 4 × 16-bit Thermocouple Card',
+      'Power Actuator: Eurotherm EPack SCR Power Controller / Proportional Gas Valve',
+      'Control Block: TIA Portal PID_Compact Technology Object with Anti-Windup',
     ],
-    keyFormulaOrMetric: 'u(t) = K_p · e(t) + K_i ∫ e(t)dt + K_d · [de(t)/dt]',
-    commonPitfall: 'Không phải hệ thống nào cũng cần vòng kín: với quạt thông gió nhà xưởng hoặc băng tải chạy tốc độ cố định, vòng hở theo lịch thời gian là lựa chọn kinh tế nhất, không lo dao động mất ổn định.',
-    speakingCue: 'Chỉ cho sinh viên thấy trên đồ thị: Vòng kín tự động khử nhiễu khi cửa lò mở, trong khi vòng hở bị sụt nhiệt nghiêm trọng không thể phục hồi.',
+    keyFormulaOrMetric: 'PID Equation: u(t) = K_p · e(t) + K_i ∫ e(t)dt + K_d · [de(t)/dt]',
+    commonPitfall: 'Assuming closed-loop is always superior: For non-critical loads with predictable dynamics (such as warehouse exhaust fans or timed conveyor purges), open-loop control remains the most cost-effective choice without feedback oscillation risks.',
+    speakingCue: 'Point out the live curve on the slide: Notice how closed-loop feedback instantly compensates when the draft occurs, whereas open-loop suffers permanent deviation.',
   },
 
   'hardwired-vs-programmable': {
-    caseTitle: 'Cải Tạo Tủ Rơ Le Dây Chuyền Ép Thân Xe Hơi GM Hydramatic Sang PLC',
-    industryApplication: 'Dây chuyền ép dập nguyên bản chứa hơn 2.000 rơ le cơ khí và công tắc hành trình. Mỗi khi nhà máy thay đổi thiết kế khung xe mới, đội ngũ thợ điện phải mất 3 tuần ngừng máy để tháo dỡ và đi lại hàng ngàn mét dây đồng. Khi chuyển sang PLC, toàn bộ dây đấu nối giữa rơ le biến thành dòng lệnh phần mềm trong bộ nhớ CPU; việc đổi khuôn chỉ cần 5 phút nạp chương trình mới qua mạng.',
+    caseTitle: 'Automotive Stamping Line Retrofit: Hardwired Relay Panel to S7-1200 PLC',
+    industryApplication: 'A legacy body stamping press line originally incorporated over 2,000 electromechanical control relays and mechanical timers spanning 3 massive steel enclosures. When plant retooling required a new stamping sequence for a redesigned car chassis, electricians endured 3 weeks of plant downtime to unmount relays, drill backplates, and trace thousands of copper jumpers. Following retrofit to an S7-1200 system, field wiring connects permanently to terminal strips once, and sequence re-tooling requires only a 5-minute software download via TIA Portal.',
     fieldHardware: [
-      'Tủ rơ le cũ: 2.000 Rơ le trung gian Omron MY4N, chiếm 3 tủ điện lớn',
-      'Hệ thống mới: 1 Rack PLC Siemens S7-1200 CPU 1215C + 6 Module SM 1223',
-      'Tiết kiệm không gian: Giảm 85% diện tích tủ điện và 70% điện năng tiêu thụ',
-      'Tuổi thọ MTBF: Tăng từ 2 năm (mòn tiếp điểm) lên 15 năm (linh kiện bán dẫn)',
+      'Legacy System: 2,000 Omron MY4N Control Relays (requiring 3 large 1200×800mm cabinets)',
+      'Modern System: 1 DIN-rail rack with S7-1200 CPU 1215C + 6 × SM 1223 I/O Modules',
+      'Physical Footprint: 85% reduction in panel enclosure space; 70% power savings',
+      'Component Lifespan: Extended from 10^6 duty cycles (relay contact wear) to 15+ years solid-state MTBF',
     ],
-    keyFormulaOrMetric: 'Thời gian ngừng máy (Downtime): Giảm từ 3 tuần (504 giờ) xuống còn 5 phút (0.08 giờ)',
-    commonPitfall: 'Tiếp điểm cơ khí của rơ le bị hồ quang điện làm rỗ tiếp điểm sau khoảng 100.000 đến 1 triệu lần đóng cắt, gây ra lỗi chập chờn rất khó dò bằng đồng hồ đo.',
-    speakingCue: 'Giảng viên phân tích bài toán kinh tế: Chi phí mua PLC đắt hơn vài rơ le, nhưng chi phí dừng máy 1 ngày trong nhà máy ô tô có thể lên đến hàng trăm ngàn USD.',
+    keyFormulaOrMetric: 'Production Downtime: Slashed from 504 hours (3 weeks) to 0.08 hours (5 minutes)',
+    commonPitfall: 'Mechanical relay contacts suffer from contact bounce, contact pitting, and arc erosion over time, leading to intermittent, hard-to-diagnose field faults that multimeter continuity tests often miss.',
+    speakingCue: 'Explain the economic driver: While a PLC CPU has a higher upfront cost than a handful of relays, eliminating a single day of automotive plant downtime saves hundreds of thousands of dollars.',
   },
 
   'why-plc': {
-    caseTitle: 'Điều Khiển Luân Phiên & Dự Phòng Bơm Tuần Hoàn Nhà Máy Xử Lý Nước Thải',
-    industryApplication: 'Trạm bơm gồm 3 máy bơm 45kW luân phiên chạy theo giờ tích luỹ (để các bơm mòn đều nhau) và tự động gọi bơm dự phòng khi bơm chính báo lỗi quá tải. Làm mạch này bằng rơ le và bộ đếm thời gian cơ học cực kỳ phức tạp và dễ nhầm lẫn. Với PLC S7-1200, kỹ sư sử dụng hàm đếm thời gian chạy máy (Runtime Counter) và so sánh tự động trong vài dòng lệnh LAD/SCL.',
+    caseTitle: 'Automated Alternation & Duty Cycling for Wastewater Treatment Pumps',
+    industryApplication: 'A wastewater pumping station utilizes three 45 kW centrifugal pumps operating in rotation to ensure equal wear distribution (runtime balancing), with automatic cut-in of a standby pump during high-inflow storms or pump failure. Implementing runtime hour tracking and automatic fault handover with hardwired mechanical relays and drum timers requires dozens of interconnecting relays. With an S7-1200 PLC, runtime hour counters (TON/TOF) and comparison blocks in software handle the alternation logic seamlessly.',
     fieldHardware: [
-      'Bơm ly tâm công nghiệp 45kW + Khởi động mềm / Biến tần V20',
-      'Rơ le nhiệt bảo vệ quá tải đưa tiếp điểm cảnh báo vào ngõ vào DI',
-      'Cảm biến áp suất đường ống Danfoss MBS 3000 (4–20 mA đưa vào AI)',
-      'Màn hình cảm ứng HMI KTP700 Basic hiển thị số giờ chạy từng bơm',
+      'Pumping Plant: 3 × 45 kW Heavy-Duty Submersible Centrifugal Pumps',
+      'Motor Control: Siemens SINAMICS V20 VFDs / 3RW Soft Starters with Safe Torque Off',
+      'Telemetry: Danfoss MBS 3000 Pressure Transmitter (4–20 mA loop to SM 1231 AI)',
+      'Operator Interface: SIMATIC HMI KTP700 Basic displaying running hours per pump',
     ],
-    keyFormulaOrMetric: 'Giờ vận hành: Runtime_Pump = Σ(T_on) | Bơm có Runtime nhỏ nhất được ưu tiên chạy',
-    commonPitfall: 'Đấu rơ le cơ khí truyền thống không thể tính được giờ chạy tích luỹ khi mất điện, trong khi PLC lưu giá trị giờ chạy vào vùng nhớ Retentive Memory an toàn.',
-    speakingCue: 'Giải thích cho người học thấy tính linh hoạt của phần mềm: Thay vì tháo tủ điện để đổi luật luân phiên từ 8 tiếng sang 12 tiếng, ta chỉ cần chỉnh thông số trên màn hình HMI.',
+    keyFormulaOrMetric: 'Runtime Alternation: Runtime_Pump = Σ(T_on) | Priority allocated to min(Runtime_i)',
+    commonPitfall: 'Hardwired relays cannot retain runtime counters across utility power outages. An S7-1200 stores these values in non-volatile Retentive Memory, preventing counter reset.',
+    speakingCue: 'Highlight the software advantage: Changing alternation intervals from 8 hours to 12 hours requires only a parameter adjustment on the HMI screen rather than rewiring timer relays.',
   },
 
   'defining-plc': {
-    caseTitle: '10 Tiêu Chuẩn Thiết Kế GM Hydramatic 1968 Khai Sinh Ra PLC Đầu Tiên',
-    industryApplication: 'Năm 1968, hãng xe General Motors đưa ra bản đặc tả gồm 10 yêu cầu kỹ thuật: Dễ lập trình bởi kỹ thuật viên không rành máy tính; Lập trình dạng tiếp điểm rơ le quen thuộc; Không chứa linh kiện mòn cơ học; Làm việc tin cậy trong môi trường công nghiệp đầy bụi bẩn và xung điện; Kích thước nhỏ gọn; Giá thành cạnh tranh. Kỹ sư Dick Morley đã sáng chế ra Modicon 084 đáp ứng toàn bộ các tiêu chí này.',
+    caseTitle: 'The 1968 GM Hydramatic Specification: Birth of the Industrial PLC Standard',
+    industryApplication: 'In 1968, General Motors\' Hydramatic Division published a 10-point technical tender seeking a solid-state electronic replacement for relay panels: easy programming without computer specialist retraining; program changes without wiring alterations; compact footprint; lower cost; and robust operation in oily, dusty, electrically noisy plant floor environments. Dick Morley\'s breakthrough design—the Modicon 084—fulfilled all criteria and established the modern PLC standard governed today by NEMA ICS 3 and IEC 61131.',
     fieldHardware: [
-      'Chuẩn quốc tế: NEMA ICS 3-1978 & IEC 61131-1',
-      'Môi trường hoạt động: Nhiệt độ 0–60°C, độ ẩm 95% không ngưng tụ',
-      'Cách ly điện áp: Optocoupler cách ly quang ngõ vào/ngõ ra lên tới 500V–1500V',
-      'Khung vỏ: Nhựa ABS/Polycarbonate chống cháy chuẩn UL 94 V-0',
+      'International Standards: NEMA ICS 3-1978 & IEC 61131-1',
+      'Operating Environment: 0°C to +60°C ambient, 95% non-condensing relative humidity',
+      'Galvanic Isolation: Optocouplers rated for 500V–1500V dielectric isolation',
+      'Enclosure Rating: Heavy-duty flame-retardant ABS/polycarbonate housing meeting UL 94 V-0',
     ],
-    keyFormulaOrMetric: 'Định nghĩa NEMA: Digital Apparatus + Programmable Memory + Industrial I/O Modules',
-    commonPitfall: 'Nhầm lẫn PLC với máy tính vi tính thông thường (PC/Arduino): PC văn phòng sẽ treo máy hoặc cháy chip chỉ sau vài ngày trong nhà máy do sốc điện cảm kháng từ contactor và bụi kim loại.',
-    speakingCue: 'Nhấn mạnh 3 từ khoá vàng trong định nghĩa: "Thiết bị số", "Khả trình (đổi bằng phần mềm)", "Môi trường công nghiệp".',
+    keyFormulaOrMetric: 'NEMA Definition: Digital Electronic Apparatus + Programmable Memory + Modular I/O',
+    commonPitfall: 'Confusing a PLC with a commercial PC or hobbyist micro-controller: Office PCs and micro-controllers fail quickly in industrial environments due to lack of optical isolation, noise suppression, and environmental sealing.',
+    speakingCue: 'Emphasize the 3 key pillars of the definition: Digitally operating, programmable internal memory, and purpose-built for harsh plant floor conditions.',
   },
 
   'plc-structure': {
-    caseTitle: 'Cơ Chế Lọc Nhiễu & Cách Ly Quang 500V Trong Khối Ngõ Vào Số (DI)',
-    industryApplication: 'Khi dây tín hiệu từ nút nhấn dài 100m chạy qua máng cáp song song với dây động lực 380VAC của động cơ, hiện tượng cảm ứng điện từ tạo ra các gai điện áp lên tới hàng trăm Volt. Khối DI của S7-1200 bảo vệ CPU nhờ 3 tầng: 1. Mạch cầu diode chống ngược cực tính; 2. Tầng lọc RC triệt tiêu xung gai tần số cao và chống rung tiếp điểm cơ học (Filter time 3.2ms); 3. Cặp cách ly quang (Optocoupler) truyền tín hiệu bằng tia hồng ngoại.',
+    caseTitle: 'Optical Isolation & 500V Noise Suppression in S7-1200 Digital Input Channels',
+    industryApplication: 'Field sensor cables running through cable trays alongside 400VAC variable frequency drive motor leads pick up massive inductive spikes and electromagnetic interference. The S7-1200 digital input stage protects the CPU microprocessor through a robust 3-stage defense: 1. Bridge diode polarity protection; 2. Configurable RC hardware filter suppressing contact bounce and high-frequency noise spikes; 3. Optocoupler (phototransistor) that converts electrical pulses into light and back, creating an impenetrable 500VAC electrical barrier.',
     fieldHardware: [
-      'Nguồn nuôi nội bộ: Bộ nguồn xung SMPS tạo điện áp 5VDC và 3.3VDC cho CPU',
-      'Cách ly quang: Optocoupler Vishay/Toshiba cách ly an toàn 500VAC',
-      'Đệm ngõ ra: Relay Omron 2A hoặc Transistor MOSFET Infineon tốc độ cao',
-      'Bus nội bộ: Đường truyền song song Address Bus, Data Bus, Control Bus',
+      'Internal Power: Switched-mode power supply generating clean 5VDC and 3.3VDC logic rails',
+      'Galvanic Isolation: Vishay/Toshiba industrial optocouplers with 500VAC isolation rating',
+      'Output Stage: Omron 2A mechanical relays or Infineon high-speed MOSFET solid-state switches',
+      'Backplane Bus: High-speed synchronized Address, Data, and Control buses',
     ],
-    keyFormulaOrMetric: 'Thời gian trễ lọc ngõ vào T_filter: Cài đặt từ 0.1 μs đến 20.0 ms trong Hardware Config',
-    commonPitfall: 'Nếu chọn bộ lọc DI quá nhanh (0.1μs) cho nút nhấn cơ khí, hiện tượng nảy tiếp điểm (contact bounce) sẽ khiến PLC đếm nhầm 1 lần nhấn thành 10 lần!',
-    speakingCue: 'Chỉ rõ trên slide các khối cấu trúc bên trong CPU 1214C: Nguồn điện ➔ Cách ly quang ➔ Vi xử lý ➔ Transistor/Relay đệm.',
+    keyFormulaOrMetric: 'Digital Input Filter Delay T_filter: Configurable from 0.1 μs to 20.0 ms in TIA Portal',
+    commonPitfall: 'Setting the input filter time too low (e.g. 0.1 μs) on mechanical pushbuttons causes contact bounce to register as multiple false trigger pulses. Mechanical buttons require 3.2 ms filtering.',
+    speakingCue: 'Trace the signal path on the slide: Field Terminal ➔ Input Protection ➔ Optical Barrier ➔ Processor Core ➔ Bus Driver.',
   },
 
   'memory-and-leds': {
-    caseTitle: 'Phân Vùng Bộ Nhớ S7-1200 & Cơ Chế Giữ Dữ Liệu Retentive Bằng Siêu Tụ',
-    industryApplication: 'Một hệ thống cân pha trộn sơn tự động đang trộn giữa chừng thì nhà máy mất điện lưới đột ngột. Nếu không cấu hình Retentive Memory, khi có điện lại biến đếm khối lượng sẽ bị reset về 0, gây tràn bể sơn hoặc sai công thức hàng tỉ đồng. S7-1200 sử dụng siêu tụ điện (Supercapacitor) duy trì nguồn cho chip nhớ NVRAM lưu giữ toàn bộ dữ liệu quan trọng tối thiểu 20 ngày mà không cần thay pin bảo dưỡng.',
+    caseTitle: 'S7-1200 Memory Organization & Supercapacitor Retentive Memory Architecture',
+    industryApplication: 'In a chemical batch reactor, utility power failure occurs midway through a 6-hour synthesis cycle. Without configured retentive memory, all recipe setpoints, batch timer elapsed values, and ingredient weights reset to zero upon power restoration, forcing scrap of a multi-thousand-dollar batch. The S7-1200 features a maintenance-free supercapacitor that powers on-chip NVRAM, preserving up to 10 KB of designated retentive tags for over 20 days without requiring battery replacement.',
     fieldHardware: [
-      'Load Memory: Bộ nhớ Flash ROM không mất dữ liệu (1MB tích hợp, mở rộng thẻ SMC 24MB)',
-      'Work Memory: RAM tốc độ cao (50KB–150KB) để CPU thực thi logic thời gian thực',
-      'Retentive Memory: Bộ nhớ lưu trữ an toàn (10KB) backed-up bằng tụ điện',
-      'Diagnostic LEDs: RUN/STOP (Xanh/Vàng), ERROR (Đỏ nhấp nháy), MAINT (Vàng bảo trì)',
+      'Load Memory: Non-volatile Flash ROM storing compiled code, symbolic tags, and comments (1 MB to 24 MB SMC)',
+      'Work Memory: Volatile ultra-fast RAM (50 KB–150 KB) where CPU executes real-time code',
+      'Retentive Memory: Supercapacitor-backed NVRAM preserving critical batch process values',
+      'Diagnostic Telemetry: Front panel RUN/STOP, ERROR, and MAINT status indicator LEDs',
     ],
-    keyFormulaOrMetric: 'Thời gian giữ dữ liệu Retentive: > 20 ngày ở 40°C không cần pin phụ trợ',
-    commonPitfall: 'Chỉ các biến được tích chọn cờ "Retain" trong Data Block (DB) hoặc Memory Marker (M) mới được giữ lại sau khi tắt nguồn. Mặc định các biến khác sẽ tự reset về 0!',
-    speakingCue: 'Hướng dẫn sinh viên cách nhìn đèn LED trên mặt trước CPU để bắt bệnh nhanh: Đèn ERROR đỏ nháy nghĩa là CPU vẫn sống nhưng có lỗi chương trình hoặc đứt dây I/O.',
+    keyFormulaOrMetric: 'Retentive Data Hold Time: > 20 days at 40°C ambient without battery replacement',
+    commonPitfall: 'Only tags explicitly flagged as "Retain" in Data Blocks (DBs) or bit memory (M) survive power cycles. Unchecked variables default to their initial start values on CPU restart!',
+    speakingCue: 'Teach students how to read the front LEDs for rapid troubleshooting: Flashing red ERROR means the CPU is operational but has detected an I/O fault or programming error in the Diagnostic Buffer.',
   },
 
   'scan-cycle': {
-    caseTitle: 'Hiện Tượng Bất Đồng Bộ Dữ Liệu Nếu Không Có Vùng Đệm Process Image (PII/PIQ)',
-    industryApplication: 'Giả sử trong một chu kỳ quét dài 5ms, chương trình đọc tiếp điểm nút nhấn khẩn cấp ở Network 1 (thấy đang đóng - OK), nhưng đến Network 50 thì nút nhấn bị ngắt. Nếu CPU đọc trực tiếp chân vật lý, các lệnh phía sau sẽ nhận trạng thái mâu thuẫn với các lệnh phía trước. Chu kỳ quét của PLC giải quyết triệt để vấn đề này: Đầu chu kỳ, CPU "chụp ảnh" tức thời toàn bộ ngõ vào vào bảng PII; trong suốt chu kỳ quét, tất cả network chỉ đọc ảnh chụp PII cố định.',
+    caseTitle: 'Eliminating Race Conditions via Process Image Input/Output (PII / PIQ) Buffers',
+    industryApplication: 'If a PLC read physical hardware input pins continuously during program execution, an emergency stop button released midway through a 5 ms scan would result in Network 1 evaluating the button as pressed (STOP), while Network 50 evaluated it as released (RUN), creating severe operational race conditions. The deterministic PLC scan cycle eliminates this risk: At the start of the scan, the CPU takes an instantaneous snapshot of all physical inputs into the Process Image Input (PII) table; all logic rungs evaluate against this consistent snapshot throughout the cycle.',
     fieldHardware: [
-      'Giai đoạn 1: Đọc ngõ vào DI vật lý ➔ Nạp vào Vùng đệm Process Image Input (PII)',
-      'Giai đoạn 2: Thực thi tuần tự các khối lệnh người dùng (OB1, FB, FC) từ trên xuống dưới',
-      'Giai đoạn 3: Xử lý truyền thông mạng PROFINET, giao tiếp màn hình HMI, tự chẩn đoán',
-      'Giai đoạn 4: Đồng loạt xuất Vùng đệm Process Image Output (PIQ) ra ngõ ra DO vật lý',
+      'Phase 1: Read physical input terminals ➔ Update Process Image Input (PII) table',
+      'Phase 2: Execute user program sequentially top-to-bottom (OB1, FC, FB)',
+      'Phase 3: Execute internal housekeeping, PROFINET network communications, and diagnostics',
+      'Phase 4: Write Process Image Output (PIQ) table simultaneously to physical output terminals',
     ],
-    keyFormulaOrMetric: 'Chu kỳ quét tổng: T_scan = T_read + T_exec + T_comm + T_write (Thường từ 1 đến 5 ms)',
-    commonPitfall: 'Lỗi ghi đè ngõ ra: Nếu dùng cuộn coil %Q0.0 ở 2 Network khác nhau, trạng thái ngõ ra vật lý sẽ luôn tuân theo Network cuối cùng vì PIQ chỉ cập nhật ra ngoài ở cuối chu kỳ!',
-    speakingCue: 'Nhấn mạnh với sinh viên: 90% lỗi của người mới học PLC bắt nguồn từ việc không hiểu nguyên lý chu kỳ quét và hiểu lầm PLC chạy giống mã C/Python trên máy tính.',
+    keyFormulaOrMetric: 'Total Scan Cycle Time: T_scan = T_read + T_exec + T_comm + T_write (Typically 1–5 ms)',
+    commonPitfall: 'The Double Coil Fault: If output %Q0.0 is assigned to coils in two different rungs, the physical output will ALWAYS follow the state of the final rung, because physical outputs only update from PIQ at the end of the scan.',
+    speakingCue: 'Emphasize to students: 90% of beginner PLC bugs stem from treating PLC ladder execution like sequential C/Python scripting rather than a cyclic deterministic scan.',
   },
 
   'languages-structure': {
-    caseTitle: 'Ma Trận Quyết Định Lựa Chọn 5 Ngôn Ngữ IEC 61131-3 Trong Dự Án Nhà Máy',
-    industryApplication: 'Một hệ thống tự động hoá hoàn chỉnh không bao giờ chỉ dùng 1 ngôn ngữ: Mạch khởi động động cơ và liên động an toàn cửa bảo vệ được viết bằng LAD (Ladder Diagram) để thợ điện dễ đọc; Thuật toán điều khiển nhiệt độ PID và lọc nhiễu tín hiệu được viết bằng FBD; Thuật toán tính toán toạ độ robot, công thức hoá học và xử lý chuỗi mã vạch barcode bắt buộc viết bằng SCL (Structured Text); Trình tự chiết rót 8 bước viết bằng SFC.',
+    caseTitle: 'Industrial Decision Matrix for the 5 Standardized IEC 61131-3 Languages',
+    industryApplication: 'Complex automation systems rarely rely on a single programming language. Machine safety interlocks, start/stop motor circuits, and simple discrete sequencing are implemented in Ladder Diagram (LAD) for plant electrician accessibility; continuous analog signal conditioning and closed-loop PID control utilize Function Block Diagram (FBD); mathematical calculations, array sorting, and ASCII barcode string parsing are written in Structured Control Language (SCL / Structured Text); multi-stage sequential batch processes utilize Sequential Function Chart (SFC).',
     fieldHardware: [
-      'LAD (Ladder Diagram): Trực quan, dựa trên sơ đồ rơ le tiếp điểm công nghiệp',
-      'FBD (Function Block Diagram): Dạng khối hộp logic toán học và điều khiển quá trình',
-      'SCL (Structured Control Language): Ngôn ngữ bậc cao cú pháp tựa Pascal / C',
-      'STL (Statement List): Hợp ngữ thanh ghi (chỉ còn dùng trên S7-300/400 cũ)',
-      'SFC (Sequential Function Chart): Lưu đồ trạng thái tuần tự cho hệ thống mẻ Batch',
+      'LAD (Ladder Diagram): Graphical language modeled after electromechanical relay schematics',
+      'FBD (Function Block Diagram): Block-oriented language modeled after logic gate diagrams',
+      'SCL (Structured Control Language): High-level text language with Pascal/C-like syntax',
+      'STL (Statement List): Low-level accumulator-based assembly language (legacy S7-300)',
+      'SFC (Sequential Function Chart): State-transition graphical language for sequential workflows',
     ],
-    keyFormulaOrMetric: 'Quy tắc vàng: Logic đóng cắt tiếp điểm ➔ Dùng LAD | Tính toán số học & mảng ➔ Dùng SCL',
-    commonPitfall: 'Cố gắng viết thuật toán tính ma trận hoặc vòng lặp For phức tạp bằng ngôn ngữ Ladder (LAD) sẽ dẫn đến hàng trăm Network rối rắm, cực kỳ khó bảo trì so với vài dòng mã SCL.',
-    speakingCue: 'Chỉ cho người học thấy xu hướng công nghiệp 4.0: S7-1200 và TIA Portal cho phép trộn lẫn các khối LAD và SCL trong cùng một project để tối ưu hoá thế mạnh của từng ngôn ngữ.',
+    keyFormulaOrMetric: 'Engineering Rule of Thumb: Contact interlocks ➔ LAD | Math & Data Arrays ➔ SCL',
+    commonPitfall: 'Attempting to implement complex math formulas or loops (FOR / WHILE) in Ladder Diagram results in dozens of convoluted rungs that are virtually impossible to debug compared to 5 clean lines of SCL.',
+    speakingCue: 'Show students the modern TIA Portal paradigm: In modern S7-1200 and S7-1500 engineering, LAD and SCL blocks are combined within the same project to leverage the strengths of each language.',
   },
 };
 
 /**
- * Fallback generator for other lessons to ensure rich, non-empty content
+ * Fallback generator for other lessons to ensure rich, non-empty content in English
  */
 export function getTopicCaseStudy(lessonSlug: string, topicSlug: string, topicTitle: string): TopicCaseStudy {
   const specific = TOPIC_CASE_STUDIES[topicSlug];
   if (specific) return specific;
 
   return {
-    caseTitle: `Nghiên Cứu Kỹ Thuật Công Nghiệp: ${topicTitle}`,
-    industryApplication: `Ứng dụng chuyên đề "${topicTitle}" trong hệ thống điều khiển tự động hoá công nghiệp thực tế. Quy chuẩn vận hành đòi hỏi đồng bộ tín hiệu thời gian thực, khử nhiễu điện từ và đảm bảo an toàn vận hành liên tục 24/7 theo tiêu chuẩn IEC 61131.`,
+    caseTitle: `Industrial Engineering Case Study: ${topicTitle}`,
+    industryApplication: `Real-world industrial deployment of "${topicTitle}" in automated manufacturing plants. Operational specifications mandate real-time signal synchronization, electromagnetic noise suppression, and failsafe 24/7 reliability in accordance with IEC 61131-3 standards.`,
     fieldHardware: [
-      'Thiết bị điều khiển: Siemens SIMATIC S7-1200 / S7-300 PLC',
-      'Chuẩn tín hiệu: 24VDC Digital, 4–20 mA Analog, PROFINET Industrial Ethernet',
-      'Môi trường công nghiệp: Chống rung động, cách ly quang chống xung sét cảm ứng',
-      'Môi trường lập trình: TIA Portal V18/V19 (Totally Integrated Automation)',
+      'Controller: Siemens SIMATIC S7-1200 / S7-300 Modular PLC',
+      'Field Signals: 24VDC Digital I/O, 4–20 mA Analog Loops, PROFINET Industrial Ethernet',
+      'Enclosure: DIN-rail mounted with isolated PE grounding and optocoupler isolation',
+      'Engineering Suite: Siemens TIA Portal V18/V19 (Totally Integrated Automation)',
     ],
-    keyFormulaOrMetric: 'Chu kỳ quét vòng lặp điều khiển: 1–10 ms | Độ tin cậy MTBF > 100.000 giờ',
-    commonPitfall: 'Luôn kiểm tra sơ đồ đấu nối và tính tương thích mức điện áp logic trước khi đấu dây thực tế vào các chân terminal của module PLC.',
-    speakingCue: `Giảng viên hướng dẫn sinh viên phân tích nguyên lý hoạt động cốt lõi của chuyên đề "${topicTitle}", chỉ dẫn cách cấu hình trong TIA Portal và các lưu ý an toàn thực địa.`,
+    keyFormulaOrMetric: 'Control Loop Execution Scan Time: 1–10 ms | Field MTBF > 100,000 Hours',
+    commonPitfall: 'Always verify terminal wiring schematics, polarity, and signal voltage compatibility before applying line power to PLC hardware expansion modules.',
+    speakingCue: `Instructor Guidance: Walk students through the core engineering principle of "${topicTitle}", demonstrate live TIA Portal configuration, and highlight field safety best practices.`,
   };
 }
