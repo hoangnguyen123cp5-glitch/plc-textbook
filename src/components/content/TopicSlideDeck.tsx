@@ -56,19 +56,21 @@ export default function TopicSlideDeck({
   const router = useRouter();
   const slideRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [studioMode, setStudioMode] = useState(false); // LMS Recording Studio Mode
   const [zoomImage, setZoomImage] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0); // 0: Overview, 1: Key Points, 2: Lab Notes, 3: Simulator, 4: Quiz
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [simulatorLayout, setSimulatorLayout] = useState<'split' | 'full'>('split'); // Split with Telemetry or Full Width
 
   const prevTopic = topics[currentIndex - 1] ?? null;
   const nextTopic = topics[currentIndex + 1] ?? null;
 
   const SLIDE_TABS = [
-    { id: 0, label: 'Overview & Schematic', shortLabel: 'Overview', icon: '📊' },
-    { id: 1, label: 'Key Engineering Points', shortLabel: 'Key Points', icon: '💡' },
-    { id: 2, label: 'Technical Lab Notes', shortLabel: 'Lab Notes', icon: '📖' },
-    { id: 3, label: 'Live Simulator', shortLabel: 'Simulator', icon: '⚡' },
-    { id: 4, label: 'Knowledge Check Quiz', shortLabel: 'Quiz', icon: '📝' },
+    { id: 0, label: 'Tổng Quan & Sơ Đồ', shortLabel: '1. Sơ Đồ', icon: '📊' },
+    { id: 1, label: 'Trọng Tâm Kỹ Thuật', shortLabel: '2. Trọng Tâm', icon: '💡' },
+    { id: 2, label: 'Ghi Chú Lab & Tiêu Chuẩn', shortLabel: '3. Ghi Chú Lab', icon: '📖' },
+    { id: 3, label: 'Thực Hành Mô Phỏng Ảo', shortLabel: '4. Mô Phỏng Lab', icon: '⚡' },
+    { id: 4, label: 'Micro-Quiz Đánh Giá', shortLabel: '5. Micro-Quiz', icon: '📝' },
   ];
 
   // Navigate to previous slide or previous topic
@@ -105,6 +107,9 @@ export default function TopicSlideDeck({
       } else if (e.key.toLowerCase() === 'f') {
         e.preventDefault();
         toggleFullscreen();
+      } else if (e.key.toLowerCase() === 'r') {
+        e.preventDefault();
+        setStudioMode(prev => !prev);
       } else if (e.key.toLowerCase() === 't') {
         e.preventDefault();
         setDrawerOpen(prev => !prev);
@@ -118,6 +123,8 @@ export default function TopicSlideDeck({
           setZoomImage(false);
         } else if (drawerOpen) {
           setDrawerOpen(false);
+        } else if (studioMode) {
+          setStudioMode(false);
         } else if (isFullscreen) {
           setIsFullscreen(false);
         }
@@ -126,7 +133,7 @@ export default function TopicSlideDeck({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentSlide, prevTopic, nextTopic, isFullscreen, zoomImage, drawerOpen, lessonSlug]);
+  }, [currentSlide, prevTopic, nextTopic, isFullscreen, studioMode, zoomImage, drawerOpen, lessonSlug]);
 
   const toggleFullscreen = () => {
     if (!isFullscreen) {
@@ -150,142 +157,121 @@ export default function TopicSlideDeck({
     return () => document.removeEventListener('fullscreenchange', handleFsChange);
   }, []);
 
-  const progressPercentage = ((currentSlide + 1) / SLIDE_TABS.length) * 100;
+  const isLMSDisplay = studioMode || isFullscreen;
 
   return (
     <div
       ref={slideRef}
       style={{
-        background: isFullscreen ? '#f1f5f9' : '#ffffff',
-        border: isFullscreen ? 'none' : '1px solid #e2e8f0',
-        borderRadius: isFullscreen ? 0 : '16px',
-        boxShadow: isFullscreen ? 'none' : '0 8px 30px rgba(0,0,0,0.06)',
-        overflow: 'hidden',
+        width: '100%',
+        maxWidth: isLMSDisplay ? '100vw' : '1440px',
+        margin: '0 auto',
+        height: isLMSDisplay ? '100vh' : 'calc(100vh - 90px)',
+        minHeight: '620px',
+        maxHeight: isLMSDisplay ? '100vh' : '920px',
+        background: '#ffffff',
+        borderRadius: isLMSDisplay ? '0px' : '14px',
+        border: isLMSDisplay ? 'none' : '1.5px solid #cbd5e1',
+        boxShadow: isLMSDisplay ? 'none' : '0 10px 30px rgba(0, 0, 0, 0.05)',
         display: 'flex',
         flexDirection: 'column',
-        position: isFullscreen ? 'fixed' : 'relative',
-        top: isFullscreen ? 0 : 'auto',
-        left: isFullscreen ? 0 : 'auto',
-        width: isFullscreen ? '100vw' : '100%',
-        height: isFullscreen ? '100vh' : 'calc(100vh - 96px)',
-        minHeight: isFullscreen ? '100vh' : '620px',
-        maxHeight: isFullscreen ? '100vh' : '920px',
-        zIndex: isFullscreen ? 99999 : 10,
+        overflow: 'hidden',
+        position: isLMSDisplay ? 'fixed' : 'relative',
+        top: isLMSDisplay ? 0 : 'auto',
+        left: isLMSDisplay ? 0 : 'auto',
+        zIndex: isLMSDisplay ? 9999 : 1,
         fontFamily: 'system-ui, -apple-system, sans-serif',
-        transition: 'all 0.2s ease',
       }}
     >
-      {/* ── Slide Progress Bar (Top Accent) ── */}
-      <div style={{ width: '100%', height: '3px', background: '#e2e8f0', flexShrink: 0 }}>
+      {/* ── Top 3px Progress Line ── */}
+      <div style={{ height: '3.5px', width: '100%', background: '#e2e8f0', flexShrink: 0 }}>
         <div
           style={{
-            width: `${progressPercentage}%`,
             height: '100%',
-            background: color,
-            transition: 'width 0.25s ease',
+            width: `${((currentSlide + 1) / SLIDE_TABS.length) * 100}%`,
+            background: `linear-gradient(90deg, ${color}, #0284c7)`,
+            transition: 'width 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
           }}
         />
       </div>
 
-      {/* ── Top Header Bar: Light, crisp, academic ── */}
+      {/* ── Top Header Bar: Clean LMS Academic Presentation Header ── */}
       <div
         style={{
-          padding: '10px 24px',
-          background: '#ffffff',
-          borderBottom: '1px solid #e2e8f0',
+          padding: isLMSDisplay ? '12px 28px' : '10px 24px',
+          background: isLMSDisplay ? '#0f172a' : '#ffffff',
+          color: isLMSDisplay ? '#ffffff' : '#0f172a',
+          borderBottom: isLMSDisplay ? '2px solid #0284c7' : '1px solid #e2e8f0',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
           gap: '10px',
           flexShrink: 0,
+          transition: 'all 0.2s ease',
         }}
       >
-        {/* Left: Breadcrumb / Topic Info */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '18px' }}>{lessonIcon}</span>
-          <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', color: color, textTransform: 'uppercase' }}>
-            {courseCode} · {lessonTitle}
-          </span>
-          <span style={{ color: '#cbd5e1' }}>/</span>
-          <span style={{ fontSize: '12.5px', fontWeight: 700, color: '#0f172a' }}>
-            Topic {currentIndex + 1}/{topics.length}: {currentTopic.title}
-          </span>
+        {/* Left: Branding & Course Breadcrumb */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span style={{ fontSize: '20px' }}>{lessonIcon}</span>
+          <div>
+            <div style={{
+              fontSize: '11px',
+              fontWeight: 800,
+              letterSpacing: '0.06em',
+              color: isLMSDisplay ? '#38bdf8' : color,
+              textTransform: 'uppercase',
+            }}>
+              {courseCode} · GIÁO TRÌNH ĐIỆN TỬ PLC S7-1200 / S7-300
+            </div>
+            <div style={{
+              fontSize: isLMSDisplay ? '14px' : '13px',
+              fontWeight: 800,
+              color: isLMSDisplay ? '#ffffff' : '#0f172a',
+            }}>
+              {lessonTitle} · Chuyên đề {currentIndex + 1}: {currentTopic.title}
+            </div>
+          </div>
         </div>
 
-        {/* Right: Topic Quick Switcher, Topics Drawer & Fullscreen Button */}
+        {/* Right: Studio Controls, Fullscreen & Topic Drawer */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {prevTopic && (
-            <button
-              onClick={() => router.push(`/lessons/${lessonSlug}/${prevTopic.slug}`)}
-              title={`Previous Topic: ${prevTopic.title}`}
-              style={{
-                padding: '5px 12px',
-                borderRadius: '6px',
-                border: '1px solid #cbd5e1',
-                background: '#ffffff',
-                color: '#475569',
-                fontSize: '11.5px',
-                fontWeight: 600,
-                cursor: 'pointer',
-                transition: 'background 0.15s ease',
-              }}
-            >
-              ◀ Prev Topic
-            </button>
-          )}
-
-          {nextTopic && (
-            <button
-              onClick={() => router.push(`/lessons/${lessonSlug}/${nextTopic.slug}`)}
-              title={`Next Topic: ${nextTopic.title}`}
-              style={{
-                padding: '5px 12px',
-                borderRadius: '6px',
-                border: '1px solid #cbd5e1',
-                background: '#ffffff',
-                color: '#475569',
-                fontSize: '11.5px',
-                fontWeight: 600,
-                cursor: 'pointer',
-                transition: 'background 0.15s ease',
-              }}
-            >
-              Next Topic ▶
-            </button>
-          )}
-
-          {/* Topics Menu Drawer Button */}
+          {/* LMS Studio Mode Toggle */}
           <button
-            onClick={() => setDrawerOpen(prev => !prev)}
+            onClick={() => setStudioMode(prev => !prev)}
+            title="Bật/Tắt chế độ quay bài giảng LMS (Ẩn viền và thanh công cụ)"
             style={{
-              padding: '5px 12px',
-              borderRadius: '6px',
-              border: `1px solid ${drawerOpen ? color : '#cbd5e1'}`,
-              background: drawerOpen ? `${color}15` : '#ffffff',
-              color: drawerOpen ? color : '#0f172a',
-              fontSize: '11.5px',
-              fontWeight: 600,
+              padding: '6px 14px',
+              borderRadius: '7px',
+              border: studioMode ? '1.5px solid #38bdf8' : '1px solid #cbd5e1',
+              background: studioMode ? '#0284c7' : isLMSDisplay ? '#1e293b' : '#f8fafc',
+              color: studioMode ? '#ffffff' : isLMSDisplay ? '#f1f5f9' : '#0f172a',
+              fontSize: '12px',
+              fontWeight: 700,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
+              boxShadow: studioMode ? '0 2px 8px rgba(2,132,199,0.3)' : 'none',
+              transition: 'all 0.15s ease',
             }}
           >
-            <span>📋</span>
-            <span>Topics ({topics.length})</span>
+            <span>🎥</span>
+            <span>{studioMode ? 'Đang Quay LMS (Bấm để Thoát)' : 'Chế Độ Quay LMS'}</span>
+            <span style={{ fontSize: '10.5px', opacity: 0.8 }}>(R)</span>
           </button>
 
-          {/* Fullscreen Projector Toggle */}
+          {/* Fullscreen Button */}
           <button
             onClick={toggleFullscreen}
+            title="Toàn màn hình trình chiếu"
             style={{
-              padding: '5px 12px',
-              borderRadius: '6px',
-              border: `1px solid ${color}40`,
-              background: `${color}0c`,
-              color: color,
-              fontSize: '11.5px',
+              padding: '6px 14px',
+              borderRadius: '7px',
+              border: isFullscreen ? '1.5px solid #38bdf8' : '1px solid #cbd5e1',
+              background: isFullscreen ? '#0284c7' : isLMSDisplay ? '#1e293b' : '#ffffff',
+              color: isFullscreen ? '#ffffff' : isLMSDisplay ? '#f1f5f9' : '#334155',
+              fontSize: '12px',
               fontWeight: 700,
               cursor: 'pointer',
               display: 'flex',
@@ -293,9 +279,71 @@ export default function TopicSlideDeck({
               gap: '6px',
             }}
           >
-            <span>{isFullscreen ? '✕ Exit Fullscreen' : '⛶ Presentation Mode'}</span>
-            <span style={{ fontSize: '10.5px', opacity: 0.7 }}>(F)</span>
+            <span>{isFullscreen ? '✕ Thu Nhỏ' : '⛶ Toàn Màn Hình'}</span>
+            <span style={{ fontSize: '10.5px', opacity: 0.8 }}>(F)</span>
           </button>
+
+          {!isLMSDisplay && (
+            <>
+              {prevTopic && (
+                <button
+                  onClick={() => router.push(`/lessons/${lessonSlug}/${prevTopic.slug}`)}
+                  title={`Chuyên đề trước: ${prevTopic.title}`}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: '7px',
+                    border: '1px solid #cbd5e1',
+                    background: '#ffffff',
+                    color: '#475569',
+                    fontSize: '11.5px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  ◀ Bài Trước
+                </button>
+              )}
+
+              {nextTopic && (
+                <button
+                  onClick={() => router.push(`/lessons/${lessonSlug}/${nextTopic.slug}`)}
+                  title={`Chuyên đề tiếp theo: ${nextTopic.title}`}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: '7px',
+                    border: '1px solid #cbd5e1',
+                    background: '#ffffff',
+                    color: '#475569',
+                    fontSize: '11.5px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Bài Sau ▶
+                </button>
+              )}
+
+              <button
+                onClick={() => setDrawerOpen(prev => !prev)}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '7px',
+                  border: `1px solid ${drawerOpen ? color : '#cbd5e1'}`,
+                  background: drawerOpen ? `${color}15` : '#ffffff',
+                  color: drawerOpen ? color : '#0f172a',
+                  fontSize: '11.5px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                <span>📋</span>
+                <span>Mục Lục ({topics.length})</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -306,14 +354,14 @@ export default function TopicSlideDeck({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '8px 24px',
-          background: '#f8fafc',
+          background: isLMSDisplay ? '#f1f5f9' : '#f8fafc',
           borderBottom: '1px solid #e2e8f0',
           gap: '8px',
           flexWrap: 'wrap',
           flexShrink: 0,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           {SLIDE_TABS.map(tab => {
             const isActive = currentSlide === tab.id;
             return (
@@ -321,30 +369,30 @@ export default function TopicSlideDeck({
                 key={tab.id}
                 onClick={() => setCurrentSlide(tab.id)}
                 style={{
-                  padding: '6px 14px',
+                  padding: '6px 16px',
                   borderRadius: '8px',
-                  border: isActive ? `1.5px solid ${color}` : '1px solid #e2e8f0',
-                  background: isActive ? `${color}15` : '#ffffff',
-                  color: isActive ? color : '#64748b',
-                  fontSize: '12px',
-                  fontWeight: isActive ? 700 : 500,
+                  border: isActive ? `2px solid ${color}` : '1px solid #e2e8f0',
+                  background: isActive ? `${color}18` : '#ffffff',
+                  color: isActive ? color : '#475569',
+                  fontSize: '12.5px',
+                  fontWeight: isActive ? 800 : 600,
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
-                  boxShadow: isActive ? '0 1px 4px rgba(0,0,0,0.04)' : 'none',
+                  boxShadow: isActive ? '0 2px 6px rgba(0,0,0,0.06)' : 'none',
                   transition: 'all 0.15s ease',
                 }}
               >
                 <span>{tab.icon}</span>
-                <span>Slide {tab.id + 1}: {tab.shortLabel}</span>
+                <span>{tab.shortLabel}</span>
               </button>
             );
           })}
         </div>
 
-        <div style={{ fontSize: '11.5px', color: '#64748b' }}>
-          Keys: <strong>1..5</strong> · <strong>← / →</strong> or <strong>Space</strong>
+        <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 600 }}>
+          Điều hướng: Phím <strong>1..5</strong> · <strong>← / →</strong> hoặc <strong>Phím Cách (Space)</strong>
         </div>
       </div>
 
@@ -352,12 +400,12 @@ export default function TopicSlideDeck({
       <div
         style={{
           flex: 1,
-          padding: isFullscreen ? '28px 48px' : '22px 32px',
+          padding: isLMSDisplay ? '24px 36px' : '20px 28px',
           overflow: 'hidden',
           background: '#ffffff',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
+          justifyContent: 'space-between',
         }}
       >
         {/* ── SLIDE 1: Executive Overview & High-Resolution Schematic ── */}
@@ -366,7 +414,7 @@ export default function TopicSlideDeck({
             style={{
               display: 'grid',
               gridTemplateColumns: '1.15fr 1fr',
-              gap: isFullscreen ? '40px' : '28px',
+              gap: isLMSDisplay ? '36px' : '24px',
               alignItems: 'center',
               height: '100%',
               overflow: 'hidden',
@@ -375,15 +423,15 @@ export default function TopicSlideDeck({
             {/* Left: Topic Title, Core Concept, Engineering Note */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', justifyContent: 'center' }}>
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                  <span style={{ width: 4, height: 16, background: color, borderRadius: 99 }} />
-                  <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: color, textTransform: 'uppercase' }}>
-                    Topic {currentIndex + 1} of {topics.length} · {currentTopic.durationMinutes} min lecture
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                  <span style={{ width: 4, height: 18, background: color, borderRadius: 99 }} />
+                  <span style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em', color: color, textTransform: 'uppercase' }}>
+                    Chuyên đề {currentIndex + 1} / {topics.length} · Thời lượng ~{currentTopic.durationMinutes} phút
                   </span>
                 </div>
                 <h2
                   style={{
-                    fontSize: isFullscreen ? '28px' : '22px',
+                    fontSize: isLMSDisplay ? '26px' : '22px',
                     fontWeight: 800,
                     color: '#0f172a',
                     lineHeight: 1.25,
@@ -399,24 +447,25 @@ export default function TopicSlideDeck({
               <div
                 style={{
                   background: '#f8fafc',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '10px',
+                  border: '1.5px solid #e2e8f0',
+                  borderRadius: '12px',
                   padding: '16px 20px',
-                  borderLeft: `4px solid ${color}`,
+                  borderLeft: `5px solid ${color}`,
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
                 }}
               >
-                <div style={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.08em', color: color, textTransform: 'uppercase', marginBottom: '8px' }}>
-                  Core Automation Principle:
+                <div style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.06em', color: color, textTransform: 'uppercase', marginBottom: '8px' }}>
+                  🎯 Khái Niệm & Nguyên Lý Tự Động Hoá Cốt Lõi:
                 </div>
                 <p
                   style={{
-                    fontSize: isFullscreen ? '15px' : '13.5px',
+                    fontSize: isLMSDisplay ? '15px' : '13.5px',
                     color: '#334155',
                     lineHeight: 1.65,
                     margin: 0,
                   }}
                 >
-                  {section?.content ? section.content.split('. ').slice(0, 3).join('. ') + '.' : 'Engineering lecture overview for this curriculum topic.'}
+                  {section?.content ? section.content.split('. ').slice(0, 3).join('. ') + '.' : 'Nội dung bài giảng lý thuyết chuyên đề tự động hoá.'}
                 </p>
               </div>
 
@@ -424,17 +473,17 @@ export default function TopicSlideDeck({
               {section?.note && (
                 <div
                   style={{
-                    padding: '12px 16px',
+                    padding: '12px 18px',
                     background: '#fffbeb',
                     border: '1px solid #fde68a',
                     borderLeft: '4px solid #f59e0b',
-                    borderRadius: '0 8px 8px 0',
-                    fontSize: isFullscreen ? '13px' : '12px',
+                    borderRadius: '8px',
+                    fontSize: isLMSDisplay ? '13px' : '12px',
                     color: '#92400e',
-                    lineHeight: 1.5,
+                    lineHeight: 1.55,
                   }}
                 >
-                  💡 <strong>Engineering Note:</strong> {section.note}
+                  💡 <strong>Lưu ý Giảng viên & Kỹ thuật:</strong> {section.note}
                 </div>
               )}
             </div>
@@ -447,11 +496,11 @@ export default function TopicSlideDeck({
                 alignItems: 'center',
                 justifyContent: 'center',
                 background: '#f8fafc',
-                border: '1px solid #e2e8f0',
+                border: '1.5px solid #e2e8f0',
                 borderRadius: '12px',
                 padding: '16px',
                 height: '100%',
-                maxHeight: isFullscreen ? '62vh' : '440px',
+                maxHeight: isLMSDisplay ? '62vh' : '440px',
                 position: 'relative',
               }}
             >
@@ -468,7 +517,7 @@ export default function TopicSlideDeck({
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
-                    title="Click to zoom image"
+                    title="Bấm để phóng to sơ đồ kỹ thuật"
                   >
                     <img
                       src={asset(diagram.src)}
@@ -480,46 +529,46 @@ export default function TopicSlideDeck({
                         borderRadius: '8px',
                         border: '1px solid #cbd5e1',
                         background: '#ffffff',
-                        boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+                        boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
                       }}
                     />
                   </div>
                   <p
                     style={{
                       fontSize: '11.5px',
-                      color: '#64748b',
+                      color: '#475569',
                       marginTop: '8px',
                       fontStyle: 'italic',
                       textAlign: 'center',
-                      margin: '8px 0 0 0',
-                      lineHeight: 1.3,
+                      lineHeight: 1.35,
+                      fontWeight: 500,
                     }}
                   >
                     {diagram.caption}
                   </p>
                 </>
               ) : (
-                <div style={{ padding: '40px 20px', textAlign: 'center', color: '#94a3b8' }}>
-                  <span style={{ fontSize: '36px', display: 'block', marginBottom: '8px' }}>📊</span>
-                  <span style={{ fontSize: '13px' }}>Technical Schematic for {currentTopic.title}</span>
+                <div style={{ padding: '40px 20px', textAlign: 'center', color: '#64748b' }}>
+                  <span style={{ fontSize: '38px', display: 'block', marginBottom: '8px' }}>📊</span>
+                  <span style={{ fontSize: '13px', fontWeight: 600 }}>Sơ đồ kỹ thuật chuyên đề: {currentTopic.title}</span>
                 </div>
               )}
             </div>
           </div>
         )}
 
-        {/* ── SLIDE 2: Key Engineering Points (Split cleanly into visual cards) ── */}
+        {/* ── SLIDE 2: Key Engineering Points ── */}
         {currentSlide === 1 && (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
-            <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
+            <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                 <span style={{ width: 4, height: 16, background: color, borderRadius: 99 }} />
-                <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: color, textTransform: 'uppercase' }}>
-                  Core Engineering Standards & Key Takeaways
+                <span style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em', color: color, textTransform: 'uppercase' }}>
+                  Trọng Tâm Kỹ Thuật & Quy Tắc Thiết Kế (Key Engineering Principles)
                 </span>
               </div>
-              <h2 style={{ fontSize: isFullscreen ? '24px' : '20px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                Key Principles · {currentTopic.title}
+              <h2 style={{ fontSize: isLMSDisplay ? '24px' : '20px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                Các Nguyên Lý Trọng Tâm Cần Ghi Nhớ · {currentTopic.title}
               </h2>
             </div>
 
@@ -528,7 +577,7 @@ export default function TopicSlideDeck({
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '12px',
+                gap: '14px',
                 flex: 1,
                 alignContent: 'center',
                 margin: '12px 0',
@@ -544,30 +593,30 @@ export default function TopicSlideDeck({
                       key={idx}
                       style={{
                         background: '#f8fafc',
-                        border: '1px solid #e2e8f0',
+                        border: '1.5px solid #e2e8f0',
                         borderRadius: '10px',
-                        padding: '12px 16px',
+                        padding: '14px 18px',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'center',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
                         <span style={{
-                          width: 20, height: 20, borderRadius: '50%',
-                          background: `${color}15`, color: color,
+                          width: 24, height: 24, borderRadius: '50%',
+                          background: `${color}18`, color: color,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: '11px', fontWeight: 700, flexShrink: 0
+                          fontSize: '12px', fontWeight: 800, flexShrink: 0
                         }}>
                           {idx + 1}
                         </span>
-                        <strong style={{ color: '#0f172a', fontSize: isFullscreen ? '14px' : '13px' }}>
+                        <strong style={{ color: '#0f172a', fontSize: isLMSDisplay ? '14.5px' : '13.5px' }}>
                           {title}
                         </strong>
                       </div>
                       {desc && (
-                        <div style={{ color: '#475569', fontSize: isFullscreen ? '13px' : '12px', lineHeight: 1.5, paddingLeft: '28px' }}>
+                        <div style={{ color: '#334155', fontSize: isLMSDisplay ? '13px' : '12px', lineHeight: 1.55, paddingLeft: '34px' }}>
                           {desc}
                         </div>
                       )}
@@ -575,28 +624,28 @@ export default function TopicSlideDeck({
                   );
                 })
               ) : (
-                <div style={{ color: '#94a3b8', fontSize: '13px' }}>Key engineering specifications loaded for this topic.</div>
+                <div style={{ color: '#64748b', fontSize: '13px' }}>Đang nạp các quy tắc kỹ thuật trọng tâm cho chuyên đề này.</div>
               )}
             </div>
 
-            <div style={{ fontSize: '11.5px', color: '#64748b', textAlign: 'right' }}>
-              Slide 2 of 5 · Press <strong>Space</strong> or <strong>→</strong> to continue to Laboratory Notes
+            <div style={{ fontSize: '12px', color: '#64748b', textAlign: 'right', fontWeight: 600 }}>
+              Slide 2 / 5 · Nhấn <strong>Phím Cách</strong> hoặc <strong>→</strong> để tiếp tục sang Ghi Chú Lab
             </div>
           </div>
         )}
 
-        {/* ── SLIDE 3: Detailed Technical Lab Notes & Guidelines ── */}
+        {/* ── SLIDE 3: Technical Lab Notes & Guidelines ── */}
         {currentSlide === 2 && (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
-            <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
+            <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                 <span style={{ width: 4, height: 16, background: color, borderRadius: 99 }} />
-                <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: color, textTransform: 'uppercase' }}>
-                  Laboratory Bench Specifications & Practical Theory
+                <span style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em', color: color, textTransform: 'uppercase' }}>
+                  Ghi Chú Phòng Thí Nghiệm & Tiêu Chuẩn Thực Hành (Lab Notes & Standards)
                 </span>
               </div>
-              <h2 style={{ fontSize: isFullscreen ? '24px' : '20px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                In-Depth Engineering Theory · {currentTopic.title}
+              <h2 style={{ fontSize: isLMSDisplay ? '24px' : '20px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                Lý Thuyết Chuyên Sâu & Tiêu Chuẩn Đấu Nối · {currentTopic.title}
               </h2>
             </div>
 
@@ -615,7 +664,7 @@ export default function TopicSlideDeck({
               <div
                 style={{
                   background: '#f8fafc',
-                  border: '1px solid #e2e8f0',
+                  border: '1.5px solid #e2e8f0',
                   borderRadius: '10px',
                   padding: '20px 24px',
                   height: '100%',
@@ -624,10 +673,10 @@ export default function TopicSlideDeck({
                   justifyContent: 'center',
                 }}
               >
-                <h4 style={{ fontSize: '11.5px', fontWeight: 700, letterSpacing: '0.08em', color: color, textTransform: 'uppercase', marginBottom: '8px', margin: '0 0 8px 0' }}>
-                  Theoretical Process Dynamics:
+                <h4 style={{ fontSize: '12px', fontWeight: 800, letterSpacing: '0.06em', color: color, textTransform: 'uppercase', marginBottom: '8px', margin: '0 0 8px 0' }}>
+                  Động Học Quá Trình & Nguyên Lý Điều Khiển:
                 </h4>
-                <p style={{ fontSize: isFullscreen ? '14.5px' : '13px', color: '#334155', lineHeight: 1.7, margin: 0 }}>
+                <p style={{ fontSize: isLMSDisplay ? '14px' : '13px', color: '#334155', lineHeight: 1.7, margin: 0 }}>
                   {section?.content}
                 </p>
               </div>
@@ -646,16 +695,16 @@ export default function TopicSlideDeck({
                   <div
                     style={{
                       background: '#fffbeb',
-                      border: '1px solid #fde68a',
+                      border: '1.5px solid #fde68a',
                       borderLeft: '5px solid #f59e0b',
                       borderRadius: '8px',
                       padding: '16px 18px',
-                      fontSize: isFullscreen ? '13.5px' : '12.5px',
+                      fontSize: isLMSDisplay ? '13px' : '12px',
                       color: '#92400e',
                       lineHeight: 1.6,
                     }}
                   >
-                    ⚠️ <strong>Practical Bench Warning & Field Guidelines:</strong>
+                    ⚠️ <strong>Cảnh Báo An Toàn & Lưu Ý Phòng Thí Nghiệm:</strong>
                     <div style={{ marginTop: '6px' }}>{section.note}</div>
                   </div>
                 ) : null}
@@ -663,64 +712,172 @@ export default function TopicSlideDeck({
                 <div
                   style={{
                     background: '#ffffff',
-                    border: '1px solid #e2e8f0',
+                    border: '1.5px solid #e2e8f0',
                     borderRadius: '8px',
                     padding: '14px 18px',
-                    fontSize: isFullscreen ? '13px' : '12px',
-                    color: '#475569',
-                    lineHeight: 1.5,
+                    fontSize: isLMSDisplay ? '13px' : '12px',
+                    color: '#334155',
+                    lineHeight: 1.55,
                   }}
                 >
-                  <strong style={{ color: '#0f172a' }}>Commissioning Checklist:</strong>
-                  <ul style={{ margin: '6px 0 0 0', paddingLeft: '18px' }}>
-                    <li>Verify 24VDC polarity before applying line power to the CPU rack.</li>
-                    <li>Ensure PE grounding busbar resistance is &lt; 10 ohms.</li>
-                    <li>Always test emergency stop hardware circuits independently of PLC logic.</li>
+                  <strong style={{ color: '#0f172a' }}>Danh Mục Kiểm Tra Trước Khi Cấp Nguồn (Pre-Power Checklist):</strong>
+                  <ul style={{ margin: '6px 0 0 0', paddingLeft: '18px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <li>Kiểm tra đúng cực tính nguồn 24VDC (L+ và M) trước khi bật aptomat nguồn CPU.</li>
+                    <li>Đảm bảo điện trở thanh đồng nối đất bảo vệ PE &lt; 10 Ω để chống xung nhiễu công nghiệp.</li>
+                    <li>Mạch dừng khẩn cấp (Emergency Stop) bắt buộc phải ngắt phần cứng, không chỉ qua phần mềm.</li>
                   </ul>
                 </div>
               </div>
             </div>
 
-            <div style={{ fontSize: '11.5px', color: '#64748b', textAlign: 'right' }}>
-              Slide 3 of 5 · Press <strong>Space</strong> or <strong>→</strong> to continue to Interactive Simulator
+            <div style={{ fontSize: '12px', color: '#64748b', textAlign: 'right', fontWeight: 600 }}>
+              Slide 3 / 5 · Nhấn <strong>Phím Cách</strong> hoặc <strong>→</strong> để tiếp tục sang Bàn Thí Nghiệm Mô Phỏng
             </div>
           </div>
         )}
 
-        {/* ── SLIDE 4: Interactive Live Simulator ── */}
+        {/* ── SLIDE 4: Interactive Live Simulator (Broadcast-Ready Dual Studio View) ── */}
         {currentSlide === 3 && (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
-            <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-                <span style={{ width: 4, height: 16, background: color, borderRadius: 99 }} />
-                <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: color, textTransform: 'uppercase' }}>
-                  Interactive Engineering Bench · Live Logic Simulation
-                </span>
+            <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                  <span style={{ width: 4, height: 16, background: color, borderRadius: 99 }} />
+                  <span style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em', color: color, textTransform: 'uppercase' }}>
+                    Bàn Thí Nghiệm Ảo & Mô Phỏng Tương Tác Trực Tuyến (Interactive Studio Bench)
+                  </span>
+                </div>
+                <h2 style={{ fontSize: isLMSDisplay ? '22px' : '18px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                  Thực Nghiệm Quá Trình: {currentTopic.title}
+                </h2>
               </div>
-              <h2 style={{ fontSize: isFullscreen ? '22px' : '18px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                Live Execution Stage: {currentTopic.title}
-              </h2>
+
+              {/* View Layout Toggle for Lecturer */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <button
+                  onClick={() => setSimulatorLayout('split')}
+                  style={{
+                    padding: '4px 10px',
+                    borderRadius: '6px',
+                    border: simulatorLayout === 'split' ? `1.5px solid ${color}` : '1px solid #cbd5e1',
+                    background: simulatorLayout === 'split' ? `${color}15` : '#ffffff',
+                    color: simulatorLayout === 'split' ? color : '#64748b',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  📊 Bố Cục Studio 2 Cánh
+                </button>
+                <button
+                  onClick={() => setSimulatorLayout('full')}
+                  style={{
+                    padding: '4px 10px',
+                    borderRadius: '6px',
+                    border: simulatorLayout === 'full' ? `1.5px solid ${color}` : '1px solid #cbd5e1',
+                    background: simulatorLayout === 'full' ? `${color}15` : '#ffffff',
+                    color: simulatorLayout === 'full' ? color : '#64748b',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  ⛶ Mở Rộng Bàn Thí Nghiệm
+                </button>
+              </div>
             </div>
 
-            {/* Simulator Node Container (Contained to prevent scrolling) */}
+            {/* Simulator Node Container: Zero Empty Void */}
             <div
               style={{
                 width: '100%',
                 flex: 1,
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                alignItems: 'stretch',
                 overflow: 'hidden',
-                padding: '8px 0',
+                padding: '10px 0',
+                gap: '16px',
               }}
             >
-              <div style={{ width: '100%', maxHeight: '100%' }}>
+              {/* Left Column: Live Simulator Canvas */}
+              <div
+                style={{
+                  flex: simulatorLayout === 'split' ? '1.35' : '1',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  overflowY: 'auto',
+                  maxHeight: '100%',
+                }}
+              >
                 {simulatorNode}
               </div>
+
+              {/* Right Column: Lecturer Studio Telemetry & Field Analysis (Shown in split mode) */}
+              {simulatorLayout === 'split' && (
+                <div
+                  style={{
+                    flex: '1',
+                    maxWidth: '430px',
+                    background: '#f8fafc',
+                    border: '1.5px solid #cbd5e1',
+                    borderRadius: '12px',
+                    padding: '16px 20px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+                  }}
+                >
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                      <span style={{ fontSize: '18px' }}>🎙️</span>
+                      <span style={{ fontSize: '11px', fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                        Góc Giảng Viên & Phân Tích Công Nghiệp
+                      </span>
+                    </div>
+
+                    {/* Section 1: Demonstration Target */}
+                    <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '10px 12px', marginBottom: '10px' }}>
+                      <span style={{ fontSize: '10.5px', fontWeight: 800, color: color, textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
+                        🎯 Mục Tiêu Trình Chiếu Video LMS:
+                      </span>
+                      <p style={{ margin: 0, fontSize: '12px', color: '#334155', lineHeight: 1.5 }}>
+                        Giảng viên hướng dẫn sinh viên thao tác các nút điều khiển, quan sát sự thay đổi tức thời của dòng tín hiệu và đáp ứng khử nhiễu tự động của PLC.
+                      </p>
+                    </div>
+
+                    {/* Section 2: Industrial Telemetry */}
+                    <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '10px 12px', marginBottom: '10px' }}>
+                      <span style={{ fontSize: '10.5px', fontWeight: 800, color: '#0284c7', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                        ⚡ Chuẩn Tín Hiệu & Thiết Bị Thật:
+                      </span>
+                      <div style={{ fontSize: '11.5px', color: '#475569', lineHeight: 1.6 }}>
+                        <div>• <strong>PLC:</strong> SIMATIC S7-1200 CPU 1214C DC/DC/DC</div>
+                        <div>• <strong>Chuẩn I/O:</strong> 24VDC PNP, 4–20 mA (AI), 0–10V (AO)</div>
+                        <div>• <strong>Truyền thông:</strong> PROFINET RT (Chu kỳ quét 1 ms)</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 3: Lecturer Tip */}
+                  <div style={{
+                    background: '#fffbeb',
+                    border: '1px solid #fde68a',
+                    borderRadius: '8px',
+                    padding: '10px 12px',
+                    fontSize: '11.5px',
+                    color: '#92400e',
+                    lineHeight: 1.5,
+                  }}>
+                    💡 <strong>Gợi ý thuyết minh:</strong> Nhấn mạnh sự khác biệt căn bản giữa hệ vòng kín (có cảm biến phản hồi khử nhiễu) và hệ vòng hở trong môi trường nhà máy thực tế.
+                  </div>
+                </div>
+              )}
             </div>
 
-            <div style={{ fontSize: '11.5px', color: '#64748b', textAlign: 'right' }}>
-              Slide 4 of 5 · Press <strong>Space</strong> or <strong>→</strong> to continue to Knowledge Check
+            <div style={{ fontSize: '12px', color: '#64748b', textAlign: 'right', fontWeight: 600 }}>
+              Slide 4 / 5 · Nhấn <strong>Phím Cách</strong> hoặc <strong>→</strong> để tiếp tục sang Micro-Quiz Đánh Giá
             </div>
           </div>
         )}
@@ -731,12 +888,12 @@ export default function TopicSlideDeck({
             <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                 <span style={{ width: 4, height: 16, background: color, borderRadius: 99 }} />
-                <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: color, textTransform: 'uppercase' }}>
-                  Formative Self-Assessment · Classroom Knowledge Check
+                <span style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em', color: color, textTransform: 'uppercase' }}>
+                  Đánh Giá Quá Trình · Micro-Quiz Củng Cố Kiến Thức (Knowledge Check)
                 </span>
               </div>
-              <h2 style={{ fontSize: isFullscreen ? '22px' : '18px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                Test Your Understanding: {currentTopic.title}
+              <h2 style={{ fontSize: isLMSDisplay ? '22px' : '18px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                Kiểm Tra & Củng Cố Nhanh Cuối Bài Giảng · {currentTopic.title}
               </h2>
             </div>
 
@@ -757,8 +914,8 @@ export default function TopicSlideDeck({
               </div>
             </div>
 
-            <div style={{ fontSize: '11.5px', color: '#64748b', textAlign: 'right' }}>
-              Slide 5 of 5 · Press <strong>Space</strong> or <strong>→</strong> to advance to next topic
+            <div style={{ fontSize: '12px', color: '#64748b', textAlign: 'right', fontWeight: 600 }}>
+              Slide 5 / 5 · Nhấn <strong>Phím Cách</strong> hoặc <strong>→</strong> để chuyển sang Chuyên Đề Kế Tiếp
             </div>
           </div>
         )}
@@ -768,7 +925,7 @@ export default function TopicSlideDeck({
       <div
         style={{
           padding: '10px 24px',
-          background: '#f8fafc',
+          background: isLMSDisplay ? '#f1f5f9' : '#f8fafc',
           borderTop: '1px solid #e2e8f0',
           display: 'flex',
           alignItems: 'center',
@@ -788,7 +945,7 @@ export default function TopicSlideDeck({
             background: '#ffffff',
             color: '#0f172a',
             fontSize: '12px',
-            fontWeight: 600,
+            fontWeight: 700,
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -797,12 +954,12 @@ export default function TopicSlideDeck({
           }}
         >
           <span>◀</span>
-          <span>{currentSlide > 0 ? `Prev: ${SLIDE_TABS[currentSlide - 1].shortLabel}` : (prevTopic ? `Prev Topic: ${prevTopic.title.slice(0, 20)}…` : 'Start of Lesson')}</span>
+          <span>{currentSlide > 0 ? `Slide Trước: ${SLIDE_TABS[currentSlide - 1].shortLabel}` : (prevTopic ? `Bài Trước: ${prevTopic.title.slice(0, 18)}…` : 'Đầu Bài Học')}</span>
         </button>
 
         {/* Slide Indicator Dots (Showing current slide out of 5) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748b' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <span style={{ fontSize: '12px', fontWeight: 800, color: '#334155' }}>
             Slide {currentSlide + 1} / {SLIDE_TABS.length}
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -814,7 +971,7 @@ export default function TopicSlideDeck({
                   onClick={() => setCurrentSlide(tab.id)}
                   title={tab.label}
                   style={{
-                    width: isCurrent ? 24 : 10,
+                    width: isCurrent ? 26 : 10,
                     height: 10,
                     borderRadius: 99,
                     border: 'none',
@@ -833,21 +990,21 @@ export default function TopicSlideDeck({
         <button
           onClick={handleNext}
           style={{
-            padding: '7px 18px',
+            padding: '7px 20px',
             borderRadius: '8px',
             border: 'none',
             background: color,
             color: '#ffffff',
             fontSize: '12px',
-            fontWeight: 600,
+            fontWeight: 800,
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            boxShadow: `0 2px 8px ${color}33`,
           }}
         >
-          <span>{currentSlide < SLIDE_TABS.length - 1 ? `Next: ${SLIDE_TABS[currentSlide + 1].shortLabel}` : (nextTopic ? `Next Topic: ${nextTopic.title.slice(0, 20)}…` : 'Complete Lesson 🏁')}</span>
+          <span>{currentSlide < SLIDE_TABS.length - 1 ? `Slide Sau: ${SLIDE_TABS[currentSlide + 1].shortLabel}` : (nextTopic ? `Bài Tiếp: ${nextTopic.title.slice(0, 18)}…` : 'Hoàn Thành Chương 🏁')}</span>
           <span>▶</span>
         </button>
       </div>
@@ -858,15 +1015,15 @@ export default function TopicSlideDeck({
           style={{
             position: 'absolute',
             top: 0,
-            right: 0,
-            bottom: 0,
+            left: 0,
             width: '320px',
+            height: '100%',
             background: '#ffffff',
-            borderLeft: '1px solid #e2e8f0',
-            boxShadow: '-4px 0 24px rgba(0,0,0,0.1)',
-            zIndex: 999999,
+            boxShadow: '4px 0 24px rgba(0,0,0,0.15)',
+            zIndex: 100,
             display: 'flex',
             flexDirection: 'column',
+            borderRight: '1px solid #e2e8f0',
           }}
         >
           <div
@@ -879,24 +1036,30 @@ export default function TopicSlideDeck({
               background: '#f8fafc',
             }}
           >
-            <div style={{ fontWeight: 700, fontSize: '13px', color: '#0f172a' }}>
-              Lesson Topics ({topics.length})
+            <div>
+              <div style={{ fontSize: '11px', fontWeight: 800, color: color, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Mục Lục Chuyên Đề
+              </div>
+              <div style={{ fontSize: '13px', fontWeight: 800, color: '#0f172a' }}>
+                {lessonTitle}
+              </div>
             </div>
             <button
               onClick={() => setDrawerOpen(false)}
               style={{
+                background: 'none',
                 border: 'none',
-                background: 'transparent',
+                fontSize: '18px',
                 cursor: 'pointer',
-                fontSize: '16px',
                 color: '#64748b',
+                padding: '4px',
               }}
             >
               ✕
             </button>
           </div>
 
-          <div style={{ flex: 1, overflowY: 'auto', padding: '10px' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
             {topics.map((t, idx) => {
               const isCurrent = idx === currentIndex;
               return (
@@ -908,20 +1071,20 @@ export default function TopicSlideDeck({
                   }}
                   style={{
                     width: '100%',
-                    padding: '10px 14px',
+                    padding: '10px 12px',
                     borderRadius: '8px',
-                    border: isCurrent ? `1px solid ${color}40` : '1px solid transparent',
+                    border: isCurrent ? `1.5px solid ${color}` : '1px solid transparent',
                     background: isCurrent ? `${color}12` : 'transparent',
-                    color: isCurrent ? color : '#334155',
+                    color: isCurrent ? '#0f172a' : '#334155',
+                    fontWeight: isCurrent ? 800 : 500,
+                    fontSize: '13px',
                     textAlign: 'left',
-                    fontSize: '12.5px',
-                    fontWeight: isCurrent ? 700 : 500,
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '10px',
                     marginBottom: '4px',
-                    transition: 'all 0.15s ease',
+                    transition: 'background 0.15s ease',
                   }}
                 >
                   <span
@@ -931,20 +1094,22 @@ export default function TopicSlideDeck({
                       borderRadius: '50%',
                       background: isCurrent ? color : '#e2e8f0',
                       color: isCurrent ? '#ffffff' : '#64748b',
+                      fontSize: '11px',
+                      fontWeight: 700,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '11px',
-                      fontWeight: 700,
                       flexShrink: 0,
                     }}
                   >
                     {idx + 1}
                   </span>
-                  <div style={{ flex: 1 }}>{t.title}</div>
-                  <span style={{ fontSize: '11px', color: '#94a3b8' }}>
-                    {t.durationMinutes}m
-                  </span>
+                  <div style={{ flex: 1 }}>
+                    <div>{t.title}</div>
+                    <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
+                      ~{t.durationMinutes} phút · 5 Slide
+                    </div>
+                  </div>
                 </button>
               );
             })}
@@ -952,39 +1117,51 @@ export default function TopicSlideDeck({
         </div>
       )}
 
-      {/* ── Lightbox Image Modal (Zoom) ── */}
+      {/* ── Image Lightbox Modal ── */}
       {zoomImage && diagram && (
         <div
           onClick={() => setZoomImage(false)}
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(15, 23, 42, 0.8)',
+            background: 'rgba(15, 23, 42, 0.85)',
             backdropFilter: 'blur(4px)',
-            zIndex: 9999999,
+            zIndex: 9999,
             display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             padding: '24px',
-            cursor: 'zoom-out',
           }}
         >
-          <img
-            src={asset(diagram.src)}
-            alt={diagram.caption}
+          <div
+            onClick={e => e.stopPropagation()}
             style={{
               maxWidth: '92vw',
-              maxHeight: '85vh',
-              objectFit: 'contain',
-              borderRadius: '8px',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+              maxHeight: '92vh',
               background: '#ffffff',
+              borderRadius: '12px',
+              padding: '16px',
+              boxShadow: '0 20px 50px rgba(0,0,0,0.4)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
             }}
-          />
-          <p style={{ color: '#ffffff', marginTop: '16px', fontSize: '14px', fontStyle: 'italic', textAlign: 'center' }}>
-            {diagram.caption} (Click anywhere to close)
-          </p>
+          >
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>{diagram.caption}</span>
+              <button
+                onClick={() => setZoomImage(false)}
+                style={{ background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer', fontWeight: 700 }}
+              >
+                ✕ Đóng (Esc)
+              </button>
+            </div>
+            <img
+              src={asset(diagram.src)}
+              alt={diagram.caption}
+              style={{ maxWidth: '100%', maxHeight: '80vh', objectFit: 'contain' }}
+            />
+          </div>
         </div>
       )}
     </div>
