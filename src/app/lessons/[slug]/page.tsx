@@ -6,6 +6,7 @@ import LessonMathBlock from '@/components/ui/LessonMathBlock';
 import LessonDownloads from '@/components/content/LessonDownloads';
 import LessonVideo from '@/components/content/LessonVideo';
 import LessonAnimationWrapper from '@/components/animations/LessonAnimationWrapper';
+import LessonPaginatedPresentation from '@/components/content/LessonPaginatedPresentation';
 
 function getCategoryColor(id: number) {
   if (id <= 3)  return '#1a3a6b';
@@ -29,6 +30,17 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
   const nextLesson = lessons.find(l => l.id === lesson.id + 1);
   const c = lessonContent[lesson.slug];
   const firstTopicSlug = lesson.topics[0]?.slug;
+
+  if (slug === '10-closed-loop-pid') {
+    return (
+      <LessonPaginatedPresentation
+        lesson={lesson}
+        content={c}
+        prevLesson={prevLesson ? { slug: prevLesson.slug, title: prevLesson.title } : undefined}
+        nextLesson={nextLesson ? { slug: nextLesson.slug, title: nextLesson.title } : undefined}
+      />
+    );
+  }
 
   return (
     <div style={{ maxWidth: '1100px', margin: '0 auto', paddingBottom: '60px' }}>
