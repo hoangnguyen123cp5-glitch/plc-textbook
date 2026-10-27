@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getLessonBySlug, lessons } from '@/lib/lessons';
 import { lessonContent } from '@/data/lesson-content';
-import LessonVideo from '@/components/content/LessonVideo';
 import TopicAnimationWrapper from '@/components/animations/TopicAnimationWrapper';
 import TopicSlideDeck from '@/components/content/TopicSlideDeck';
 import TopicQuiz from '@/components/content/TopicQuiz';
@@ -359,10 +358,7 @@ export default async function TopicPage({
 
   return (
     <div style={{ width: '100%', height: '100%' }}>
-      {/* Video — tự ẩn hoàn toàn nếu topic này chưa được đánh mốc */}
-      <LessonVideo lessonSlug={lesson.slug} topicSlug={topic.slug} color={color} />
-
-      {/* Content area: Pure Slide-by-Slide Presentation Deck */}
+      {/* Content area: Pure Slide-by-Slide Presentation Deck with Interleaved Video Lab */}
       {(() => {
         const contentData = lessonContent[lesson.slug];
         const numMatch = topic.title.match(/^(\d+\.\d+)/);
