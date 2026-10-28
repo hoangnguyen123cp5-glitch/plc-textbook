@@ -10,8 +10,6 @@ import {
   IconList,
   IconMaximize2,
   IconMinimize2,
-  IconX,
-  IconCheck,
 } from '@/components/ui/TechnicalIcons';
 
 interface TopicItem {
@@ -71,9 +69,7 @@ const TOPIC_SLIDES = [
 export default function TopicSlideDeck({
   lessonSlug,
   lessonTitle,
-  lessonIcon,
   courseCode,
-  color,
   currentTopic,
   topics,
   currentIndex,
@@ -101,6 +97,27 @@ export default function TopicSlideDeck({
   const chapterSections = allSections.length > 0 ? allSections : (section ? [section] : []);
   const totalChapterSlides = chapterSections.length + 5; // Cover + N Sections + Virtual Bench + SOP + Diagnostics + Summary
   const currentTotalSlides = deckMode === 'topic' ? TOPIC_SLIDES.length : totalChapterSlides;
+
+  // Smart section diagram matcher
+  const getSectionDiagram = useCallback((secIndex: number, secTitle: string) => {
+    // 1. By corresponding topic in topics array
+    const topicByIndex = topics[secIndex];
+    if (topicByIndex && allDiagrams[topicByIndex.slug]) {
+      return allDiagrams[topicByIndex.slug];
+    }
+    // 2. By numeric match in title (e.g., "1.5" matches topic with "1.5")
+    const numMatch = secTitle.match(/^(\d+\.\d+)/);
+    if (numMatch) {
+      const matchedTopic = topics.find(tp => tp.title.includes(numMatch[1]));
+      if (matchedTopic && allDiagrams[matchedTopic.slug]) {
+        return allDiagrams[matchedTopic.slug];
+      }
+    }
+    // 3. By exact title key
+    if (allDiagrams[secTitle]) return allDiagrams[secTitle];
+    // 4. Default to diagram if first section
+    return secIndex === 0 ? diagram : null;
+  }, [allDiagrams, diagram, topics]);
 
   // Slide navigation
   const handlePrev = useCallback(() => {
@@ -171,15 +188,12 @@ export default function TopicSlideDeck({
         return;
       }
 
-      if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
         e.preventDefault();
         handleNext();
       } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
         e.preventDefault();
         handlePrev();
-      } else if (e.key === ' ') {
-        e.preventDefault();
-        handleNext();
       } else if (e.key === 'Home') {
         e.preventDefault();
         setCurrentSlide(0);
@@ -240,8 +254,8 @@ export default function TopicSlideDeck({
         maxWidth: isFullscreen ? '100vw' : '1440px',
         margin: '0 auto',
         height: isFullscreen ? '100vh' : 'calc(100vh - 86px)',
-        minHeight: '600px',
-        maxHeight: isFullscreen ? '100vh' : '900px',
+        minHeight: '640px',
+        maxHeight: isFullscreen ? '100vh' : '920px',
         background: '#ffffff',
         borderRadius: isFullscreen ? '0px' : '4px',
         border: isFullscreen ? 'none' : '1px solid #cbd5e1',
@@ -287,7 +301,7 @@ export default function TopicSlideDeck({
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div>
             <div style={{
-              fontSize: '10px',
+              fontSize: '11px',
               fontWeight: 700,
               letterSpacing: '0.05em',
               color: '#475569',
@@ -296,7 +310,7 @@ export default function TopicSlideDeck({
               {courseCode} · SIMATIC S7-1200 / S7-300 COURSEWARE · IEC 61131-2
             </div>
             <div style={{
-              fontSize: isFullscreen ? '14px' : '13px',
+              fontSize: isFullscreen ? '15px' : '14px',
               fontWeight: 700,
               color: '#0f172a',
             }}>
@@ -316,7 +330,7 @@ export default function TopicSlideDeck({
           border: '1px solid #cbd5e1',
         }}>
           <span style={{
-            fontSize: '11.5px',
+            fontSize: '12.5px',
             fontWeight: 700,
             fontFamily: 'Consolas, monospace',
             color: '#0072BD',
@@ -324,7 +338,7 @@ export default function TopicSlideDeck({
             [Slide {String(currentSlide + 1).padStart(2, '0')} / {String(currentTotalSlides).padStart(2, '0')}]
           </span>
           <span style={{ fontSize: '12px', color: '#64748b' }}>·</span>
-          <span style={{ fontSize: '12px', fontWeight: 600, color: '#334155' }}>
+          <span style={{ fontSize: '12.5px', fontWeight: 600, color: '#334155' }}>
             {currentSlideMeta.label}
           </span>
         </div>
@@ -344,7 +358,7 @@ export default function TopicSlideDeck({
                 border: 'none',
                 background: deckMode === 'topic' ? '#0072BD' : 'transparent',
                 color: deckMode === 'topic' ? '#ffffff' : '#475569',
-                fontSize: '11px',
+                fontSize: '11.5px',
                 fontWeight: 600,
                 cursor: 'pointer',
               }}
@@ -362,7 +376,7 @@ export default function TopicSlideDeck({
                 border: 'none',
                 background: deckMode === 'chapter' ? '#0072BD' : 'transparent',
                 color: deckMode === 'chapter' ? '#ffffff' : '#475569',
-                fontSize: '11px',
+                fontSize: '11.5px',
                 fontWeight: 600,
                 cursor: 'pointer',
               }}
@@ -381,7 +395,7 @@ export default function TopicSlideDeck({
               border: notesOpen ? '1px solid #0072BD' : '1px solid #cbd5e1',
               background: notesOpen ? '#eff6ff' : '#ffffff',
               color: notesOpen ? '#0072BD' : '#334155',
-              fontSize: '11px',
+              fontSize: '11.5px',
               fontWeight: 600,
               cursor: 'pointer',
               display: 'flex',
@@ -403,7 +417,7 @@ export default function TopicSlideDeck({
               border: drawerOpen ? '1px solid #0072BD' : '1px solid #cbd5e1',
               background: drawerOpen ? '#eff6ff' : '#ffffff',
               color: drawerOpen ? '#0072BD' : '#334155',
-              fontSize: '11px',
+              fontSize: '11.5px',
               fontWeight: 600,
               cursor: 'pointer',
               display: 'flex',
@@ -425,7 +439,7 @@ export default function TopicSlideDeck({
               border: isFullscreen ? '1px solid #0072BD' : '1px solid #cbd5e1',
               background: isFullscreen ? '#eff6ff' : '#ffffff',
               color: isFullscreen ? '#0072BD' : '#334155',
-              fontSize: '11px',
+              fontSize: '11.5px',
               fontWeight: 600,
               cursor: 'pointer',
               display: 'flex',
@@ -443,7 +457,7 @@ export default function TopicSlideDeck({
       <div
         style={{
           flex: 1,
-          padding: isFullscreen ? '20px 32px 72px 32px' : '16px 24px 60px 24px',
+          padding: isFullscreen ? '22px 36px 76px 36px' : '18px 26px 64px 26px',
           overflow: 'hidden',
           background: '#ffffff',
           display: 'flex',
@@ -459,58 +473,61 @@ export default function TopicSlideDeck({
           // Slide 0: CLO & Objectives
           if (currentSlide === 0) {
             return (
-              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '24px', alignItems: 'center', height: '100%' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', justifyContent: 'center' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ width: 4, height: 18, background: '#0072BD', borderRadius: 2 }} />
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
+                <div style={{ borderBottom: '1px solid #cbd5e1', paddingBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                    <span style={{ width: 4, height: 16, background: '#0072BD', borderRadius: 2 }} />
+                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                       {TOPIC_SLIDES[0].category} · CHUYÊN ĐỀ {currentIndex + 1} / {topics.length}
                     </span>
                   </div>
-
-                  <h1 style={{ fontSize: isFullscreen ? '28px' : '23px', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.25 }}>
+                  <h1 style={{ fontSize: isFullscreen ? '28px' : '25px', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.25 }}>
                     {currentTopic.title}
                   </h1>
-
-                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px 18px', borderLeft: '4px solid #0072BD' }}>
-                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', marginBottom: '6px' }}>
-                      Chuẩn Đầu Ra Môn Học (CLO):
-                    </div>
-                    <p style={{ margin: 0, fontSize: '13px', color: '#334155', lineHeight: 1.65 }}>
-                      Sau khi hoàn thành chuyên đề này, sinh viên nắm vững nguyên lý truyền dẫn tín hiệu vật lý, các ràng buộc thời gian thực của PLC, và quy chuẩn nghiệm thu lắp đặt cho <strong>{currentTopic.title}</strong> theo tiêu chuẩn tự động hóa công nghiệp IEC 61131.
-                    </p>
-                  </div>
-
-                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '11.5px', fontWeight: 600, padding: '4px 10px', borderRadius: '4px', background: '#f1f5f9', border: '1px solid #cbd5e1', color: '#334155' }}>
-                      Thời lượng giảng dạy: ~{currentTopic.durationMinutes} phút
-                    </span>
-                    <span style={{ fontSize: '11.5px', fontWeight: 600, padding: '4px 10px', borderRadius: '4px', background: '#f1f5f9', border: '1px solid #cbd5e1', color: '#334155' }}>
-                      Bàn mô phỏng tương tác
-                    </span>
-                    <span style={{ fontSize: '11.5px', fontWeight: 600, padding: '4px 10px', borderRadius: '4px', background: '#f1f5f9', border: '1px solid #cbd5e1', color: '#334155' }}>
-                      Mô hình phần cứng Siemens S7-1200
-                    </span>
-                  </div>
                 </div>
 
-                {/* Right: Engineering Competency Overview */}
-                <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '18px 20px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '12px' }}>
-                    Trọng Tâm Kỹ Thuật Chuyên Đề:
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '22px', flex: 1, alignItems: 'stretch', margin: '14px 0' }}>
+                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '20px 22px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                      <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
+                        Chuẩn Đầu Ra Môn Học (CLO):
+                      </span>
+                      <p style={{ margin: 0, fontSize: '15.5px', color: '#1e293b', lineHeight: 1.65 }}>
+                        Sau khi hoàn thành chuyên đề này, sinh viên nắm vững nguyên lý truyền dẫn tín hiệu vật lý, các ràng buộc thời gian thực của PLC, và quy chuẩn nghiệm thu lắp đặt cho <strong>{currentTopic.title}</strong> theo tiêu chuẩn tự động hóa công nghiệp IEC 61131.
+                      </p>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '16px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 600, padding: '5px 12px', borderRadius: '4px', background: '#ffffff', border: '1px solid #cbd5e1', color: '#334155' }}>
+                        Thời lượng: ~{currentTopic.durationMinutes} phút
+                      </span>
+                      <span style={{ fontSize: '12px', fontWeight: 600, padding: '5px 12px', borderRadius: '4px', background: '#ffffff', border: '1px solid #cbd5e1', color: '#334155' }}>
+                        Bàn mô phỏng tương tác
+                      </span>
+                      <span style={{ fontSize: '12px', fontWeight: 600, padding: '5px 12px', borderRadius: '4px', background: '#ffffff', border: '1px solid #cbd5e1', color: '#334155' }}>
+                        Mô hình Siemens S7-1200
+                      </span>
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <div style={{ padding: '8px 12px', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px' }}>
-                      <strong style={{ fontSize: '12px', color: '#0f172a' }}>1. Kiến trúc vật lý & cách ly tín hiệu:</strong>
-                      <div style={{ fontSize: '11.5px', color: '#475569', marginTop: '2px' }}>Phân biệt mạch cách ly quang 500V, đấu nối PNP/NPN và vòng dòng 4–20 mA.</div>
+
+                  {/* Right: Engineering Competency Overview */}
+                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '18px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '6px' }}>
+                      Trọng Tâm Kỹ Thuật Chuyên Đề:
                     </div>
-                    <div style={{ padding: '8px 12px', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px' }}>
-                      <strong style={{ fontSize: '12px', color: '#0f172a' }}>2. Chu kỳ quét xác định (Deterministic Scan):</strong>
-                      <div style={{ fontSize: '11.5px', color: '#475569', marginTop: '2px' }}>Tổ chức ngắt tuần hoàn OB30 loại bỏ hoàn toàn hiện tượng jitter chu kỳ.</div>
-                    </div>
-                    <div style={{ padding: '8px 12px', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px' }}>
-                      <strong style={{ fontSize: '12px', color: '#0f172a' }}>3. Quy trình nghiệm thu & chẩn đoán lỗi:</strong>
-                      <div style={{ fontSize: '11.5px', color: '#475569', marginTop: '2px' }}>Quy tắc chống rung tiếp điểm, xử lý vòng lặp mass (ground loop) và lỗi watchdog OB80.</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ padding: '10px 14px', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px' }}>
+                        <strong style={{ fontSize: '13px', color: '#0f172a' }}>1. Kiến trúc vật lý & cách ly tín hiệu:</strong>
+                        <div style={{ fontSize: '12px', color: '#475569', marginTop: '2px', lineHeight: 1.45 }}>Phân biệt mạch cách ly quang 500V, đấu nối PNP/NPN và vòng dòng 4–20 mA.</div>
+                      </div>
+                      <div style={{ padding: '10px 14px', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px' }}>
+                        <strong style={{ fontSize: '13px', color: '#0f172a' }}>2. Chu kỳ quét xác định (Deterministic Scan):</strong>
+                        <div style={{ fontSize: '12px', color: '#475569', marginTop: '2px', lineHeight: 1.45 }}>Tổ chức ngắt tuần hoàn OB30 loại bỏ hoàn toàn hiện tượng jitter chu kỳ.</div>
+                      </div>
+                      <div style={{ padding: '10px 14px', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px' }}>
+                        <strong style={{ fontSize: '13px', color: '#0f172a' }}>3. Quy trình nghiệm thu & chẩn đoán lỗi:</strong>
+                        <div style={{ fontSize: '12px', color: '#475569', marginTop: '2px', lineHeight: 1.45 }}>Quy tắc chống rung tiếp điểm, xử lý vòng lặp mass và lỗi watchdog OB80.</div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -524,52 +541,52 @@ export default function TopicSlideDeck({
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
                 <div style={{ borderBottom: '1px solid #cbd5e1', paddingBottom: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                    <span style={{ width: 4, height: 14, background: '#0072BD', borderRadius: 2 }} />
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
+                    <span style={{ width: 4, height: 16, background: '#0072BD', borderRadius: 2 }} />
+                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
                       {TOPIC_SLIDES[1].category}
                     </span>
                   </div>
-                  <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                  <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.25 }}>
                     Bối Cảnh & Động Lực Kỹ Thuật Công Nghiệp: {currentTopic.title}
                   </h2>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '18px', flex: 1, alignItems: 'stretch', margin: '12px 0' }}>
-                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '22px', flex: 1, alignItems: 'stretch', margin: '14px 0' }}>
+                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '20px 22px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div>
-                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                      <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                         Thách Thức Kỹ Thuật Thực Tế:
                       </span>
-                      <h3 style={{ fontSize: '14.5px', fontWeight: 700, color: '#0f172a', margin: '0 0 8px 0' }}>
+                      <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a', margin: '0 0 10px 0' }}>
                         Khắc Phục Ràng Buộc Phần Cứng Cứng Nhắc & Thời Gian Dừng Dây Chuyền
                       </h3>
-                      <p style={{ fontSize: '12.5px', color: '#334155', lineHeight: 1.6, margin: 0 }}>
+                      <p style={{ fontSize: '15px', color: '#1e293b', lineHeight: 1.65, margin: 0 }}>
                         {section?.content ? section.content.split('. ').slice(0, 3).join('. ') + '.' : 'Trước khi điều khiển khả trình phổ biến, các nhà máy công nghiệp chịu tổn thất lớn do mỏi cơ khí relay, dây nối chằng chịt và thiếu giám sát từ xa.'}
                       </p>
                     </div>
 
-                    <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '12px 14px' }}>
-                      <span style={{ fontSize: '10.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
+                    <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '14px 16px', marginTop: '14px' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
                         Giá Trị Kỹ Thuật Của PLC Hiện Đại:
                       </span>
-                      <div style={{ fontSize: '12px', color: '#334155', lineHeight: 1.5 }}>
+                      <div style={{ fontSize: '14px', color: '#334155', lineHeight: 1.55 }}>
                         Loại bỏ rơ-le trung gian, thu gọn tủ điện &gt;80%, đảm bảo chu kỳ quét micro-giây xác định và tích hợp trực tiếp mạng truyền thông PROFINET / Modbus TCP.
                       </div>
                     </div>
                   </div>
 
-                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', marginBottom: '8px' }}>
+                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '18px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                    <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', marginBottom: '10px' }}>
                       Bảng So Sánh Công Nghệ:
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '4px', padding: '10px 12px' }}>
-                        <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#b91c1c', marginBottom: '2px' }}>Phương Pháp Rơ-le Truyền Thống</div>
-                        <div style={{ fontSize: '11px', color: '#475569' }}>Tiếp điểm cơ học mỏi theo thời gian, đấu dây cố định, thời gian sửa chữa dừng máy kéo dài, không có dữ liệu chẩn đoán.</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '12px 14px' }}>
+                        <div style={{ fontSize: '13px', fontWeight: 700, color: '#b91c1c', marginBottom: '4px' }}>Phương Pháp Rơ-le Truyền Thống</div>
+                        <div style={{ fontSize: '12.5px', color: '#475569', lineHeight: 1.5 }}>Tiếp điểm cơ học mỏi theo thời gian, đấu dây cố định, thời gian sửa chữa dừng máy kéo dài, không có dữ liệu chẩn đoán.</div>
                       </div>
-                      <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '10px 12px' }}>
-                        <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#15803d', marginBottom: '2px' }}>Kiến Trúc PLC Vi Điều Khiển</div>
-                        <div style={{ fontSize: '11px', color: '#475569' }}>Lập trình linh hoạt theo IEC 61131, chỉnh sửa online không dừng chuyền, giám sát tín hiệu qua SCADA/HMI.</div>
+                      <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '12px 14px' }}>
+                        <div style={{ fontSize: '13px', fontWeight: 700, color: '#15803d', marginBottom: '4px' }}>Kiến Trúc PLC Vi Điều Khiển</div>
+                        <div style={{ fontSize: '12.5px', color: '#475569', lineHeight: 1.5 }}>Lập trình linh hoạt theo IEC 61131, chỉnh sửa online không dừng chuyền, giám sát tín hiệu qua SCADA/HMI.</div>
                       </div>
                     </div>
                   </div>
@@ -584,49 +601,49 @@ export default function TopicSlideDeck({
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
                 <div style={{ borderBottom: '1px solid #cbd5e1', paddingBottom: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                    <span style={{ width: 4, height: 14, background: '#0072BD', borderRadius: 2 }} />
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
+                    <span style={{ width: 4, height: 16, background: '#0072BD', borderRadius: 2 }} />
+                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
                       {TOPIC_SLIDES[2].category}
                     </span>
                   </div>
-                  <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                  <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.25 }}>
                     Nguyên Lý Lý Thuyết Cốt Lõi: {currentTopic.title}
                   </h2>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '18px', flex: 1, alignItems: 'stretch', margin: '12px 0' }}>
-                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '22px', flex: 1, alignItems: 'stretch', margin: '14px 0' }}>
+                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '20px 22px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div>
-                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                      <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                         Cơ Sở Lý Thuyết & Luồng Tín Hiệu:
                       </span>
-                      <p style={{ fontSize: '13px', color: '#334155', lineHeight: 1.65, margin: 0 }}>
+                      <p style={{ fontSize: '15px', color: '#1e293b', lineHeight: 1.65, margin: 0 }}>
                         {section?.content || 'Nguyên lý lý thuyết mô tả quá trình thu thập tín hiệu vật lý, xử lý thuật toán tuần hoàn và xuất tín hiệu điều khiển ra cơ cấu chấp hành.'}
                       </p>
                     </div>
 
                     {section?.note && (
-                      <div style={{ padding: '10px 12px', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', fontSize: '11.5px', color: '#475569', lineHeight: 1.5 }}>
+                      <div style={{ marginTop: '14px', padding: '12px 14px', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', fontSize: '13px', color: '#475569', lineHeight: 1.5 }}>
                         <strong style={{ color: '#0f172a' }}>Lưu ý kỹ thuật:</strong> {section.note}
                       </div>
                     )}
                   </div>
 
-                  <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#0f172a', textTransform: 'uppercase', marginBottom: '8px' }}>
+                  <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '18px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a', textTransform: 'uppercase', marginBottom: '10px' }}>
                       Chu Trình Xử Lý Tín Hiệu Số:
                     </span>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontFamily: 'Consolas, monospace', fontSize: '11px' }}>
-                      <div style={{ padding: '8px 10px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '3px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontFamily: 'Consolas, monospace', fontSize: '12px' }}>
+                      <div style={{ padding: '10px 12px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '3px' }}>
                         01. Đại lượng vật lý (Nhiệt/Áp/Lưu lượng) ➔ Cảm biến đo lường
                       </div>
-                      <div style={{ padding: '8px 10px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '3px' }}>
+                      <div style={{ padding: '10px 12px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '3px' }}>
                         02. 24VDC / 4–20 mA ➔ Cách ly quang 500V & Bộ biến đổi ADC
                       </div>
-                      <div style={{ padding: '8px 10px', background: '#eff6ff', border: '1px solid #0072BD', borderRadius: '3px', color: '#0072BD', fontWeight: 700 }}>
+                      <div style={{ padding: '10px 12px', background: '#eff6ff', border: '1px solid #0072BD', borderRadius: '3px', color: '#0072BD', fontWeight: 700 }}>
                         03. Vùng nhớ ảnh quá trình (PII) ➔ CPU xử lý chương trình OB1 / OB30
                       </div>
-                      <div style={{ padding: '8px 10px', background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '3px', color: '#15803d', fontWeight: 700 }}>
+                      <div style={{ padding: '10px 12px', background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '3px', color: '#15803d', fontWeight: 700 }}>
                         04. Vùng nhớ ngõ ra (PIQ) ➔ Transistor / Relay kích chấp hành
                       </div>
                     </div>
@@ -639,58 +656,60 @@ export default function TopicSlideDeck({
           // Slide 3: System Schematics & Wiring (FIGURE 1.1)
           if (currentSlide === 3) {
             return (
-              <div style={{ display: 'grid', gridTemplateColumns: '1.15fr 1fr', gap: isFullscreen ? '28px' : '20px', alignItems: 'center', height: '100%', overflow: 'hidden' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', justifyContent: 'center' }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
-                      <span style={{ width: 4, height: 14, background: '#0072BD', borderRadius: 2 }} />
-                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
-                        {TOPIC_SLIDES[3].category}
-                      </span>
-                    </div>
-                    <h2 style={{ fontSize: '19px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-                      Sơ Đồ Hệ Thống & Đấu Nối Vật Lý: {currentTopic.title}
-                    </h2>
+              <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
+                <div style={{ borderBottom: '1px solid #cbd5e1', paddingBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                    <span style={{ width: 4, height: 16, background: '#0072BD', borderRadius: 2 }} />
+                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
+                      {TOPIC_SLIDES[3].category}
+                    </span>
                   </div>
-
-                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '14px 16px', borderLeft: '4px solid #0072BD' }}>
-                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', marginBottom: '4px' }}>
-                      Kiến Trúc Đầu Cổng I/O Công Nghiệp:
-                    </div>
-                    <p style={{ margin: 0, fontSize: '12.5px', color: '#334155', lineHeight: 1.6 }}>
-                      Ngõ vào số 24VDC sử dụng mạch bán dẫn PNP (sinking/sourcing) cách ly quang 500V. Kênh analog dùng cáp xoắn đôi có vỏ bọc chống nhiễu (STP) truyền dòng điện 4–20 mA hoặc điện áp 0–10V.
-                    </p>
-                  </div>
-
-                  <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '10px 12px', fontSize: '11.5px', color: '#475569' }}>
-                    <strong style={{ color: '#0f172a' }}>Quy tắc lắp đặt:</strong> Luôn nối chân 1M về cực âm 0VDC của bộ nguồn phụ SITOP để thiết lập mạch chuẩn cho ngõ vào số Type 1 theo IEC 61131.
-                  </div>
+                  <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.25 }}>
+                    Sơ Đồ Hệ Thống & Đấu Nối Vật Lý: {currentTopic.title}
+                  </h2>
                 </div>
 
-                {/* Right: Technical Schematic Visualizer */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '12px', height: '100%', maxHeight: isFullscreen ? '65vh' : '440px' }}>
-                  {diagram ? (
-                    <>
-                      <div
-                        onClick={() => setZoomImage(diagram.src)}
-                        style={{ width: '100%', height: '85%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-in' }}
-                        title="Nhấp để phóng to toàn màn hình sơ đồ"
-                      >
-                        <img
-                          src={asset(diagram.src)}
-                          alt={diagram.caption}
-                          style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: '4px', border: '1px solid #cbd5e1', background: '#ffffff' }}
-                        />
-                      </div>
-                      <p style={{ fontSize: '11.5px', color: '#475569', marginTop: '6px', textAlign: 'center', lineHeight: 1.35, fontWeight: 500 }}>
-                        {diagram.caption}
+                <div style={{ display: 'grid', gridTemplateColumns: '1.15fr 1fr', gap: '22px', flex: 1, alignItems: 'stretch', margin: '14px 0', minHeight: 0 }}>
+                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '20px 22px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                      <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', marginBottom: '6px', display: 'block' }}>
+                        Kiến Trúc Đầu Cổng I/O Công Nghiệp:
+                      </span>
+                      <p style={{ margin: 0, fontSize: '15px', color: '#1e293b', lineHeight: 1.65 }}>
+                        Ngõ vào số 24VDC sử dụng mạch bán dẫn PNP (sinking/sourcing) cách ly quang 500V. Kênh analog dùng cáp xoắn đôi có vỏ bọc chống nhiễu (STP) truyền dòng điện 4–20 mA hoặc điện áp 0–10V.
                       </p>
-                    </>
-                  ) : (
-                    <div style={{ textAlign: 'center', color: '#64748b' }}>
-                      <span style={{ fontSize: '13px', fontWeight: 600 }}>Sơ Đồ Kỹ Thuật Đang Tải</span>
                     </div>
-                  )}
+
+                    <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '12px 14px', fontSize: '13px', color: '#475569', marginTop: '14px' }}>
+                      <strong style={{ color: '#0f172a' }}>Quy tắc lắp đặt:</strong> Luôn nối chân 1M về cực âm 0VDC của bộ nguồn phụ SITOP để thiết lập mạch chuẩn cho ngõ vào số Type 1 theo IEC 61131.
+                    </div>
+                  </div>
+
+                  {/* Right: Technical Schematic Visualizer */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '14px', height: '100%' }}>
+                    {diagram ? (
+                      <>
+                        <div
+                          onClick={() => setZoomImage(diagram.src)}
+                          style={{ width: '100%', height: '88%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-in', background: '#ffffff', borderRadius: '4px', border: '1px solid #e2e8f0', overflow: 'hidden' }}
+                          title="Nhấp để phóng to toàn màn hình sơ đồ"
+                        >
+                          <img
+                            src={asset(diagram.src)}
+                            alt={diagram.caption}
+                            style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                          />
+                        </div>
+                        <p style={{ fontSize: '12px', color: '#475569', marginTop: '8px', textAlign: 'center', lineHeight: 1.35, fontWeight: 500, margin: '8px 0 0 0' }}>
+                          {diagram.caption}
+                        </p>
+                      </>
+                    ) : (
+                      <div style={{ textAlign: 'center', color: '#64748b' }}>
+                        <span style={{ fontSize: '14px', fontWeight: 600 }}>Sơ Đồ Kỹ Thuật Đang Tải</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             );
@@ -702,38 +721,38 @@ export default function TopicSlideDeck({
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
                 <div style={{ borderBottom: '1px solid #cbd5e1', paddingBottom: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                    <span style={{ width: 4, height: 14, background: '#0072BD', borderRadius: 2 }} />
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
+                    <span style={{ width: 4, height: 16, background: '#0072BD', borderRadius: 2 }} />
+                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
                       {TOPIC_SLIDES[4].category}
                     </span>
                   </div>
-                  <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                  <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.25 }}>
                     Quy Tắc Vận Hành & Khống Chế Kỹ Thuật: {currentTopic.title}
                   </h2>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', flex: 1, alignContent: 'center', margin: '10px 0' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '14px', flex: 1, alignContent: 'center', margin: '14px 0' }}>
                   {section?.keyPoints && section.keyPoints.length > 0 ? (
                     section.keyPoints.slice(0, 6).map((kp, idx) => {
                       const parts = kp.split(':');
                       const title = parts[0];
                       const desc = parts.slice(1).join(':').trim();
                       return (
-                        <div key={idx} style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '12px 14px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                        <div key={idx} style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '14px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                            <span style={{ width: 20, height: 20, borderRadius: '2px', background: '#0072BD', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700, flexShrink: 0 }}>
+                            <span style={{ width: 22, height: 22, borderRadius: '2px', background: '#0072BD', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700, flexShrink: 0 }}>
                               {String(idx + 1).padStart(2, '0')}
                             </span>
-                            <strong style={{ color: '#0f172a', fontSize: '12.5px' }}>{title}</strong>
+                            <strong style={{ color: '#0f172a', fontSize: '14px' }}>{title}</strong>
                           </div>
                           {desc && (
-                            <div style={{ color: '#334155', fontSize: '11.5px', lineHeight: 1.5, paddingLeft: '28px' }}>{desc}</div>
+                            <div style={{ color: '#334155', fontSize: '13px', lineHeight: 1.5, paddingLeft: '30px' }}>{desc}</div>
                           )}
                         </div>
                       );
                     })
                   ) : (
-                    <div style={{ color: '#64748b', fontSize: '12px' }}>Đang nạp các nguyên lý khống chế hệ thống.</div>
+                    <div style={{ color: '#64748b', fontSize: '13px' }}>Đang nạp các nguyên lý khống chế hệ thống.</div>
                   )}
                 </div>
               </div>
@@ -746,46 +765,46 @@ export default function TopicSlideDeck({
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
                 <div style={{ borderBottom: '1px solid #cbd5e1', paddingBottom: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                    <span style={{ width: 4, height: 14, background: '#0072BD', borderRadius: 2 }} />
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
+                    <span style={{ width: 4, height: 16, background: '#0072BD', borderRadius: 2 }} />
+                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
                       {TOPIC_SLIDES[5].category}
                     </span>
                   </div>
-                  <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                  <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.25 }}>
                     Mô Hình Toán Học & Ràng Buộc Rời Rạc Hóa: {currentTopic.title}
                   </h2>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '18px', flex: 1, alignItems: 'stretch', margin: '12px 0' }}>
-                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '22px', flex: 1, alignItems: 'stretch', margin: '14px 0' }}>
+                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '20px 22px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div>
-                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                      <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                         Phương Trình Điều Khiển & Quan Hệ Biến Số:
                       </span>
-                      <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '12px 14px', fontFamily: 'Consolas, monospace', fontSize: '13px', fontWeight: 700, color: '#0f172a', marginBottom: '10px' }}>
+                      <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '14px 16px', fontFamily: 'Consolas, monospace', fontSize: '14.5px', fontWeight: 700, color: '#0f172a', marginBottom: '12px' }}>
                         {caseStudy?.keyFormulaOrMetric || 'e(t) = SP(t) − PV(t) | Chu kỳ quét T_scan = T_input + T_logic + T_diag + T_output <= 10 ms'}
                       </div>
-                      <p style={{ fontSize: '12.5px', color: '#334155', lineHeight: 1.6, margin: 0 }}>
+                      <p style={{ fontSize: '14.5px', color: '#1e293b', lineHeight: 1.65, margin: 0 }}>
                         Tính toán thời gian thực đòi hỏi thời gian quét tồi nhất $T_{'{scan}'}$ phải luôn nhỏ hơn ngưỡng bảo vệ watchdog của CPU (mặc định 150 ms trong TIA Portal, tối ưu hóa &lt; 10 ms trong điều khiển đóng mở nhanh).
                       </p>
                     </div>
 
-                    <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '10px 12px', fontSize: '11.5px', color: '#475569' }}>
+                    <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '12px 14px', fontSize: '13px', color: '#475569', marginTop: '12px' }}>
                       <strong style={{ color: '#0f172a' }}>Tiêu chuẩn lấy mẫu Nyquist:</strong> Tần số lấy mẫu ngõ vào phải lớn hơn ít nhất 2 lần tần số động học cao nhất của đối tượng vật lý để tránh méo tín hiệu do hiện tượng aliasing.
                     </div>
                   </div>
 
-                  <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#0f172a', textTransform: 'uppercase' }}>
+                  <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '18px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a', textTransform: 'uppercase' }}>
                       Bảng Thông Số Kỹ Thuật Thời Gian Thực:
                     </span>
-                    <div style={{ padding: '8px 10px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '3px', fontSize: '11.5px' }}>
+                    <div style={{ padding: '10px 12px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '3px', fontSize: '13px' }}>
                       • <strong>Độ dao động chu kỳ (Jitter):</strong> &lt; 100 μs trên CPU Siemens S7-1200
                     </div>
-                    <div style={{ padding: '8px 10px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '3px', fontSize: '11.5px' }}>
+                    <div style={{ padding: '10px 12px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '3px', fontSize: '13px' }}>
                       • <strong>Độ phân giải ADC:</strong> 12-bit đến 16-bit (tương ứng 0..27648 đơn vị chuẩn)
                     </div>
-                    <div style={{ padding: '8px 10px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '3px', fontSize: '11.5px' }}>
+                    <div style={{ padding: '10px 12px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '3px', fontSize: '13px' }}>
                       • <strong>Độ trễ lọc quang (Optocoupler):</strong> 0.2 ms đến 12.8 ms (cấu hình trong Hardware Configuration)
                     </div>
                   </div>
@@ -800,55 +819,55 @@ export default function TopicSlideDeck({
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
                 <div style={{ borderBottom: '1px solid #cbd5e1', paddingBottom: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                    <span style={{ width: 4, height: 14, background: '#0072BD', borderRadius: 2 }} />
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
+                    <span style={{ width: 4, height: 16, background: '#0072BD', borderRadius: 2 }} />
+                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
                       {TOPIC_SLIDES[6].category}
                     </span>
                   </div>
-                  <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                  <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.25 }}>
                     Tình Huống Ứng Dụng Nhà Máy Thực Tế: {currentTopic.title}
                   </h2>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1.25fr 1fr', gap: '18px', flex: 1, alignItems: 'stretch', margin: '12px 0' }}>
-                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.25fr 1fr', gap: '22px', flex: 1, alignItems: 'stretch', margin: '14px 0' }}>
+                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '20px 22px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div>
-                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '6px', display: 'block' }}>
+                      <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '6px', display: 'block' }}>
                         Hiện Trường Ứng Dụng:
                       </span>
-                      <h3 style={{ fontSize: '14.5px', fontWeight: 700, color: '#0f172a', margin: '0 0 8px 0', lineHeight: 1.4 }}>
+                      <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a', margin: '0 0 10px 0', lineHeight: 1.4 }}>
                         {caseStudy?.caseTitle || `Dây chuyền tự động hóa công nghiệp: ${currentTopic.title}`}
                       </h3>
-                      <p style={{ fontSize: '12.5px', color: '#334155', lineHeight: 1.6, margin: 0 }}>
+                      <p style={{ fontSize: '15px', color: '#1e293b', lineHeight: 1.65, margin: 0 }}>
                         {caseStudy?.industryApplication || section?.content}
                       </p>
                     </div>
 
-                    <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '10px 12px' }}>
-                      <span style={{ fontSize: '10.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', display: 'block', marginBottom: '3px' }}>
+                    <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '12px 14px', marginTop: '12px' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', display: 'block', marginBottom: '3px' }}>
                         Chỉ Số Vận Hành Trọng Yếu:
                       </span>
-                      <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a', fontFamily: 'Consolas, monospace' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a', fontFamily: 'Consolas, monospace' }}>
                         {caseStudy?.keyFormulaOrMetric || 'Giảm thời gian dừng máy > 90% | MTBF > 80,000 giờ vận hành'}
                       </div>
                     </div>
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'space-between' }}>
-                    <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '12px 14px' }}>
-                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
+                    <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '14px 16px' }}>
+                      <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
                         Quy Chuẩn An Toàn & Lắp Đặt:
                       </span>
-                      <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.55 }}>
+                      <div style={{ fontSize: '13px', color: '#334155', lineHeight: 1.55 }}>
                         Tuân thủ tiêu chuẩn an toàn thiết bị IEC 61131-2, cách ly điện áp &gt;500 VAC và phân chia máng cáp độc lập giữa nguồn động lực 400VAC và tín hiệu điều khiển 24VDC.
                       </div>
                     </div>
 
-                    <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '12px 14px' }}>
-                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#0f172a', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
+                    <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '14px 16px' }}>
+                      <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
                         Phần Cứng Hiện Trường Triển Khai:
                       </span>
-                      <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '11.5px', color: '#475569', lineHeight: 1.5, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                      <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '12.5px', color: '#475569', lineHeight: 1.5, display: 'flex', flexDirection: 'column', gap: '3px' }}>
                         {(caseStudy?.fieldHardware || [
                           'CPU: Siemens SIMATIC S7-1200 1214C DC/DC/DC',
                           'Tín hiệu: 24VDC PNP, 4–20 mA Analog, PROFINET RT',
@@ -858,7 +877,7 @@ export default function TopicSlideDeck({
                       </ul>
                     </div>
 
-                    <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '10px 12px', fontSize: '11.5px', color: '#334155', lineHeight: 1.5 }}>
+                    <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '12px 14px', fontSize: '12.5px', color: '#334155', lineHeight: 1.5 }}>
                       <strong style={{ color: '#0f172a' }}>Bài học hiện trường:</strong> {caseStudy?.commonPitfall || 'Luôn đảm bảo điện trở nối đất bảo vệ (PE) < 10 ohm và tách biệt mass DC điều khiển M.'}
                     </div>
                   </div>
@@ -871,18 +890,16 @@ export default function TopicSlideDeck({
           if (currentSlide === 7) {
             return (
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
-                <div style={{ borderBottom: '1px solid #cbd5e1', paddingBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                      <span style={{ width: 4, height: 14, background: '#0072BD', borderRadius: 2 }} />
-                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
-                        {TOPIC_SLIDES[7].category}
-                      </span>
-                    </div>
-                    <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-                      Bàn Mô Phỏng Tương Tác: {currentTopic.title}
-                    </h2>
+                <div style={{ borderBottom: '1px solid #cbd5e1', paddingBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                    <span style={{ width: 4, height: 16, background: '#0072BD', borderRadius: 2 }} />
+                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
+                      {TOPIC_SLIDES[7].category}
+                    </span>
                   </div>
+                  <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.25 }}>
+                    Bàn Mô Phỏng Tương Tác: {currentTopic.title}
+                  </h2>
                 </div>
 
                 <div style={{ width: '100%', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '8px 0' }}>
@@ -900,59 +917,59 @@ export default function TopicSlideDeck({
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
                 <div style={{ borderBottom: '1px solid #cbd5e1', paddingBottom: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                    <span style={{ width: 4, height: 14, background: '#0072BD', borderRadius: 2 }} />
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
+                    <span style={{ width: 4, height: 16, background: '#0072BD', borderRadius: 2 }} />
+                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
                       {TOPIC_SLIDES[8].category}
                     </span>
                   </div>
-                  <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                  <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.25 }}>
                     Quy Trình Nghiệm Thu (SOP) & Ma Trận Xử Lý Sự Cố Hiện Trường
                   </h2>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '18px', flex: 1, alignContent: 'center', margin: '10px 0' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '22px', flex: 1, alignContent: 'center', margin: '14px 0' }}>
                   {/* Left: 4-Step Commissioning SOP */}
-                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '14px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', marginBottom: '8px' }}>
+                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', marginBottom: '10px' }}>
                       Quy Trình Nghiệm Thu 4 Bước (Commissioning SOP):
                     </span>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                      <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '3px', padding: '10px' }}>
-                        <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a', marginBottom: '2px' }}>1. Đo nguội (Cold Test)</div>
-                        <div style={{ fontSize: '11px', color: '#475569' }}>Cắt nguồn toàn bộ tủ. Đo kiểm tra thông mạch tiếp địa PE &lt; 10Ω và siết ốc chân domino.</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                      <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '3px', padding: '12px' }}>
+                        <div style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a', marginBottom: '3px' }}>1. Đo nguội (Cold Test)</div>
+                        <div style={{ fontSize: '12px', color: '#475569', lineHeight: 1.45 }}>Cắt nguồn toàn bộ tủ. Đo kiểm tra thông mạch tiếp địa PE &lt; 10Ω và siết ốc chân domino.</div>
                       </div>
-                      <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '3px', padding: '10px' }}>
-                        <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a', marginBottom: '2px' }}>2. Cấp nguồn 24VDC</div>
-                        <div style={{ fontSize: '11px', color: '#475569' }}>Đo điện áp bus DC (20.4–28.8V), kiểm tra LED báo nguồn và diode chống ngược cực.</div>
+                      <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '3px', padding: '12px' }}>
+                        <div style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a', marginBottom: '3px' }}>2. Cấp nguồn 24VDC</div>
+                        <div style={{ fontSize: '12px', color: '#475569', lineHeight: 1.45 }}>Đo điện áp bus DC (20.4–28.8V), kiểm tra LED báo nguồn và diode chống ngược cực.</div>
                       </div>
-                      <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '3px', padding: '10px' }}>
-                        <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a', marginBottom: '2px' }}>3. Thử vòng lặp I/O</div>
-                        <div style={{ fontSize: '11px', color: '#475569' }}>Force thử từng ngõ ra DO, kích cảm biến DI tại chỗ, xác nhận đèn LED cổng sáng đúng.</div>
+                      <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '3px', padding: '12px' }}>
+                        <div style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a', marginBottom: '3px' }}>3. Thử vòng lặp I/O</div>
+                        <div style={{ fontSize: '12px', color: '#475569', lineHeight: 1.45 }}>Force thử từng ngõ ra DO, kích cảm biến DI tại chỗ, xác nhận đèn LED cổng sáng đúng.</div>
                       </div>
-                      <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '3px', padding: '10px' }}>
-                        <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#15803d', marginBottom: '2px' }}>4. Chạy RUN online</div>
-                        <div style={{ fontSize: '11px', color: '#475569' }}>Nạp chương trình từ TIA Portal, chuyển CPU sang RUN và kiểm tra thời gian quét cycle time.</div>
+                      <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '3px', padding: '12px' }}>
+                        <div style={{ fontSize: '13px', fontWeight: 700, color: '#15803d', marginBottom: '3px' }}>4. Chạy RUN online</div>
+                        <div style={{ fontSize: '12px', color: '#475569', lineHeight: 1.45 }}>Nạp chương trình từ TIA Portal, chuyển CPU sang RUN và kiểm tra thời gian quét cycle time.</div>
                       </div>
                     </div>
                   </div>
 
                   {/* Right: 3-Point Fault Diagnostics */}
-                  <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '14px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#0f172a', textTransform: 'uppercase', marginBottom: '8px' }}>
+                  <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a', textTransform: 'uppercase', marginBottom: '10px' }}>
                       Ma Trận Sự Cố & Giải Pháp Sửa Chữa:
                     </span>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <div style={{ padding: '8px 10px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '3px' }}>
-                        <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#b91c1c' }}>Rung tiếp điểm cơ khí (Contact Bounce)</div>
-                        <div style={{ fontSize: '11px', color: '#475569' }}>Cài đặt bộ lọc phần mềm DI (6.4 ms mặc định) trong cấu hình phần cứng TIA Portal.</div>
+                      <div style={{ padding: '10px 12px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '3px' }}>
+                        <div style={{ fontSize: '12.5px', fontWeight: 700, color: '#b91c1c' }}>Rung tiếp điểm cơ khí (Contact Bounce)</div>
+                        <div style={{ fontSize: '12px', color: '#475569', marginTop: '2px' }}>Cài đặt bộ lọc phần mềm DI (6.4 ms mặc định) trong cấu hình phần cứng TIA Portal.</div>
                       </div>
-                      <div style={{ padding: '8px 10px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '3px' }}>
-                        <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#b45309' }}>Nhiễu vòng lặp mass (Ground Loop 50Hz)</div>
-                        <div style={{ fontSize: '11px', color: '#475569' }}>Chỉ nối vỏ bọc chống nhiễu tại một đầu tủ điện PLC, thả nổi đầu cảm biến.</div>
+                      <div style={{ padding: '10px 12px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '3px' }}>
+                        <div style={{ fontSize: '12.5px', fontWeight: 700, color: '#b45309' }}>Nhiễu vòng lặp mass (Ground Loop 50Hz)</div>
+                        <div style={{ fontSize: '12px', color: '#475569', marginTop: '2px' }}>Chỉ nối vỏ bọc chống nhiễu tại một đầu tủ điện PLC, thả nổi đầu cảm biến.</div>
                       </div>
-                      <div style={{ padding: '8px 10px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '3px' }}>
-                        <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD' }}>Quá chu kỳ Watchdog (Lỗi OB80)</div>
-                        <div style={{ fontSize: '11px', color: '#475569' }}>Xóa bỏ vòng lặp vô tận trong OB1; chuyển hàm tính toán nặng vào ngắt chu kỳ OB30.</div>
+                      <div style={{ padding: '10px 12px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '3px' }}>
+                        <div style={{ fontSize: '12.5px', fontWeight: 700, color: '#0072BD' }}>Quá chu kỳ Watchdog (Lỗi OB80)</div>
+                        <div style={{ fontSize: '12px', color: '#475569', marginTop: '2px' }}>Xóa bỏ vòng lặp vô tận trong OB1; chuyển hàm tính toán nặng vào ngắt chu kỳ OB30.</div>
                       </div>
                     </div>
                   </div>
@@ -967,23 +984,23 @@ export default function TopicSlideDeck({
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
                 <div style={{ borderBottom: '1px solid #cbd5e1', paddingBottom: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                    <span style={{ width: 4, height: 14, background: '#0072BD', borderRadius: 2 }} />
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
+                    <span style={{ width: 4, height: 16, background: '#0072BD', borderRadius: 2 }} />
+                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
                       {TOPIC_SLIDES[9].category}
                     </span>
                   </div>
-                  <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                  <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.25 }}>
                     Tổng Kết Chuyên Đề & Khuyến Nghị Vận Hành: {currentTopic.title}
                   </h2>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '18px', flex: 1, alignItems: 'stretch', margin: '12px 0' }}>
-                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '22px', flex: 1, alignItems: 'stretch', margin: '14px 0' }}>
+                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '20px 22px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div>
-                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#15803d', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                      <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#15803d', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
                         Năng Lực Kỹ Thuật Đạt Được:
                       </span>
-                      <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '12px', color: '#334155', lineHeight: 1.65, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '14.5px', color: '#1e293b', lineHeight: 1.7, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         <li>Hiểu rõ 5 thành phần cốt lõi của cấu trúc điều khiển tự động hóa.</li>
                         <li>Phân tích nguyên lý cách ly điện và luồng tín hiệu số qua ngõ I/O của S7-1200.</li>
                         <li>Áp dụng chu kỳ quét xác định để triệt tiêu hiện tượng tranh chấp tín hiệu.</li>
@@ -991,16 +1008,16 @@ export default function TopicSlideDeck({
                       </ul>
                     </div>
 
-                    <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '10px 12px', fontSize: '11.5px', color: '#15803d' }}>
+                    <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '12px 14px', fontSize: '13px', color: '#15803d', marginTop: '14px' }}>
                       <strong>Tiến độ môn học:</strong> Chuyên đề {currentIndex + 1} / {topics.length} đã hoàn thành. Sẵn sàng tiếp tục chuyên đề tiếp theo.
                     </div>
                   </div>
 
-                  <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '10px' }}>
-                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#0f172a', textTransform: 'uppercase' }}>
+                  <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '18px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '10px' }}>
+                    <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a', textTransform: 'uppercase' }}>
                       Tiêu Chuẩn Công Nghiệp Áp Dụng:
                     </div>
-                    <div style={{ fontSize: '11.5px', color: '#475569', lineHeight: 1.6 }}>
+                    <div style={{ fontSize: '13px', color: '#475569', lineHeight: 1.65 }}>
                       <div>• <strong>IEC 61131-2:</strong> Yêu cầu kỹ thuật và thử nghiệm phần cứng thiết bị</div>
                       <div>• <strong>IEC 61131-3:</strong> Quy chuẩn các ngôn ngữ lập trình PLC</div>
                       <div>• <strong>NEMA ICS 3:</strong> Quy chuẩn hệ thống điều khiển công nghiệp</div>
@@ -1022,96 +1039,198 @@ export default function TopicSlideDeck({
           // Slide 0: Chapter Overview & CLO
           if (currentSlide === 0) {
             return (
-              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '24px', alignItems: 'center', height: '100%' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', justifyContent: 'center' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ width: 4, height: 18, background: '#0072BD', borderRadius: 2 }} />
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
+                <div style={{ borderBottom: '1px solid #cbd5e1', paddingBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                    <span style={{ width: 4, height: 16, background: '#0072BD', borderRadius: 2 }} />
+                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
                       CHƯƠNG TRÌNH ĐÀO TẠO KỸ THUẬT · TỔNG QUAN TOÀN CHƯƠNG
                     </span>
                   </div>
-
-                  <h1 style={{ fontSize: isFullscreen ? '28px' : '23px', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.25 }}>
+                  <h1 style={{ fontSize: isFullscreen ? '28px' : '25px', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.25 }}>
                     {lessonTitle}
                   </h1>
-
-                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px 18px', borderLeft: '4px solid #0072BD' }}>
-                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', marginBottom: '6px' }}>
-                      Mục Tiêu Trọng Tâm Toàn Chương:
-                    </div>
-                    <p style={{ margin: 0, fontSize: '13px', color: '#334155', lineHeight: 1.65 }}>
-                      {chapterOverview || 'Chương này cung cấp kiến thức nền tảng và phương pháp thực hành chuyên sâu về kỹ thuật điều khiển tự động hóa bằng PLC, từ đấu nối mạch vật lý đến thuật toán điều khiển số.'}
-                    </p>
-                  </div>
                 </div>
 
-                <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '18px 20px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a', textTransform: 'uppercase', marginBottom: '10px' }}>
-                    Các Chuẩn Đầu Ra Cốt Lõi:
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '22px', flex: 1, alignItems: 'stretch', margin: '14px 0' }}>
+                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '20px 22px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                      <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', marginBottom: '8px', display: 'block' }}>
+                        Mục Tiêu Trọng Tâm Toàn Chương:
+                      </span>
+                      <p style={{ margin: 0, fontSize: '15.5px', color: '#1e293b', lineHeight: 1.65 }}>
+                        {chapterOverview || 'Chương này cung cấp kiến thức nền tảng và phương pháp thực hành chuyên sâu về kỹ thuật điều khiển tự động hóa bằng PLC, từ đấu nối mạch vật lý đến thuật toán điều khiển số.'}
+                      </p>
+                    </div>
                   </div>
-                  <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '12px', color: '#334155', lineHeight: 1.6, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    {(chapterObjectives.length > 0 ? chapterObjectives : [
-                      'Làm chủ kiến trúc vi điều khiển của PLC Siemens SIMATIC S7-1200.',
-                      'Thiết kế sơ đồ đấu nối cách ly I/O theo tiêu chuẩn công nghiệp.',
-                      'Triển khai các khối hàm điều khiển thời gian thực qua TIA Portal.',
-                      'Chẩn đoán, khắc phục sự cố và bảo trì hệ thống điều khiển tự động.',
-                    ]).map((obj, oIdx) => (
-                      <li key={oIdx}>{obj}</li>
-                    ))}
-                  </ul>
+
+                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '18px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                    <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a', textTransform: 'uppercase', marginBottom: '10px' }}>
+                      Các Chuẩn Đầu Ra Cốt Lõi:
+                    </div>
+                    <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '14px', color: '#334155', lineHeight: 1.65, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      {(chapterObjectives.length > 0 ? chapterObjectives : [
+                        'Làm chủ kiến trúc vi điều khiển của PLC Siemens SIMATIC S7-1200.',
+                        'Thiết kế sơ đồ đấu nối cách ly I/O theo tiêu chuẩn công nghiệp.',
+                        'Triển khai các khối hàm điều khiển thời gian thực qua TIA Portal.',
+                        'Chẩn đoán, khắc phục sự cố và bảo trì hệ thống điều khiển tự động.',
+                      ]).map((obj, oIdx) => (
+                        <li key={oIdx}>{obj}</li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </div>
             );
           }
 
-          // Slide 1..N: Curriculum Sections
+          // Slide 1..N: Curriculum Sections (DYNAMIC BALANCED 2-COLUMN PRESENTATION)
           if (currentSlide >= 1 && currentSlide <= chapterSections.length) {
-            const sec = chapterSections[currentSlide - 1];
-            const secDiagram = allDiagrams[sec.title] || (currentSlide === 1 ? diagram : null);
+            const secIndex = currentSlide - 1;
+            const sec = chapterSections[secIndex];
+            const secDiagram = getSectionDiagram(secIndex, sec.title);
+            const hasDiagram = !!secDiagram;
+            const keyPoints = sec.keyPoints || [];
 
             return (
-              <div style={{ display: 'grid', gridTemplateColumns: secDiagram ? '1.15fr 1fr' : '1fr', gap: '20px', alignItems: 'center', height: '100%', overflow: 'hidden' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', justifyContent: 'center' }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
-                      <span style={{ width: 4, height: 14, background: '#0072BD', borderRadius: 2 }} />
-                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
-                        NỘI DUNG CHUYÊN ĐỀ {currentSlide} / {chapterSections.length}
+              <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
+                {/* Section Header */}
+                <div style={{ borderBottom: '1px solid #cbd5e1', paddingBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                    <span style={{ width: 4, height: 16, background: '#0072BD', borderRadius: 2 }} />
+                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      NỘI DUNG CHUYÊN ĐỀ {String(currentSlide).padStart(2, '0')} / {String(chapterSections.length).padStart(2, '0')}
+                    </span>
+                  </div>
+                  <h2 style={{ fontSize: isFullscreen ? '26px' : '23px', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.25 }}>
+                    {sec.title}
+                  </h2>
+                </div>
+
+                {/* Main Content Area: Stretched 2 Columns */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: hasDiagram ? '1.15fr 1fr' : (keyPoints.length > 0 ? '1.1fr 1fr' : '1fr'),
+                  gap: '22px',
+                  flex: 1,
+                  alignItems: 'stretch',
+                  margin: '14px 0',
+                  minHeight: 0,
+                }}>
+                  {/* Left Column: Core Formulation & Definition */}
+                  <div style={{
+                    background: '#f8fafc',
+                    border: '1px solid #cbd5e1',
+                    borderRadius: '4px',
+                    padding: '18px 22px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                  }}>
+                    <div>
+                      <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
+                        Định Nghĩa Tiêu Chuẩn & Nguyên Lý Hoạt Động:
                       </span>
+                      <p style={{ margin: 0, fontSize: '15.5px', color: '#1e293b', lineHeight: 1.65 }}>
+                        {sec.content}
+                      </p>
                     </div>
-                    <h2 style={{ fontSize: '19px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-                      {sec.title}
-                    </h2>
+
+                    {hasDiagram && keyPoints.length > 0 && (
+                      <div style={{ marginTop: '14px', borderTop: '1px solid #e2e8f0', paddingTop: '10px' }}>
+                        <span style={{ fontSize: '11px', fontWeight: 700, color: '#0f172a', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                          Đặc Tính Kỹ Thuật Trọng Tâm:
+                        </span>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                          {keyPoints.slice(0, 3).map((kp, kIdx) => (
+                            <div key={kIdx} style={{ fontSize: '13px', color: '#334155', display: 'flex', gap: '6px', lineHeight: 1.45 }}>
+                              <span style={{ color: '#0072BD', fontWeight: 700 }}>•</span>
+                              <span>{kp}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {sec.note && (
+                      <div style={{ marginTop: '12px', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '10px 14px', fontSize: '13px', color: '#475569' }}>
+                        <strong style={{ color: '#0f172a' }}>Lưu ý kỹ thuật:</strong> {sec.note}
+                      </div>
+                    )}
                   </div>
 
-                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '14px 16px', borderLeft: '4px solid #0072BD' }}>
-                    <p style={{ margin: 0, fontSize: '13px', color: '#334155', lineHeight: 1.65 }}>
-                      {sec.content}
-                    </p>
-                  </div>
-
-                  {sec.note && (
-                    <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '10px 12px', fontSize: '11.5px', color: '#475569' }}>
-                      <strong style={{ color: '#0f172a' }}>Ghi chú kỹ thuật:</strong> {sec.note}
+                  {/* Right Column: High-Resolution Technical Diagram OR Structured Cards */}
+                  {hasDiagram ? (
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: '#f8fafc',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '4px',
+                      padding: '14px',
+                      height: '100%',
+                    }}>
+                      <div
+                        onClick={() => setZoomImage(secDiagram.src)}
+                        style={{ width: '100%', height: '88%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-in', background: '#ffffff', borderRadius: '4px', border: '1px solid #e2e8f0', overflow: 'hidden' }}
+                        title="Nhấp để phóng to toàn màn hình sơ đồ kỹ thuật"
+                      >
+                        <img
+                          src={asset(secDiagram.src)}
+                          alt={secDiagram.caption}
+                          style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                        />
+                      </div>
+                      <p style={{ fontSize: '12px', color: '#475569', marginTop: '8px', textAlign: 'center', lineHeight: 1.35, fontWeight: 500, margin: '8px 0 0 0' }}>
+                        {secDiagram.caption}
+                      </p>
+                    </div>
+                  ) : (
+                    <div style={{
+                      background: '#ffffff',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '4px',
+                      padding: '18px 20px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                    }}>
+                      <div>
+                        <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a', textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>
+                          Các Tiêu Chuẩn & Yêu Cầu Kỹ Thuật:
+                        </span>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {keyPoints.length > 0 ? (
+                            keyPoints.map((kp, kIdx) => {
+                              const parts = kp.split(':');
+                              const kpTitle = parts[0];
+                              const kpDesc = parts.slice(1).join(':').trim();
+                              return (
+                                <div key={kIdx} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '4px', padding: '10px 12px' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                                    <span style={{ width: 22, height: 22, borderRadius: '2px', background: '#0072BD', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700, flexShrink: 0 }}>
+                                      {String(kIdx + 1).padStart(2, '0')}
+                                    </span>
+                                    <strong style={{ fontSize: '13.5px', color: '#0f172a' }}>{kpTitle}</strong>
+                                  </div>
+                                  {kpDesc && (
+                                    <div style={{ fontSize: '12.5px', color: '#334155', paddingLeft: '30px', lineHeight: 1.5 }}>
+                                      {kpDesc}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })
+                          ) : (
+                            <div style={{ fontSize: '13px', color: '#64748b' }}>Tiêu chuẩn công nghiệp theo IEC 61131.</div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
-
-                {secDiagram && (
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '12px', height: '100%', maxHeight: '420px' }}>
-                    <div
-                      onClick={() => setZoomImage(secDiagram.src)}
-                      style={{ width: '100%', height: '85%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-in' }}
-                    >
-                      <img
-                        src={asset(secDiagram.src)}
-                        alt={secDiagram.caption}
-                        style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: '4px', border: '1px solid #cbd5e1', background: '#ffffff' }}
-                      />
-                    </div>
-                    <p style={{ fontSize: '11px', color: '#475569', marginTop: '6px', textAlign: 'center' }}>{secDiagram.caption}</p>
-                  </div>
-                )}
               </div>
             );
           }
@@ -1122,12 +1241,12 @@ export default function TopicSlideDeck({
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
                 <div style={{ borderBottom: '1px solid #cbd5e1', paddingBottom: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                    <span style={{ width: 4, height: 14, background: '#0072BD', borderRadius: 2 }} />
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
+                    <span style={{ width: 4, height: 16, background: '#0072BD', borderRadius: 2 }} />
+                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
                       BÀN MÔ PHỎNG TƯƠNG TÁC
                     </span>
                   </div>
-                  <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                  <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.25 }}>
                     Mô Phỏng Quá Trình Thời Gian Thực: {lessonTitle}
                   </h2>
                 </div>
@@ -1147,32 +1266,32 @@ export default function TopicSlideDeck({
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
                 <div style={{ borderBottom: '1px solid #cbd5e1', paddingBottom: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                    <span style={{ width: 4, height: 14, background: '#0072BD', borderRadius: 2 }} />
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
+                    <span style={{ width: 4, height: 16, background: '#0072BD', borderRadius: 2 }} />
+                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
                       QUY TRÌNH NGHIỆM THU HIỆN TRƯỜNG
                     </span>
                   </div>
-                  <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                  <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.25 }}>
                     Bảng Kiểm Nghiệm Thu & An Toàn: {lessonTitle}
                   </h2>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', flex: 1, alignContent: 'center', margin: '10px 0' }}>
-                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '14px' }}>
-                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#0072BD', marginBottom: '4px' }}>1. Đo nguội</div>
-                    <div style={{ fontSize: '11px', color: '#475569', lineHeight: 1.5 }}>Đo kiểm tra thông mạch tiếp địa PE &lt; 10Ω và siết ốc chân domino.</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px', flex: 1, alignContent: 'center', margin: '14px 0' }}>
+                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#0072BD', marginBottom: '4px' }}>1. Đo nguội</div>
+                    <div style={{ fontSize: '12px', color: '#475569', lineHeight: 1.5 }}>Đo kiểm tra thông mạch tiếp địa PE &lt; 10Ω và siết ốc chân domino.</div>
                   </div>
-                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '14px' }}>
-                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#0072BD', marginBottom: '4px' }}>2. Cấp nguồn 24VDC</div>
-                    <div style={{ fontSize: '11px', color: '#475569', lineHeight: 1.5 }}>Đo điện áp bus DC (20.4–28.8V) và kiểm tra LED nguồn CPU.</div>
+                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#0072BD', marginBottom: '4px' }}>2. Cấp nguồn 24VDC</div>
+                    <div style={{ fontSize: '12px', color: '#475569', lineHeight: 1.5 }}>Đo điện áp bus DC (20.4–28.8V) và kiểm tra LED nguồn CPU.</div>
                   </div>
-                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '14px' }}>
-                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#0072BD', marginBottom: '4px' }}>3. Thử vòng lặp I/O</div>
-                    <div style={{ fontSize: '11px', color: '#475569', lineHeight: 1.5 }}>Force ngõ ra DO, kích cảm biến DI tại chỗ, kiểm tra dòng 4–20 mA.</div>
+                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#0072BD', marginBottom: '4px' }}>3. Thử vòng lặp I/O</div>
+                    <div style={{ fontSize: '12px', color: '#475569', lineHeight: 1.5 }}>Force ngõ ra DO, kích cảm biến DI tại chỗ, kiểm tra dòng 4–20 mA.</div>
                   </div>
-                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '14px' }}>
-                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#15803d', marginBottom: '4px' }}>4. Vận hành RUN</div>
-                    <div style={{ fontSize: '11px', color: '#475569', lineHeight: 1.5 }}>Nạp chương trình từ TIA Portal, kiểm tra scan time và interlock dừng khẩn.</div>
+                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#15803d', marginBottom: '4px' }}>4. Vận hành RUN</div>
+                    <div style={{ fontSize: '12px', color: '#475569', lineHeight: 1.5 }}>Nạp chương trình từ TIA Portal, kiểm tra scan time và interlock dừng khẩn.</div>
                   </div>
                 </div>
               </div>
@@ -1185,31 +1304,31 @@ export default function TopicSlideDeck({
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
                 <div style={{ borderBottom: '1px solid #cbd5e1', paddingBottom: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                    <span style={{ width: 4, height: 14, background: '#0072BD', borderRadius: 2 }} />
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
+                    <span style={{ width: 4, height: 16, background: '#0072BD', borderRadius: 2 }} />
+                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
                       CHẨN ĐOÁN LỖI & SỰ CỐ
                     </span>
                   </div>
-                  <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                  <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.25 }}>
                     Ma Trận Chẩn Đoán Lỗi Phần Cứng & Phần Mềm: {lessonTitle}
                   </h2>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', flex: 1, alignContent: 'center', margin: '10px 0' }}>
-                  <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '14px' }}>
-                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#b91c1c', marginBottom: '4px' }}>Rung tiếp điểm DI</div>
-                    <p style={{ margin: '0 0 6px 0', fontSize: '11px', color: '#475569', lineHeight: 1.5 }}>Tiếp điểm cơ học dao động 2–5 ms khi đóng, tạo xung giả vào bộ đếm tốc độ cao HSC.</p>
-                    <div style={{ fontSize: '10.5px', color: '#15803d', fontWeight: 600 }}>Khắc phục: Cài đặt lọc DI 6.4 ms trong TIA Portal.</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px', flex: 1, alignContent: 'center', margin: '14px 0' }}>
+                  <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#b91c1c', marginBottom: '4px' }}>Rung tiếp điểm DI</div>
+                    <p style={{ margin: '0 0 6px 0', fontSize: '12px', color: '#475569', lineHeight: 1.5 }}>Tiếp điểm cơ học dao động 2–5 ms khi đóng, tạo xung giả vào bộ đếm tốc độ cao HSC.</p>
+                    <div style={{ fontSize: '11.5px', color: '#15803d', fontWeight: 600 }}>Khắc phục: Cài đặt lọc DI 6.4 ms trong TIA Portal.</div>
                   </div>
-                  <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '14px' }}>
-                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#b45309', marginBottom: '4px' }}>Vòng lặp mass Analog (AI)</div>
-                    <p style={{ margin: '0 0 6px 0', fontSize: '11px', color: '#475569', lineHeight: 1.5 }}>Nối vỏ bọc ở cả hai đầu sinh dòng tuần hoàn 50Hz, làm sai lệch giá trị đo &gt;15%.</p>
-                    <div style={{ fontSize: '10.5px', color: '#15803d', fontWeight: 600 }}>Khắc phục: Chỉ nối mass vỏ bọc tại tủ điện PLC.</div>
+                  <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#b45309', marginBottom: '4px' }}>Vòng lặp mass Analog (AI)</div>
+                    <p style={{ margin: '0 0 6px 0', fontSize: '12px', color: '#475569', lineHeight: 1.5 }}>Nối vỏ bọc ở cả hai đầu sinh dòng tuần hoàn 50Hz, làm sai lệch giá trị đo &gt;15%.</p>
+                    <div style={{ fontSize: '11.5px', color: '#15803d', fontWeight: 600 }}>Khắc phục: Chỉ nối mass vỏ bọc tại tủ điện PLC.</div>
                   </div>
-                  <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '14px' }}>
-                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#0072BD', marginBottom: '4px' }}>Quá thời gian quét OB80</div>
-                    <p style={{ margin: '0 0 6px 0', fontSize: '11px', color: '#475569', lineHeight: 1.5 }}>Vòng lặp tính toán trong OB1 vượt quá 150 ms dẫn đến CPU chuyển STOP khẩn.</p>
-                    <div style={{ fontSize: '10.5px', color: '#15803d', fontWeight: 600 }}>Khắc phục: Chuyển tác vụ tính toán vào ngắt OB30.</div>
+                  <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#0072BD', marginBottom: '4px' }}>Quá thời gian quét OB80</div>
+                    <p style={{ margin: '0 0 6px 0', fontSize: '12px', color: '#475569', lineHeight: 1.5 }}>Vòng lặp tính toán trong OB1 vượt quá 150 ms dẫn đến CPU chuyển STOP khẩn.</p>
+                    <div style={{ fontSize: '11.5px', color: '#15803d', fontWeight: 600 }}>Khắc phục: Chuyển tác vụ tính toán vào ngắt OB30.</div>
                   </div>
                 </div>
               </div>
@@ -1222,23 +1341,23 @@ export default function TopicSlideDeck({
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
                 <div style={{ borderBottom: '1px solid #cbd5e1', paddingBottom: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                    <span style={{ width: 4, height: 14, background: '#0072BD', borderRadius: 2 }} />
-                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
+                    <span style={{ width: 4, height: 16, background: '#0072BD', borderRadius: 2 }} />
+                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase' }}>
                       TỔNG KẾT TOÀN BỘ CHƯƠNG
                     </span>
                   </div>
-                  <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                  <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.25 }}>
                     Tổng Kết Nội Dung Chương & Hướng Phát Triển: {lessonTitle}
                   </h2>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '18px', flex: 1, alignItems: 'stretch', margin: '12px 0' }}>
-                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '22px', flex: 1, alignItems: 'stretch', margin: '14px 0' }}>
+                  <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '20px 22px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div>
-                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#15803d', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                      <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#15803d', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                         Các Điểm Cốt Lõi Cần Nhớ:
                       </span>
-                      <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '12px', color: '#334155', lineHeight: 1.65, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '14px', color: '#334155', lineHeight: 1.7, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         <li>Hiểu nguyên lý hoạt động của các đối tượng công nghệ điều khiển PLC.</li>
                         <li>Nắm vững phương pháp bảo vệ chống bão hòa và chuyển đổi không giật bumpless.</li>
                         <li>Tuân thủ tuyệt đối quy định an toàn điện và tiếp địa công nghiệp.</li>
@@ -1246,11 +1365,11 @@ export default function TopicSlideDeck({
                     </div>
                   </div>
 
-                  <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#0f172a', textTransform: 'uppercase', marginBottom: '8px' }}>
+                  <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '18px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                    <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a', textTransform: 'uppercase', marginBottom: '8px' }}>
                       Định Hướng Thực Hành Tiếp Theo:
                     </div>
-                    <div style={{ fontSize: '11.5px', color: '#475569', lineHeight: 1.6 }}>
+                    <div style={{ fontSize: '13px', color: '#475569', lineHeight: 1.65 }}>
                       Hoàn thiện chương trình PLC trên TIA Portal, kết nối mô phỏng với PLCSIM và kiểm tra đáp ứng quá trình với bộ thông số đã tính toán.
                     </div>
                   </div>
@@ -1515,7 +1634,7 @@ export default function TopicSlideDeck({
               <div style={{ fontSize: '11px', fontWeight: 700, color: '#0072BD', textTransform: 'uppercase', marginBottom: '6px' }}>
                 Gợi Ý Giảng Giải (Speaking Cue):
               </div>
-              <p style={{ margin: 0, fontSize: '12px', color: '#334155', lineHeight: 1.6 }}>
+              <p style={{ margin: 0, fontSize: '13px', color: '#334155', lineHeight: 1.6 }}>
                 {caseStudy?.speakingCue || 'Nhấn mạnh cho sinh viên nguyên lý vật lý của đối tượng điều khiển, liên kết trực tiếp giữa mô hình toán học và phần cứng thực tế.'}
               </p>
             </div>
@@ -1524,7 +1643,7 @@ export default function TopicSlideDeck({
               <div style={{ fontSize: '11px', fontWeight: 700, color: '#0f172a', textTransform: 'uppercase', marginBottom: '6px' }}>
                 Lưu Ý Trọng Tâm Lớp Học:
               </div>
-              <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '11.5px', color: '#475569', lineHeight: 1.55, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '12.5px', color: '#475569', lineHeight: 1.55, display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 <li>Nhắc lại định luật Kirchhoff và dòng rò trong mạch cách ly quang.</li>
                 <li>Phân biệt giữa thời gian trễ phần cứng (hardware delay) và chu kỳ lấy mẫu phần mềm.</li>
                 <li>Hướng dẫn sinh viên cách tra cứu Diagnostic Buffer khi CPU báo lỗi STOP.</li>
@@ -1536,7 +1655,7 @@ export default function TopicSlideDeck({
                 <div style={{ fontSize: '11px', fontWeight: 700, color: '#b91c1c', textTransform: 'uppercase', marginBottom: '4px' }}>
                   Lỗi Hiện Trường Hay Gặp:
                 </div>
-                <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.5 }}>
+                <div style={{ fontSize: '12.5px', color: '#334155', lineHeight: 1.5 }}>
                   {caseStudy.commonPitfall}
                 </div>
               </div>
@@ -1546,7 +1665,7 @@ export default function TopicSlideDeck({
               <div style={{ fontSize: '11px', fontWeight: 700, color: '#0f172a', textTransform: 'uppercase', marginBottom: '6px' }}>
                 Bảng Phím Tắt Trình Chiếu:
               </div>
-              <div style={{ fontSize: '11px', color: '#475569', lineHeight: 1.6 }}>
+              <div style={{ fontSize: '12px', color: '#475569', lineHeight: 1.6 }}>
                 <div>• <strong>Space / →:</strong> Chuyển bước / Slide tiếp</div>
                 <div>• <strong>←:</strong> Lùi slide trước</div>
                 <div>• <strong>Home / End:</strong> Về slide đầu / cuối</div>
