@@ -9,7 +9,8 @@
     "lint": "eslint",
     "narration": "node scripts/narration-check.mjs",
     "narration:missing": "node scripts/narration-check.mjs --missing",
-    "narration:prompt": "node scripts/narration-check.mjs --prompt"
+    "narration:prompt": "node scripts/narration-check.mjs --prompt",
+    "migrate:content": "node scripts/migrate-content.mjs"
   },
 
   "dependencies": {
