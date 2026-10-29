@@ -68,5 +68,34 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-10"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "The PLC Scan Cycle and Process Image Tables",
+      "points": [
+        "Phase 1 (Input Scan): Transfers instantaneous states of all physical digital inputs into the PII RAM table",
+        "Phase 2 (Program Execution): The CPU evaluates OB1 networks sequentially; ensures data consistency across the entire rung execution",
+        "Phase 3 (Housekeeping & Comms): Services background self-tests, PROFINET network stacks, and HMI polling requests",
+        "Phase 4 (Output Scan): Transfers the contents of the PIQ image table to physical relay/transistor output terminals",
+        "\"Last-Write Wins\" Principle: If a digital coil %Q0.0 is written TRUE in Network 1, but overwritten FALSE in Network 5 within the same scan, the physical output will be DE-ENERGIZED!",
+        "Immediate I/O (e.g. %I0.0:P, %Q0.0:P): Bypasses image tables to access physical hardware pins immediately, but incurs CPU scan time penalties"
+      ],
+      "explain": "A PLC does not execute program code once and terminate; rather, it loops perpetually through a deterministic, real-time sequence known as the Scan Cycle. A standard scan cycle comprises 4 sequential phases: (1) Input Scan: The CPU polls all physical input terminals and snapshots their instantaneous states into the Process Image Input (PII) memory buffer; (2) Program Execution: The CPU evaluates user networks in OB1 top-to-bottom, reading exclusively from PII and storing intermediate results in local memory and the Process Image Output (PIQ); (3) Housekeeping & Diagnostics: The CPU performs internal self-tests and processes communication requests from TIA Portal and HMI panels; (4) Output Scan: The CPU writes the contents of PIQ simultaneously to the physical output hardware terminals. Because logic evaluates the PII snapshot rather than physical pins directly, transient input pulses narrower than the scan time can be completely missed by the CPU.",
+      "figure": {
+        "src": "/images/diagrams/plc-scan-cycle.jpg",
+        "caption": "Figure 1.8: Deterministic 4-Phase PLC Scan Cycle & Process Image Registers (PII / PIQ)"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 1
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

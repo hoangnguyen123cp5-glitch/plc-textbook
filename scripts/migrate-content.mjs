@@ -79,6 +79,7 @@ const rawLessonContent = lessonContentMod.lessonContent || {};
 // Nguồn 3: data/topic-case-studies.ts
 const caseStudiesMod = requireTs('src/data/topic-case-studies.ts');
 const rawCaseStudies = caseStudiesMod.TOPIC_CASE_STUDIES || {};
+const slideStats = { total: 0 };
 
 // Nguồn 4: app/lessons/[slug]/[topic]/page.tsx (TOPIC_DIAGRAMS)
 function getTopicDiagrams() {
@@ -337,6 +338,26 @@ export default ${JSON.stringify(lessonFileObj, null, 2)} satisfies LessonContent
       video = { startSec: lessonVideo.chapters[topic.slug] };
     }
 
+    // Sinh slides[] (GĐ1b): body → concept, figure gắn vào concept chưa có figure,
+    // figure dư → diagram, mỗi câu quiz → slide quiz ở cuối. Không sinh 'practice'.
+    const slides = [];
+    for (const sec of body) {
+      slides.push({
+        kind: 'concept',
+        title: (sec.heading || title).replace(/^\d+\.\d+\s*/, ''),
+        ...(sec.keyPoints && sec.keyPoints.length ? { points: sec.keyPoints } : {}),
+        ...(sec.text ? { explain: sec.text } : {}),
+      });
+    }
+    for (const fig of figures || []) {
+      const free = slides.find((sl) => sl.kind === 'concept' && !sl.figure);
+      if (free) free.figure = fig;
+      else slides.push({ kind: 'diagram', title: fig.caption, figure: fig });
+    }
+    (quiz || []).forEach((_, qi) => slides.push({ kind: 'quiz', title: 'Kiểm tra nhanh', questionIndex: qi }));
+    slideStats.total += slides.length;
+    for (const sl of slides) slideStats[sl.kind] = (slideStats[sl.kind] || 0) + 1;
+
     // Xây dựng đối tượng TopicContent
     const topicObj = {
       slug: topic.slug,
@@ -350,6 +371,7 @@ export default ${JSON.stringify(lessonFileObj, null, 2)} satisfies LessonContent
       ...(quiz ? { quiz } : {}),
       ...(narration ? { narration } : {}),
       ...(video ? { video } : {}),
+      ...(slides.length ? { slides } : {}),
       status: 'review',
     };
 
@@ -421,3 +443,4 @@ console.log('');
 console.log('Tổng số file sinh ra:', generatedFiles.length);
 console.log('  - File bài học (_lesson.ts):', statsAfter.lessons);
 console.log('  - File chuyên đề (*.ts):', statsAfter.topics);
+console.log('Slides sinh ra:', JSON.stringify(slideStats));

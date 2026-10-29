@@ -47,5 +47,30 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Position Control with Motion Control",
+      "points": [
+        "Pulse Train Output (PTO) Topology: Outputs pulse train on %Q0.0 (frequency represents velocity; pulse count represents displacement) and direction signal on %Q0.1",
+        "Axis Technology Object (TO_Axis): Graphical configuration tool parameterizing mechanical pitch, acceleration ramps, jerk filtering, and limits",
+        "PLCopen Motion Standard: Vendor-independent motion blocks ensuring portable, standardized programming across diverse drive platforms",
+        "MC_Power: Authorizes and enables the drive power stage; must remain active throughout all axis positioning commands",
+        "MC_Home: Synchronizes the logical software coordinate system with physical mechanical datum using limit switches and encoder zero markers",
+        "MC_MoveAbsolute vs MC_MoveRelative: Absolute moves travel to an exact position relative to origin (X = 250.0 mm); Relative moves advance by a distance increment (+50.0 mm)",
+        "S-Curve Jerk Limiting: Smooths acceleration transitions to eliminate mechanical vibration, belt slipping, and structural stress on mechanical carriages"
+      ],
+      "explain": "For high-precision positioning applications—such as pick-and-place linear gantries, indexing rotary tables, and ball-screw packaging feeds—the S7-1200 incorporates Pulse Train Output (PTO) motion control conforming to standardized PLCopen specifications. In PTO mode, the hardware pulse generator outputs a train of discrete square-wave pulses where each pulse commands the motor drive to step by an exact mechanical increment (e.g. 0.01 mm). The pulse frequency governs rotational speed, while the total pulse count commands absolute travel distance. In TIA Portal, motion control is engineered using Axis Technology Objects (TO_Axis). The engineer parameterizes the mechanical kinematics (screw lead, gear ratios), velocity limits, S-curve jerk-limiting acceleration/deceleration ramps, and software/hardware end-of-travel limit switches. Control logic is executed using standardized PLCopen function blocks: MC_Power (energizes the servo drive), MC_Reset (clears drive alarm faults), MC_Home (executes active or passive zero-datum calibration using the encoder Z pulse), MC_MoveJog (manual velocity jog for maintenance), MC_MoveAbsolute (travels to an exact coordinate coordinate), and MC_MoveRelative (advances by a relative distance delta).",
+      "figure": {
+        "src": "/images/slides/09-high-speed-counting/PL___Slide_4_014.jpeg",
+        "caption": "Figure 9.4: Pulse Train Output (PTO) & PLCopen Motion Technology Objects (MC_Power, MC_MoveAbsolute)"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

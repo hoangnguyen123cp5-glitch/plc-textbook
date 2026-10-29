@@ -46,5 +46,29 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Omron and Mitsubishi PLCs",
+      "points": [
+        "Omron CP Series Architecture: Compact DIN-rail form factor; USB/Ethernet programming ports; expandable with CPM1A-style expansion I/O blocks",
+        "Mitsubishi MELSEC FX Series: FX3U (RS422 mini-DIN programming port, modular expansion) and FX5U (embedded Ethernet, 4-axis 200kHz motion control)",
+        "Power Supply Engineering: Both brands offer 100–240VAC line supply or 24VDC control supply models with integrated 24VDC auxiliary sensor supplies",
+        "Engineering Software Suites: Omron CX-One (CX-Programmer) and Sysmac Studio; Mitsubishi GX Works2 (legacy FX) and GX Works3 (iQ-F and iQ-R)",
+        "IEC 61131-3 Compliance: All three platforms support Ladder Diagram (LAD) and Structured Text (ST), but proprietary dialects persist",
+        "Global Market Coexistence: A single factory floor frequently runs Siemens on packaging machines, Mitsubishi on CNC tooling, and Omron on robotics"
+      ],
+      "explain": "In Vietnamese, Japanese, and Asian automotive, semiconductor, and consumer electronics manufacturing plants, Omron Corporation and Mitsubishi Electric represent the dominant control platforms alongside Siemens. Omron's micro-PLC portfolio is spearheaded by the CP series (CP1E economical, CP1H high-speed, and CP2E modern IoT-ready), programmed via CX-Programmer within the CX-One engineering suite or modern Sysmac Studio. Mitsubishi Electric dominates with the MELSEC FX series: the legendary FX3U (the world's most widely cloned compact PLC) and the modern FX5U (MELSEC iQ-F series) featuring integrated Ethernet and high-speed motion control, programmed via GX Works2 or GX Works3. Both Japanese brands adopt a compact brick-chassis form factor with expandable right-side bus extensions. While core CPU execution loops (input scan -> logic execution -> output scan) and IEC 61131-3 compliance are universal, each manufacturer utilizes proprietary tag syntax, register boundaries, and engineering software paradigms that require systematic cross-referencing.",
+      "figure": {
+        "src": "/images/slides/06-other-plc-brands/06-oth_carved_039.png",
+        "caption": "Figure 6.1: Japanese Industrial PLCs: Omron CP1H and Mitsubishi MELSEC FX3U / FX5U Architecture"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

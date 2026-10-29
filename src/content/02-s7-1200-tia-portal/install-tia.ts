@@ -46,5 +46,29 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Installing TIA Portal",
+      "points": [
+        "Software Components: STEP 7 Professional (S7-1200, S7-1500, S7-300, S7-400), WinCC Advanced/Unified, Safety Advanced, and S7-PLCSIM",
+        "Operating System Support: Windows 10 Pro/Enterprise 64-bit, Windows 11 Pro, Windows Server 2019/2022; Home editions are unsupported",
+        "Hardware Prerequisites: 16 GB to 32 GB RAM, high-speed NVMe SSD, minimum 1920x1080 display resolution with 100% DPI scaling",
+        "Automation License Manager (ALM): Dedicated system service that installs, transfers, validates, and recovers Siemens engineering license keys",
+        "21-Day Trial License: Authorizes all professional software features without functional restriction for 21 days from initial activation",
+        "Installation Best Practices: Temporarily disable aggressive third-party antivirus suites, execute installer with administrative privileges, and reboot upon completion"
+      ],
+      "explain": "Siemens Totally Integrated Automation Portal (TIA Portal) is an industrial engineering software package integrating STEP 7 (PLC programming), WinCC (HMI and SCADA design), Startdrive (frequency converter parameterization), and S7-PLCSIM (virtual PLC emulation). A robust workstation configuration is critical for efficient engineering workflows: 64-bit Windows 10/11 Professional or Enterprise, multi-core Intel Core i7/i9 or AMD Ryzen processor (>=3.4 GHz), minimum 16 GB of high-speed DDR4/DDR5 RAM (32 GB recommended for large multi-device topologies), and solid-state storage (NVMe SSD) with at least 50 GB of unallocated disk space. The installation media is distributed as self-extracting ISO archives available via Siemens Industry Online Support (SIOS). Licensing is governed centrally by the Automation License Manager (ALM), which manages node-locked, USB dongle, or network floating licenses. Siemens provides a fully functional 21-day trial license enabling complete evaluation and academic laboratory instruction.",
+      "figure": {
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__050.png",
+        "caption": "Figure 2.5: TIA Portal Engineering Suite: STEP 7 Professional, WinCC, and ALM Licensing"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

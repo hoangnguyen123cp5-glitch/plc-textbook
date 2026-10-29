@@ -55,5 +55,28 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Defining the PLC: NEMA Standards and Historical Origins",
+      "points": [
+        "NEMA Standard Definition: Digital apparatus, programmable internal memory, logic/timer/counter/math functions, modular digital/analog I/O interface",
+        "1968 GM Hydramatic Specification: 10 design criteria intended to eradicate relay panel downtime in automotive stamping and assembly plants",
+        "The First Commercial PLC: The Modicon 084 developed in 1969",
+        "Terminology: PLC (Programmable Logic Controller) and PC (Programmable Controller in North American literature) represent the identical apparatus",
+        "Technical Writing Standard: \"PLC\" is preferred globally to avoid confusion with \"Personal Computer\""
+      ],
+      "explain": "The National Electrical Manufacturers Association (NEMA) defines a PLC as: \"A digitally operating electronic apparatus which uses a programmable memory for the internal storage of instructions for implementing specific functions such as logic, sequencing, timing, counting, and arithmetic, to control, through digital or analog input/output modules, various types of machines or processes.\" The concept originated in 1968, when manufacturing engineers at General Motors' Hydramatic Division issued a 10-point technical specification seeking a replacement for hardwired relay panels: easy programming without electrician retraining, logic revisions without panel rewiring, compact footprint, lower cost, and high reliability in harsh plant floor conditions. The resulting breakthrough—the Modicon 084 designed by Dick Morley—inaugurated the modern industrial automation era.",
+      "figure": {
+        "src": "/images/slides/01-programmable-control/PLC_Slide_1__027.jpeg",
+        "caption": "Figure 1.5: NEMA Microprocessor Standards & Optoisolated Industrial Field Interfaces"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

@@ -45,5 +45,29 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Migration Paths and Tooling",
+      "points": [
+        "S7-200 to S7-1200 Migration Path: No automated code converter; requires manual code re-engineering utilizing standardized IEC logic blocks",
+        "S7-300/400 to S7-1500 Migration Path: Supported by the automated TIA Migration Tool; converts hardware, tags, DBs, and standard OB/FC/FB rungs",
+        "TIA Migration Tool Software: Standalone utility executed on the computer hosting STEP 7 Classic; exports project into an intermediate '*.am19' migration file",
+        "Automated Conversion Scope: Converts standard LAD/FBD blocks, DB structures, and symbol tables; leaves complex indirect addressing for manual review",
+        "Non-Convertible Technologies: Siemens GRAPH (SFC), HiGraph, legacy communication FBs, and non-standard vendor libraries require manual recoding",
+        "ET 200M to ET 200SP / MP: High-density modular distributed I/O modules provide push-in terminal blocks and integrated PROFINET switches"
+      ],
+      "explain": "Siemens establishes formal, well-defined hardware replacement paths and software migration tools to assist engineers during modernization. The official hardware migration matrix dictates: (1) SIMATIC S7-200 micro-controllers migrate to SIMATIC S7-1200. Because S7-200 used the proprietary STEP 7 Micro/WIN software with a unique memory architecture, there is no direct automatic project converter; applications require a structured manual rewrite using the legacy program printout and I/O list as a functional specification. (2) SIMATIC S7-300 and S7-400 systems migrate to SIMATIC S7-1500. For this path, Siemens provides the automated TIA Portal Migration Tool (or the integrated 'Migrate Project' function in TIA Portal V13 through V19). The tool parses original STEP 7 Classic projects (*.s7p), automatically converting hardware racks, symbolic tag tables, standard Data Blocks, and most Ladder/FBD logic blocks into equivalent TIA Portal objects. (3) Decentralized Periphery: Legacy ET 200M remote racks migrate to modern ET 200MP or high-density ET 200SP stations, cutting physical panel footprint by up to 50% while upgrading communication from PROFIBUS-DP to PROFINET.",
+      "figure": {
+        "src": "/images/slides/14-system-upgrade/PLC___Slide__002.png",
+        "caption": "Figure 14.2: Official Siemens Migration Paths: S7-200 -> S7-1200 and S7-300 -> S7-1500"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

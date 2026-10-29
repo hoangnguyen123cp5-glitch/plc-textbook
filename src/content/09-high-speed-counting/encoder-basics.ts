@@ -46,5 +46,29 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Encoder Construction and Operating Principle",
+      "points": [
+        "Optical Grating Mechanics: Etched glass/metal disk with alternating transparent slits; optical resolution rated in Pulses Per Revolution (PPR, e.g. 1024 or 2048 PPR)",
+        "Quadrature Phase Shift (90°): Channel A leads Channel B during forward rotation; Channel B leads Channel A during reverse rotation, enabling directional sensing",
+        "Z Index Marker Channel: Fires exactly one pulse per 360° mechanical turn; provides precision zero-datum homing reference independent of tooth count",
+        "Electrical Output Interfaces: Push-Pull (HTL 24VDC, standard for PLC inputs), Open Collector (NPN/PNP), or Differential Line Driver (RS422 / TTL 5VDC for high noise immunity)",
+        "Velocity Calculation Formula: Rotational Velocity (RPM) = (Pulses Counted per second / PPR) * 60",
+        "Incremental vs Absolute Encoders: Incremental encoders lose position upon power loss (requiring homing at startup); absolute encoders report true position immediately via Gray code"
+      ],
+      "explain": "A rotary encoder converts mechanical angular displacement and rotational velocity into digital electrical pulse trains. In factory automation, incremental optical rotary encoders are the predominant feedback device for conveyor synchronization, web winders, and motor shafts. The physical construction comprises a precision stainless-steel shaft, an optical glass or etched metal disk patterned with radial transparent and opaque slits, an array of infrared light-emitting diodes (LEDs), and matching photodiode receivers. As the shaft rotates, the grating chops the infrared beams, generating two square-wave electrical signals: Channel A and Channel B. Crucially, the optical masks for Channel A and Channel B are physically offset by 90 electrical degrees: a geometric relationship known as Quadrature. By examining the phase relationship, the controller detects direction: when rotating clockwise (CW), Channel A leads Channel B; when rotating counter-clockwise (CCW), Channel B leads Channel A. A third channel—the Z Index channel—generates exactly one narrow pulse per full 360-degree mechanical revolution, establishing an absolute physical zero reference marker for machine homing.",
+      "figure": {
+        "src": "/images/slides/09-high-speed-counting/PL___Slide_4_001.jpeg",
+        "caption": "Figure 9.1: Incremental Optical Rotary Encoder: Quadrature A/B Phase Shift & Z Index Pulse"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

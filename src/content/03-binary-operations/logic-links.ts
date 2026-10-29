@@ -58,5 +58,35 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Logic Links (AND, OR, NOT)",
+      "points": [
+        "Normally Open (NO) Contact (---[ ]---): Passes virtual power flow only when the assigned boolean address evaluates to TRUE (logic 1)",
+        "Normally Closed (NC) Contact (---[/]---): Passes virtual power flow when the assigned address is FALSE (logic 0); opens when address is TRUE",
+        "Standard Output Coil (---( )---): Writes the evaluated Result of Logic Operation (RLO) directly to the designated memory address (%Q or %M)",
+        "Boolean AND Link: Configured by placing two or more contacts in series along a single rung path; all series conditions must evaluate TRUE",
+        "Boolean OR Link: Configured by wiring contacts in parallel branches; power flow conducts if at least one branch evaluates TRUE",
+        "Boolean NOT (Invert RLO): An inline NOT contact block (---[NOT]---) or negated coil (---(/)---) reverses the current rung logic state",
+        "Exclusive-OR (XOR) Logic: Constructed using two parallel branches containing cross-coupled NO and NC contacts: (A AND NOT B) OR (NOT A AND B)"
+      ],
+      "explain": "Binary logic operations in Ladder Diagram (LAD) replicate the behavior of electromechanical relay schematics while executing deterministically within the CPU. The fundamental building blocks are Normally Open (NO) contacts (---[ ]---), Normally Closed (NC) contacts (---[/]---), standard output coils (---( )---), and negated coils (---(/)---). In LAD, power flow evaluates virtually from the left power rail across the rung to the right rail. Series connection of contacts implements Boolean AND logic (both Contact A AND Contact B must conduct for the output to energize). Parallel branch connections implement Boolean OR logic (conduction across either Branch A OR Branch B completes the circuit). An NC contact functions as a Boolean NOT operator: when the referenced memory bit is logic 0 (FALSE), the virtual contact remains closed and conducts; when the bit becomes logic 1 (TRUE), the contact opens, interrupting power flow. Combining series and parallel combinations allows engineers to construct complex combinational logic, including Exclusive-OR (XOR) circuits where an output is true if exactly one of two inputs is active.",
+      "figure": {
+        "src": "/images/diagrams/ladder-start-stop.jpg",
+        "caption": "Figure 3.1: Start/Stop Motor Latch Circuit (Seal-in Network) in TIA Portal Ladder Diagram"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 1
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

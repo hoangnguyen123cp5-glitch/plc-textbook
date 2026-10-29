@@ -46,5 +46,29 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Application Exercise",
+      "points": [
+        "System State Decomposition: Break complex machine cycles into discrete states: Idle, Running, Rejecting, Batch Complete, and Fault",
+        "Fail-Safe Interlocking: Hardwired NC emergency stop (%I0.0) and thermal motor overload (%I0.1) contacts precede all rung power flow",
+        "Part Tracking Mechanism: Synchronize sensor edge detection with conveyor mechanical travel time using precision TON timers",
+        "Defect Latching: Latch fault flags with Reset-dominant RS blocks; prevent machine restart until the reject bin is cleared and reset is pressed",
+        "Batch Management: Automatic counter reset upon batch completion combined with totalizer accumulation in a non-volatile Global DB",
+        "Structured Network Layout: Segregate code into logical networks: Network 1 (Safety & E-Stop), Network 2 (Conveyor Control), Network 3 (Inspection Logic), Network 4 (Pusher Actuation), Network 5 (Batch Counter)"
+      ],
+      "explain": "This practical application synthesizes binary logic, timers, counters, and edge detection into a complete industrial workcell: an automated packaging line inspection and batch diversion station. The process operates as follows: an infeed conveyor motor (M1, %Q0.0) transports cartons past an optical part sensor (%I0.2). An inductive proximity sensor (%I0.3) inspects each carton for the presence of a metallic safety seal. As cartons pass, an IEC counter (CTU) increments the total production count. If a carton passes the optical sensor without triggering the metal proximity sensor, a defective-part condition is latched, and a TON timer initiates a calibrated delay matching the conveyor transit time to the reject pusher. When the timer elapses, a solenoid actuator (%Q0.1) pulses for 500 ms (via a TP timer) to divert the unsealed carton onto a reject chute. Upon reaching a batch count of 50 acceptable cartons, conveyor M1 halts, an acoustic buzzer (%Q0.2) sounds for 3 seconds via a TOF timer, and a packaging gate indexes the batch.",
+      "figure": {
+        "src": "/images/slides/03-binary-operations/03-bin_carved_045.png",
+        "caption": "Figure 3.5: Multi-Step Sequential Machine Control with Latch Flags & Safety Interlocks"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

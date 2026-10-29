@@ -46,5 +46,29 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Comparison Functions",
+      "points": [
+        "In-Line LAD Contact Blocks: Comparison instructions appear as contact boxes placed directly in the ladder rung power flow path",
+        "Strict Type Consistency: Both comparison operands (IN1 and IN2) must share the identical data type (e.g. comparing an INT directly to a REAL causes a compiler syntax error)",
+        "Equality Hazard with REALs: Due to binary floating-point representation, 1.0 / 3.0 * 3.0 may evaluate to 0.9999999 rather than 1.0000000; never use '==' on REAL variables",
+        "Floating-Point Tolerance Band: Evaluate equality using absolute difference: ABS(RealA - RealB) <= Epsilon",
+        "Window Comparator: Placing a '>=' contact in series with a '<=' contact validates that a process variable remains inside a defined deadband",
+        "Multi-Condition Branching: Multiple comparison contacts placed in parallel branches execute conditional branching based on operating modes"
+      ],
+      "explain": "Comparison instructions evaluate numerical relationships between two values of identical data type and pass virtual ladder power flow if the mathematical condition is satisfied. TIA Portal provides six standard comparison contact blocks in LAD: Equal (==), Not Equal (<>), Greater Than (>), Greater Than or Equal (>=), Less Than (<), and Less Than or Equal (<=). During evaluation, input IN1 is compared against input IN2 (IN1 == IN2). In process automation, comparisons are used to trigger high-level alarms, interlock heating circuits when temperatures exceed thresholds, and synchronize multi-stage machines. When comparing floating-point REAL numbers, direct equality (==) should be avoided because rounding errors inherent in IEEE 754 floating-point arithmetic can cause numbers that are mathematically equal to differ by fractional bits in the lowest mantissa position. Instead, engineers implement an epsilon tolerance band: ABS(IN1 - IN2) < 0.001. Window comparators combine two comparisons in series (e.g. Value >= Min AND Value <= Max) to confirm that a process parameter is within safe operating limits.",
+      "figure": {
+        "src": "/images/slides/04-numeric-operations/04-num_carved_029.png",
+        "caption": "Figure 4.2: Relational Comparison Contact Blocks (==, <>, >=, <=) and Window Comparators in LAD"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

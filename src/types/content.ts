@@ -1,6 +1,10 @@
 // Schema chuẩn cho hệ thống nội dung đơn file: Mỗi topic = 1 file (.ts)
 // File topic viết dạng: export default { ... } satisfies TopicContent;
 // File bài viết dạng:   export default { ... } satisfies LessonContentFile;
+//
+// Mỗi topic là 1 trang, 2 chế độ: Học (đọc slide + giải thích) và Trình chiếu (phím F,
+// chỉ còn slide 16:9 — giáo viên quay bằng OBS). Video CHỈ nằm trong slide 'practice',
+// không có video giảng viên.
 
 export interface TopicBodySection {
   heading?: string;
@@ -60,8 +64,17 @@ export interface TopicContent {
   narration?: TopicNarration;
   video?: TopicVideoRef;
   simulator?: string;           // Key của component mô phỏng nếu có
+  slides?: Slide[];             // Thứ tự trình chiếu; không có thì trang tự dựng từ body + quiz
   status: 'draft' | 'review' | 'published';
 }
+
+export type Slide =
+  | { kind: 'concept'; title: string; points?: string[]; figure?: TopicFigure; explain?: string }
+  | { kind: 'diagram'; title: string; figure: TopicFigure; explain?: string }
+  | { kind: 'practice'; title: string;
+      video: { provider: 'youtube'; id: string; startSec?: number };
+      steps: string[]; explain?: string }
+  | { kind: 'quiz'; title: string; questionIndex: number };   // trỏ vào quiz[]
 
 export interface LessonVideoMeta {
   provider: 'youtube';

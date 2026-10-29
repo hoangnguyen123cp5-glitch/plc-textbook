@@ -46,5 +46,29 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Input and Output Circuits",
+      "points": [
+        "Mitsubishi S/S Configuration Jumper: Connecting S/S to +24V sets NPN Sink input mode; connecting S/S to 0V sets PNP Source input mode",
+        "Omron COM Grouping: Independent COM terminals allow isolation between distinct sensor banks, but internal bridge shorts occur if cross-wired",
+        "NPN vs PNP Transistor DO: European S7-1200 DO is PNP sourcing (switches +24V to load); Japanese FX/CP DO is typically NPN sinking (switches load to 0V)",
+        "Relay Output Equivalence: 2.0A resistive / inductive load rating across all brands; mechanical contact lifetime ~100,000 operations under full load",
+        "Analog Module Terminals: Omron and Mitsubishi analog cards support selectable 0–10V or 4–20mA via DIP switches or software buffer memories",
+        "Terminal Block Screw Formats: Japanese PLCs traditionally feature M3 phillips/slotted screw terminal barriers; modern variants offer push-in spring clamps"
+      ],
+      "explain": "The semiconductor physics of sinking and sourcing digital I/O applies identically across all PLC vendors; however, terminal labeling and common-bus topologies differ significantly between European and Japanese designs. In Europe (Siemens), 24VDC Sinking DI (PNP compatible) is standard. In Japan (Mitsubishi and Omron), NPN sinking transistor logic was historically dominant due to early bipolar semiconductor availability. On the Mitsubishi FX3U, digital input circuits feature a dedicated 'S/S' (Sink/Source) terminal: connecting S/S to +24VDC configures the inputs as NPN sinking (switched to 0VDC); connecting S/S to 0VDC configures the inputs as PNP sourcing (switched to +24VDC). Omron CP1H controllers feature grouped inputs with independent 'COM' terminals (e.g. COM0, COM1) allowing mixed sinking and sourcing configurations across different input banks. For digital outputs, both brands provide either 2.0A electromechanical relay contacts (capable of switching up to 250VAC or 30VDC) or 0.5A solid-state transistor outputs. Japanese transistor outputs are typically NPN open-collector (sinking outputs that switch the load to ground), requiring external loads to connect to +24VDC.",
+      "figure": {
+        "src": "/images/slides/06-other-plc-brands/06-oth_carved_043.png",
+        "caption": "Figure 6.2: S/S Terminal Jumper Wiring & NPN Sinking vs PNP Sourcing Field Connections"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

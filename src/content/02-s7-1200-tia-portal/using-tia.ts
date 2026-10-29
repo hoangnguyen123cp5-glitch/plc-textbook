@@ -46,5 +46,29 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Working with TIA Portal",
+      "points": [
+        "Portal View vs Project View: Switch seamlessly between task-oriented portal navigation and deep hierarchical project editing via the bottom-left toggle",
+        "Project Tree Organization: Structured root hierarchy containing Devices, Program Blocks (OB/FC/FB/DB), PLC Tag Tables, Watch Tables, and Common Data",
+        "MLFB Part Number Precision: Verify the complete Siemens article number (e.g. 6ES7 214-1AG40-0XB0); mismatched catalog models will reject program downloads",
+        "Firmware Matching: Ensure the project hardware firmware revision matches or is backward-compatible with the physical CPU firmware (e.g. V4.2 vs V4.6)",
+        "Hardware Catalog Navigation: Search and insert CPUs, Signal Boards, Signal Modules, ET 200 distributed stations, and drive nodes into the graphical rack",
+        "Compilation and Download: Full compilation validates memory allocations, addressing conflicts, and syntax errors prior to transferring runtime blocks to Flash"
+      ],
+      "explain": "TIA Portal presents two complementary graphical environments: Portal View and Project View. Portal View is a task-oriented interface tailored for quick operational tasks (creating projects, hardware discovery, diagnostic inspections, and firmware updates). Project View is the comprehensive hierarchical engineering workbench, organized into three primary functional areas: the Project Tree on the left (containing PLC folders, Program Blocks, PLC Tags, and Device Configuration), the central Work Area (where ladder rungs, hardware racks, and network topologies are visually designed), and the Inspector / Task Card Area on the bottom and right (providing contextual hardware properties, diagnostics, instruction catalogs, and cross-references). To configure hardware, the engineer drags the specific CPU model from the hardware catalog into the Device View, verifying that the order code (MLFB) and firmware revision (e.g. V4.6) exactly match the physical device. The project is compiled (Ctrl+B for hardware, Ctrl+Shift+B for software) and downloaded to the CPU via PROFINET.",
+      "figure": {
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__062.png",
+        "caption": "Figure 2.6: TIA Portal Project View: Device Configuration, Hardware Catalog, and Network Topology"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

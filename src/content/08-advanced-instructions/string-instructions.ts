@@ -47,5 +47,30 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "String and Character Instructions",
+      "points": [
+        "STRING Memory Architecture: Allocated as max_length (Byte 0) + current_length (Byte 1) + ASCII character bytes; default capacity is 254 characters",
+        "CONCAT Block: Concatenates two source strings (IN1 + IN2) into a single destination string; truncates if destination capacity is exceeded",
+        "Substring Extraction: LEFT (extracts leftmost n characters), RIGHT (extracts rightmost n characters), MID (extracts n characters starting at offset p)",
+        "Search and Inspection: LEN (returns current string length), FIND (searches for sub-string; returns 1-based character position, or 0 if not found)",
+        "VAL_STRG (Value to String): Converts numeric INT/REAL variables into formatted ASCII strings with configurable decimal places and sign characters",
+        "STRG_VAL (String to Value): Parses incoming ASCII text strings into numeric integer or floating-point variables for PLC logic evaluation",
+        "DELETE and INSERT Blocks: Dynamically delete character spans or insert prefixes/suffixes into serialized production tracking strings"
+      ],
+      "explain": "Modern automated manufacturing requires interfacing with peripheral devices that transmit textual information: handheld barcode scanners, optical vision inspection cameras, RFID tag transponders, laser marking printers, and weigh-scale indicators. TIA Portal handles text data via the CHAR (8-bit ASCII), WCHAR (16-bit Unicode), STRING, and WSTRING data types. A standard STRING variable in S7-1200 occupies n+2 bytes of memory: Byte 0 defines the maximum declared string capacity (up to 254 characters); Byte 1 defines the current actual length of valid text; Bytes 2 through n+1 store the ASCII character bytes. TIA Portal provides a rich suite of string processing instructions: CONCAT combines two strings into one; LEFT extracts n characters from the beginning of a string; RIGHT extracts n characters from the end; MID extracts a substring from any specified character offset; LEN returns the actual character count; and FIND searches for the first occurrence of a substring within a text string. To convert between numeric values and text strings, the VAL_STRG instruction converts an INT or REAL into an ASCII string (e.g. for printing on a packaging label), while STRG_VAL parses an incoming barcode string into a numeric part number.",
+      "figure": {
+        "src": "/images/slides/08-advanced-instructions/PLC___Slide__016.jpg",
+        "caption": "Figure 8.2: ASCII String Data Architecture and Substring Manipulation (CONCAT, MID, VAL_STRG)"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;
