@@ -4,22 +4,30 @@ export default {
   "slug": "counters",
   "sourceRef": "2.4",
   "title": "Counters (CTU, CTD, CTUD)",
-  "durationMinutes": 12,
+  "durationMinutes": 14,
   "summary": "Counting discrete occurrences—such as parts traversing a conveyor, machine cycles, or batch quantities—is implemented via standardized IEC 61131-3 counter function blocks: CTU (Count Up), CTD (Coun...",
   "body": [
     {
-      "heading": "2.4 Counters (CTU, CTD, CTUD)",
-      "text": "Counting discrete occurrences—such as parts traversing a conveyor, machine cycles, or batch quantities—is implemented via standardized IEC 61131-3 counter function blocks: CTU (Count Up), CTD (Count Down), and CTUD (Bidirectional Count Up/Down). Each counter requires an Instance Data Block to store current count value (CV) and status flags. The CTU block monitors its count input (CU): on every rising edge (FALSE to TRUE transition), the current count value (CV) increments by 1. When CV becomes greater than or equal to the preset value (PV), the output flag (Q) evaluates TRUE. Asserting the Reset (R) input instantly forces CV to 0 and clears Q. The CTD block decrements CV on each rising edge of CD, initializing CV to PV when the Load (LD) input is pulsed; output Q turns TRUE when CV decrements to <= 0. The CTUD block combines both mechanisms with independent CU and CD clock inputs, separate QU and QD outputs, and simultaneous Reset and Load controls, making it ideal for tracking bidirectional storage buffers or parking garage capacity.",
+      "heading": "CTU and CTD: Edge-Triggered Counting",
+      "text": "Counting discrete occurrences, such as parts on a conveyor or completed machine cycles, is implemented with the standardized IEC 61131-3 counter blocks CTU (Count Up), CTD (Count Down), and CTUD (bidirectional). Each counter instance keeps its running Current Value (CV) in its own Instance Data Block. The CTU block watches its count input (CU) and increments CV by one on every rising edge, a FALSE-to-TRUE transition, not on a steady-state TRUE level; output Q turns TRUE once CV reaches or exceeds the preset value (PV), and asserting the Reset input (R) forces CV back to zero immediately, overriding any counting. The CTD block works the opposite way: it decrements CV on every rising edge of its CD input, starting from a value loaded into CV when the Load (LD) input is pulsed, and its output Q turns TRUE once CV falls to zero or below.",
       "keyPoints": [
-        "Edge-Triggered Clocking: Counters increment/decrement strictly on the rising edge of input pulses; steady-state TRUE inputs do not cause repeated counts",
-        "Instance Data Block Architecture: Dedicated DB retains current count value (CV) across power interruptions if configured with retentive memory",
-        "Data Type Flexibility: Supported integer types include SInt (8-bit, max 127), Int (16-bit, max 32,767), and DInt (32-bit, max 2.14 billion counts)",
-        "CTU (Count Up): Increments CV on CU rising edge; Q activates when CV >= PV; Reset input (R) takes priority and forces CV = 0",
-        "CTD (Count Down): Decrements CV on CD rising edge; Q activates when CV <= 0; Load input (LD) loads preset PV into CV",
-        "CTUD (Bidirectional): Independent CU (up) and CD (down) inputs; QU flags over-target while QD flags empty buffer condition",
-        "Counting Speed Limitation: Software IEC counters in OB1 are limited by the PLC scan cycle time (max reliable input frequency ~50 Hz); higher frequencies require hardware High-Speed Counters (HSC)"
+        "Counters only respond to a rising (0-to-1) edge on their count input, never a steady TRUE level",
+        "CTU: CV increments on each CU edge; Q turns TRUE once CV >= PV; R forces CV back to 0",
+        "CTD: CV decrements on each CD edge from a value set by LD; Q turns TRUE once CV <= 0",
+        "Reset on CTU and Load on CTD both take priority over the normal counting action"
       ],
-      "note": "If an optical sensor generates pulses narrower than the PLC scan cycle (e.g. small parts passing rapidly on a conveyor), an IEC counter in OB1 will miss counts! Use hardware High-Speed Counter (HSC) inputs or pulse-stretching sensor amplifiers for high-speed tracking."
+      "note": "A counter that never seems to reach its preset is almost always being driven by a signal that is TRUE continuously rather than pulsing. Check the field device and the rung logic for a genuine rising edge, not a held contact."
+    },
+    {
+      "heading": "CTUD and the High-Speed Counting Limit",
+      "text": "The CTUD block combines both directions in one instance, with independent CU and CD clock inputs, separate QU (over-target) and QD (empty) status outputs, and simultaneous Reset and Load controls, which suits applications like tracking the level of a buffer that both fills and empties, such as parts waiting in a storage lane. The counter's data type, SInt, Int, or DInt, sets its maximum range, from 127 counts up to roughly 2.14 billion. Every software IEC counter, however it is wired, only sees a pulse if that pulse is present during the input-scan phase of a program cycle: a part passing fast enough that the sensor's pulse is narrower than the scan time will simply be missed, which puts a practical ceiling of roughly 50 Hz on software counting in OB1. Applications that must count faster than that, such as encoder pulses or very fast part streams, require a dedicated hardware High-Speed Counter (HSC) channel instead.",
+      "keyPoints": [
+        "CTUD: independent up/down clocks, QU and QD status, simultaneous Reset and Load",
+        "Data type sets range: SInt (127), Int (32,767), DInt (about 2.14 billion)",
+        "Software IEC counters in OB1 only see pulses present during the scan's input phase",
+        "Practical ceiling for software counting: roughly 50 Hz — faster signals need a hardware HSC"
+      ],
+      "note": "If an optical sensor generates pulses narrower than the PLC scan cycle, a software counter in OB1 will silently undercount. Use a hardware High-Speed Counter input, or a pulse-stretching sensor amplifier, for any signal faster than about 50 Hz."
     }
   ],
   "figures": [
@@ -28,6 +36,17 @@ export default {
       "caption": "Figure 3.4: IEC Counter Function Blocks: CTU (Count Up), CTD (Count Down), and CTUD Execution"
     }
   ],
+  "caseStudy": {
+    "title": "Undercounting Caps on a High-Speed Capping Line",
+    "context": "A capping machine's totalizer, built from a CTU counter in OB1, consistently reports fewer bottles than the line's mechanical cycle counter, with the gap growing as the line speed increases. At the line's rated speed, bottles pass the optical sensor roughly every 15 ms, while the PLC's own scan cycle sits around 8 ms, so in principle every pulse should be seen — until the sensor's output pulse itself turns out to be only 2 ms wide, well under the scan time, so a sizeable fraction of passes are missed whenever the pulse happens to fall between two input-scan phases. The fix is not a faster PLC: the technician adds a pulse-stretching relay between the sensor and the input card so every pulse is held wide enough to guarantee capture, and the counts match.",
+    "hardware": [
+      "CTU counter driven directly from a 2 ms sensor pulse — too narrow relative to the scan",
+      "PLC scan cycle ~8 ms: fast enough in principle, but only samples once per cycle",
+      "Fix: pulse-stretching relay (or a sensor with a built-in minimum pulse width) ahead of the input",
+      "Alternative fix: move the signal to a hardware High-Speed Counter (HSC) channel instead of OB1"
+    ],
+    "pitfall": "Assuming that a PLC scan time faster than the average time between pulses guarantees every pulse is seen. What matters is the width of each individual pulse compared to the scan time, not the average rate."
+  },
   "quiz": [
     {
       "q": "What triggers an IEC CTU (Count Up) counter block to increment its Current Value (CV)?",
@@ -50,21 +69,29 @@ export default {
   "slides": [
     {
       "kind": "concept",
-      "title": "Counters (CTU, CTD, CTUD)",
+      "title": "CTU and CTD: Edge-Triggered Counting",
       "points": [
-        "Edge-Triggered Clocking: Counters increment/decrement strictly on the rising edge of input pulses; steady-state TRUE inputs do not cause repeated counts",
-        "Instance Data Block Architecture: Dedicated DB retains current count value (CV) across power interruptions if configured with retentive memory",
-        "Data Type Flexibility: Supported integer types include SInt (8-bit, max 127), Int (16-bit, max 32,767), and DInt (32-bit, max 2.14 billion counts)",
-        "CTU (Count Up): Increments CV on CU rising edge; Q activates when CV >= PV; Reset input (R) takes priority and forces CV = 0",
-        "CTD (Count Down): Decrements CV on CD rising edge; Q activates when CV <= 0; Load input (LD) loads preset PV into CV",
-        "CTUD (Bidirectional): Independent CU (up) and CD (down) inputs; QU flags over-target while QD flags empty buffer condition",
-        "Counting Speed Limitation: Software IEC counters in OB1 are limited by the PLC scan cycle time (max reliable input frequency ~50 Hz); higher frequencies require hardware High-Speed Counters (HSC)"
+        "Counters only respond to a rising (0-to-1) edge on their count input, never a steady TRUE level",
+        "CTU: CV increments on each CU edge; Q turns TRUE once CV >= PV; R forces CV back to 0",
+        "CTD: CV decrements on each CD edge from a value set by LD; Q turns TRUE once CV <= 0",
+        "Reset on CTU and Load on CTD both take priority over the normal counting action"
       ],
-      "explain": "Counting discrete occurrences—such as parts traversing a conveyor, machine cycles, or batch quantities—is implemented via standardized IEC 61131-3 counter function blocks: CTU (Count Up), CTD (Count Down), and CTUD (Bidirectional Count Up/Down). Each counter requires an Instance Data Block to store current count value (CV) and status flags. The CTU block monitors its count input (CU): on every rising edge (FALSE to TRUE transition), the current count value (CV) increments by 1. When CV becomes greater than or equal to the preset value (PV), the output flag (Q) evaluates TRUE. Asserting the Reset (R) input instantly forces CV to 0 and clears Q. The CTD block decrements CV on each rising edge of CD, initializing CV to PV when the Load (LD) input is pulsed; output Q turns TRUE when CV decrements to <= 0. The CTUD block combines both mechanisms with independent CU and CD clock inputs, separate QU and QD outputs, and simultaneous Reset and Load controls, making it ideal for tracking bidirectional storage buffers or parking garage capacity.",
+      "explain": "Counting discrete occurrences, such as parts on a conveyor or completed machine cycles, is implemented with the standardized IEC 61131-3 counter blocks CTU (Count Up), CTD (Count Down), and CTUD (bidirectional). Each counter instance keeps its running Current Value (CV) in its own Instance Data Block. The CTU block watches its count input (CU) and increments CV by one on every rising edge, a FALSE-to-TRUE transition, not on a steady-state TRUE level; output Q turns TRUE once CV reaches or exceeds the preset value (PV), and asserting the Reset input (R) forces CV back to zero immediately, overriding any counting. The CTD block works the opposite way: it decrements CV on every rising edge of its CD input, starting from a value loaded into CV when the Load (LD) input is pulsed, and its output Q turns TRUE once CV falls to zero or below.",
       "figure": {
         "src": "/images/slides/03-binary-operations/03-bin_carved_022.png",
         "caption": "Figure 3.4: IEC Counter Function Blocks: CTU (Count Up), CTD (Count Down), and CTUD Execution"
       }
+    },
+    {
+      "kind": "concept",
+      "title": "CTUD and the High-Speed Counting Limit",
+      "points": [
+        "CTUD: independent up/down clocks, QU and QD status, simultaneous Reset and Load",
+        "Data type sets range: SInt (127), Int (32,767), DInt (about 2.14 billion)",
+        "Software IEC counters in OB1 only see pulses present during the scan's input phase",
+        "Practical ceiling for software counting: roughly 50 Hz — faster signals need a hardware HSC"
+      ],
+      "explain": "The CTUD block combines both directions in one instance, with independent CU and CD clock inputs, separate QU (over-target) and QD (empty) status outputs, and simultaneous Reset and Load controls, which suits applications like tracking the level of a buffer that both fills and empties, such as parts waiting in a storage lane. The counter's data type, SInt, Int, or DInt, sets its maximum range, from 127 counts up to roughly 2.14 billion. Every software IEC counter, however it is wired, only sees a pulse if that pulse is present during the input-scan phase of a program cycle: a part passing fast enough that the sensor's pulse is narrower than the scan time will simply be missed, which puts a practical ceiling of roughly 50 Hz on software counting in OB1. Applications that must count faster than that, such as encoder pulses or very fast part streams, require a dedicated hardware High-Speed Counter (HSC) channel instead."
     },
     {
       "kind": "quiz",

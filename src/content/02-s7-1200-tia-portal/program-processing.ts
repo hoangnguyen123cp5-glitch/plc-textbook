@@ -27,6 +27,18 @@ export default {
       "caption": "Figure 2.2: Program Processing in TIA Portal: OB1 Main Cycle, FCs, FBs, and Instance Data Blocks"
     }
   ],
+  "caseStudy": {
+    "title": "Three Conveyors, One Function Block",
+    "context": "A sorting line has three identical belt conveyors, each with a start/stop latch, a jam timer and a run-hours counter. The first draft copies the same ladder logic three times in OB1 with different addresses, and a later fix to the jam logic is applied to only two of the copies. The refactored program writes the logic once as FB \"Conveyor\" with Static variables for the latch, timer (TON as a multi-instance) and hour counter, then calls it three times in OB1, each call with its own instance DB. Plant-wide setpoints such as jam time and belt speed live in a Global DB \"LineParams\" that the HMI can also read.",
+    "hardware": [
+      "OB1 (Program cycle): calls FB \"Conveyor\" three times — instance DBs \"Conv1_DB\", \"Conv2_DB\", \"Conv3_DB\"",
+      "FB \"Conveyor\": Input = start/stop/jam sensor, Output = motor, Static = latch bit, TON jam timer, hour counter",
+      "FC \"ScaleSpeed\": stateless conversion of speed setpoint to drive reference — no instance DB needed",
+      "Global DB \"LineParams\": jam time, belt speed setpoints shared with the HMI",
+      "OB100 (Startup): initialises counters and forces all motors OFF after power-up"
+    ],
+    "pitfall": "Putting the jam timer inside an FC: an FC has only Temp memory, which is not kept between scans, so the timer state is lost every cycle and the jam alarm never fires. Anything that must remember a value from one scan to the next belongs in an FB (Static) or a DB."
+  },
   "quiz": [
     {
       "q": "What is the fundamental difference between an FC (Function) and an FB (Function Block) in TIA Portal?",
@@ -38,6 +50,28 @@ export default {
       ],
       "answer": 1,
       "explain": "FBs retain static variable memory between scan cycles via their dedicated Instance DB; FCs are stateless and discard temporary tags after execution."
+    },
+    {
+      "q": "Logic for three identical conveyors is written once as an FB. How is each conveyor's state kept separate?",
+      "options": [
+        "Each FB call uses its own instance data block",
+        "The FB is copied three times under different names",
+        "All three share one Global DB with no separation",
+        "The CPU creates separate Temp memory that persists between scans"
+      ],
+      "answer": 0,
+      "explain": "Every call of an FB is linked to its own instance DB (or a multi-instance), so latches, timers and counters for each conveyor are stored independently."
+    },
+    {
+      "q": "Which Organization Block runs once when the S7-1200 switches from STOP to RUN, before the cyclic program starts?",
+      "options": [
+        "OB1",
+        "OB30",
+        "OB80",
+        "OB100"
+      ],
+      "answer": 3,
+      "explain": "OB100 is the Startup OB. It executes once on the STOP→RUN transition and is used to initialise data before OB1 begins cycling."
     }
   ],
   "narration": {
@@ -68,6 +102,16 @@ export default {
       "kind": "quiz",
       "title": "Kiểm tra nhanh",
       "questionIndex": 0
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 1
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 2
     }
   ],
   "status": "review"

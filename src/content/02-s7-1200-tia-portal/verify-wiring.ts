@@ -27,6 +27,18 @@ export default {
       "caption": "Figure 2.4: Online Wiring Verification: Hardware Status LEDs, Watch Tables, and Signal Diagnostics"
     }
   ],
+  "caseStudy": {
+    "title": "I/O Checkout Before First Run: Watch Table, Not Force",
+    "context": "Before the first test run of a pick-and-place station, a two-person team checks every channel. One person operates the field device (pushbuttons, reed switches, light curtain) while the other watches the CPU front LEDs and the online watch table, ticking each address off the I/O list. For outputs, the program is not yet loaded, so a Modify command in the watch table sets each %Q bit while the field person confirms the relay clicks and the valve moves. One technician then forces %Q0.4 to test a cylinder, finishes the shift, and forgets to remove the force: the next day the cylinder extends regardless of the program logic, and the yellow MAINT LED on the CPU is lit.",
+    "hardware": [
+      "Watch table: monitor %I bits live and use Modify to set %Q bits for output checks",
+      "Front-panel LEDs: green channel LED = voltage present on the terminal (logic 1 ≥ about 15 VDC)",
+      "Force table: forces the peripheral address (e.g. %Q0.4:P) and overrides the program",
+      "MAINT LED (yellow) on the CPU indicates that a force is active",
+      "Signed I/O checklist: address, tag name, device, input OK / output OK, tester initials"
+    ],
+    "pitfall": "Leaving forces active after commissioning. On the S7-1200 a force stays in effect until it is explicitly stopped (Stop forcing), even across a power cycle, and it overrides interlocks in the user program. Always check that the MAINT LED is off before handing the machine over."
+  },
   "quiz": [
     {
       "q": "Which tool in TIA Portal allows real-time monitoring and safe forcing of individual I/O bits during field commissioning?",
@@ -38,6 +50,28 @@ export default {
       ],
       "answer": 0,
       "explain": "Watch Tables enable engineers to view live boolean/integer values of %I, %Q, and %M tags directly during electrical checkout."
+    },
+    {
+      "q": "On an S7-1200, which front-panel indication tells you that a force is still active?",
+      "options": [
+        "The yellow MAINT LED is lit",
+        "The RUN/STOP LED flashes red",
+        "All input LEDs flash together",
+        "The ERROR LED is permanently green"
+      ],
+      "answer": 0,
+      "explain": "The MAINT LED signals a maintenance condition, including active forces. It must be off before the machine is handed over to production."
+    },
+    {
+      "q": "A program is running and writes %Q0.0 every scan. What happens if you use Modify in a watch table to set %Q0.0 = 1 while the program logic says 0?",
+      "options": [
+        "The output stays at 1 permanently",
+        "The CPU goes to STOP",
+        "The program overwrites the value in the next scan, so the output does not stay on",
+        "The output is forced and the MAINT LED lights"
+      ],
+      "answer": 2,
+      "explain": "Modify writes the value once. Because the program writes %Q0.0 in every cycle, its result replaces the modified value at the next scan. Only a Force overrides the program, which is why forcing is so hazardous."
     }
   ],
   "narration": {
@@ -68,6 +102,16 @@ export default {
       "kind": "quiz",
       "title": "Kiểm tra nhanh",
       "questionIndex": 0
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 1
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 2
     }
   ],
   "status": "review"

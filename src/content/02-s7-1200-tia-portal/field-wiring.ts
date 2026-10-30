@@ -28,6 +28,18 @@ export default {
       "caption": "Figure 2.3: Industrial Field Wiring Schematic for 24VDC Digital Inputs (Sinking / Sourcing Circuits)"
     }
   ],
+  "caseStudy": {
+    "title": "The Sensor That Never Switched: NPN vs PNP on the 1M Common",
+    "context": "During lab assembly a student wires a 3-wire inductive proximity sensor to %I0.2 of a CPU 1214C. The sensor's own LED lights when a metal target is present, but the CPU input LED and the TIA Portal watch table stay at 0. Measuring with a multimeter shows only about 0 V between %I0.2 and 1M. The sensor is an NPN (current-sinking) type, but the input group was wired as a sinking input with 1M tied to 0 V (M), which expects a PNP sensor that switches +24 V to the terminal. An NPN sensor pulls its output to 0 V, so no current flows through the input.",
+    "hardware": [
+      "Sensor: 3-wire inductive proximity switch, brown = +24 V (L+), blue = 0 V (M), black = signal",
+      "PNP sensor + 1M to M: signal switches +24 V into %I0.2 — input reads 1 (correct pairing)",
+      "NPN sensor: requires the sourcing arrangement, 1M to +24 V (L+), so the sensor pulls the input to 0 V",
+      "One 1M common serves the whole input group — all sensors in that group must be the same type",
+      "Check with a multimeter: logic 1 needs at least about 15 VDC between the input terminal and 1M"
+    ],
+    "pitfall": "Mixing NPN and PNP sensors on inputs that share the same 1M common. Only one polarity can work in that group; either standardise on one sensor type (PNP is usual in Europe and in Siemens labs) or move the odd sensor to a group with its own common."
+  },
   "quiz": [
     {
       "q": "In a standard European Sinking Digital Input configuration (PNP sensor compatible), what voltage is connected to common terminal 1M?",
@@ -50,6 +62,17 @@ export default {
       ],
       "answer": 1,
       "explain": "When a DC inductive coil de-energizes, the collapsing magnetic field induces negative spikes exceeding 400V. A flyback diode dissipates this surge safely."
+    },
+    {
+      "q": "An NPN proximity sensor's own LED lights, but the PLC input stays 0. The input group's 1M is connected to 0 V. What is the most likely cause?",
+      "options": [
+        "The CPU is in STOP mode",
+        "The sensor type does not match the 1M wiring — an NPN sensor needs 1M connected to +24 V",
+        "The input must be forced in a Force Table",
+        "A flyback diode is missing across the sensor"
+      ],
+      "answer": 1,
+      "explain": "With 1M at 0 V the input expects a PNP sensor that switches +24 V. An NPN sensor switches to 0 V, so there is no voltage across the input. Rewire 1M to +24 V (whole group) or use a PNP sensor."
     }
   ],
   "narration": {
@@ -86,6 +109,11 @@ export default {
       "kind": "quiz",
       "title": "Kiểm tra nhanh",
       "questionIndex": 1
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 2
     }
   ],
   "status": "review"
