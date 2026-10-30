@@ -27,6 +27,18 @@ export default {
       "caption": "Figure 2.5: TIA Portal Engineering Suite: STEP 7 Professional, WinCC, and ALM Licensing"
     }
   ],
+  "caseStudy": {
+    "title": "Preparing 20 Lab PCs for TIA Portal",
+    "context": "A department installs TIA Portal (STEP 7 Professional, WinCC Advanced and S7-PLCSIM) on 20 lab computers before the semester. Two machines get stuck in a loop: the installer reports that a restart is required, and after rebooting asks again. Siemens' documented cause is a pending Windows file-rename entry (PendingFileRenameOperations in the registry) left by another program's update; once it is cleared and the PC restarted, setup continues. Another group of PCs installs successfully but cannot open the instructor's project, because it was saved with a newer TIA Portal version than the one installed.",
+    "hardware": [
+      "Workstation: 64-bit Windows 10/11 Pro or Enterprise, 16 GB RAM or more, SSD with ample free space",
+      "Install as a Windows administrator; pause antivirus scanning of the setup folder if the vendor allows it",
+      "Use the same TIA Portal version and update level on all lab PCs and the instructor PC",
+      "Automation License Manager: trial license for evaluation, or floating licenses from a license server for the lab",
+      "S7-PLCSIM installed so students can test without hardware"
+    ],
+    "pitfall": "Mixing TIA Portal versions in one lab. A project upgraded to a newer version cannot be opened in an older version, so students' work becomes unreadable on some PCs. Fix the version (and update) for the whole course before installing."
+  },
   "quiz": [
     {
       "q": "Which Siemens utility manages license keys for STEP 7 and WinCC?",
@@ -38,6 +50,28 @@ export default {
       ],
       "answer": 0,
       "explain": "Siemens Automation License Manager (ALM) handles activation, transfer, and verification of software licenses."
+    },
+    {
+      "q": "The instructor saves a project in a newer TIA Portal version. What happens on a lab PC with an older TIA Portal version?",
+      "options": [
+        "The project opens normally with all features",
+        "The project cannot be opened; upgrading a project to a newer version is one-way",
+        "The project opens read-only with full download capability",
+        "TIA Portal converts it automatically to the older format"
+      ],
+      "answer": 1,
+      "explain": "TIA Portal projects can be upgraded to newer versions but not opened in older ones, so all PCs in a course should run the same version."
+    },
+    {
+      "q": "Which TIA Portal component lets students test PLC programs on a virtual CPU without real hardware?",
+      "options": [
+        "WinCC Runtime",
+        "Startdrive",
+        "Automation License Manager",
+        "S7-PLCSIM"
+      ],
+      "answer": 3,
+      "explain": "S7-PLCSIM simulates an S7 CPU on the PC so programs can be downloaded and tested without a physical controller."
     }
   ],
   "narration": {
@@ -68,6 +102,16 @@ export default {
       "kind": "quiz",
       "title": "Kiểm tra nhanh",
       "questionIndex": 0
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 1
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 2
     }
   ],
   "status": "review"
