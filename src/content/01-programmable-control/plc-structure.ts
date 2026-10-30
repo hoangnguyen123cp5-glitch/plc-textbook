@@ -55,5 +55,28 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Internal Hardware Architecture of a PLC",
+      "points": [
+        "Power Supply Unit: Provides isolated 24VDC/5VDC rails to internal logic cards; attenuates line noise and surges",
+        "CPU Module: System brain executing cyclic input sampling, OB1 user code evaluation, and interrupt service routines",
+        "Digital Input (DI) Modules: Feature optocouplers (500VAC isolation) and hardware RC filters to suppress contact bounce and inductive surges",
+        "Digital Output (DO) Modules: Relay contacts (2A AC/DC rating, low switching speed) or Transistor outputs (0.5A DC, high-speed switching for PWM/PTO motion)",
+        "Backplane Bus: Address Bus (pinpoints register offsets), Data Bus (transfers bit/word values), Control Bus (synchronizes read/write clocks)"
+      ],
+      "explain": "At its core, a PLC is an industrial-hardened computer enclosed in an impact-resistant, dust-sealed, and vibration-damped chassis. Its anatomical architecture consists of 5 primary subsystems: (1) Power Supply Unit (PSU), converting 120/230VAC mains or regulating 24VDC to clean internal bus logic voltages (5VDC/3.3VDC); (2) Central Processing Unit (CPU Module), containing the industrial microprocessor, clock generators, and memory chips that govern all system operations; (3) Digital/Analog Input Section, interfacing field switches, encoders, and sensors through optical isolators (optocouplers) and RC filter networks that block transient voltage spikes; (4) Output Section, executing switching commands via electromechanical relays or power MOSFET transistors; (5) Internal System Bus, comprising the Address Bus, Data Bus, and Control Bus for synchronized inter-module backplane communication.",
+      "figure": {
+        "src": "/images/diagrams/plc-wiring-di.jpg",
+        "caption": "Figure 1.6: Anatomical PLC Architecture: Power Supply, CPU, Backplane Bus & Discrete I/O"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

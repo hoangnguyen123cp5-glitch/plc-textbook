@@ -46,5 +46,29 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Programming Console",
+      "points": [
+        "Handheld Programmer Purpose: Portable, battery-free field diagnostic unit powered directly from the PLC backplane serial communication bus",
+        "Mode Selector Switch: PROGRAM (CPU stopped, full memory editing), MONITOR (CPU executing, live data monitoring & bit forcing), RUN (read-only execution)",
+        "Direct Mnemonic Entry: Programs entered in Statement List format (e.g. LD X000 -> AND X001 -> OUT Y000) directly into internal RAM",
+        "Live Diagnostic Monitoring: Displays real-time boolean states, accumulated timer ticks, and error fault codes on multi-line LCD screens",
+        "Emergency Forcing: Allows immediate software overriding of physical inputs and outputs to diagnose suspected field contact failures",
+        "Modern Transition: Modern facilities replace dedicated consoles with ruggedized industrial tablets running Web-based diagnostic servers"
+      ],
+      "explain": "In industrial environments where portable laptops are prohibited or unavailable during emergency breakdowns, handheld programming consoles (HPP) provide direct, ruggedized access to PLC memory. Devices like the Omron CQM1-PRO01 or Mitsubishi FX-20P connect directly to the CPU's serial communication port without requiring operating system booting or license activations. The programming console features a liquid crystal display (LCD) and a tactile keypad labeled with direct machine mnemonics: LD (Load), AND, OR, OUT, SET, RST, TIM, CNT, and numeric keys. The console operates across three primary functional modes: PROGRAM mode (for entering or modifying mnemonic ladder statements while the CPU scan is halted), MONITOR mode (which allows live online monitoring of contact states, modifying bit registers, forcing outputs, and reading current timer/counter values while the machine executes), and RUN mode (for dedicated execution with edit operations locked out). Technicians frequently use consoles to clear CPU memory faults or force an output coil to test a suspect contactor.",
+      "figure": {
+        "src": "/images/slides/06-other-plc-brands/06-oth_carved_032.png",
+        "caption": "Figure 6.3: Handheld Programming Consoles (HPP): Keypad Mnemonics (LD, AND, OR) & Mode Selector"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

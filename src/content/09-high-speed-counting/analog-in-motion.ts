@@ -47,5 +47,30 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Analog Signal Handling in Motion Applications",
+      "points": [
+        "Bipolar Analog Interface (±10V): Industry standard velocity reference; voltage magnitude commands speed, polarity commands direction",
+        "High-Resolution Analog Output: 14-bit SM 1232 module provides 16,384 discrete steps, ensuring smooth acceleration without velocity stepping",
+        "Closed-Loop Position Loop: PLC executes closed-loop algorithm: reads position via HSC or linear transducer, computes error, outputs analog speed demand",
+        "Linear Displacement Transducers: Magnetostrictive or optical linear scales outputting 0–10V or 4–20mA provide absolute carriage position feedback",
+        "Software Velocity Profiling: Ramping algorithms govern acceleration, steady-state run, deceleration, and creep-to-target phases to prevent mechanical overshoot",
+        "Analog Torque Limiting: Secondary analog output channels command drive torque limits to protect sensitive web materials from breaking during winding",
+        "Drive Ready/Fault Interlocks: Digital handshake lines (Drive Enabled, Drive Running, Drive Faulted) wired to PLC discrete I/O supervise drive safety"
+      ],
+      "explain": "While pulse-train output (PTO) is dominant for stepper and low-cost servo drives, heavy industrial motion applications—including large conveyor drives, centrifugal extruders, web unwinders, and overhead bridge cranes—frequently utilize variable frequency drives (VFDs) and heavy-duty AC servodrives commanded via analog velocity setpoints. The S7-1200 interfaces to these drives via high-resolution analog output modules (SM 1232, 14-bit) generating bipolar ±10V DC speed commands where polarity dictates motor rotation direction (-10V = full speed reverse, 0V = standstill, +10V = full speed forward). Closed-loop position regulation is implemented within the PLC: the controller reads instantaneous position feedback from an incremental encoder connected to an HSC channel or an absolute magnetostrictive linear transducer connected to an analog input channel. In software, a position error comparator continuously computes: e = Target_Position - Actual_Position, multiplying error by a position proportional gain to generate the analog speed setpoint. To ensure smooth motion, software S-curve ramp generators profile the speed demand, preventing abrupt acceleration steps that cause mechanical backlash and belt slipping.",
+      "figure": {
+        "src": "/images/slides/09-high-speed-counting/PL___Slide_4_013.jpeg",
+        "caption": "Figure 9.5: ±10V Bipolar Analog Velocity Setpoint Interface to AC Variable Frequency Drives"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

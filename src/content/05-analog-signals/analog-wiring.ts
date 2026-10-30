@@ -47,5 +47,30 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Wiring Analog Inputs and Outputs",
+      "points": [
+        "Shielded Twisted-Pair (STP) Cabling: Twisting cancels magnetic noise induction; braided copper or foil shield repels electrostatic noise fields",
+        "Single-Point Shield Grounding Rule: Terminate cable shields strictly at the control enclosure end using 360-degree conductive saddle clamps; leave the field end isolated",
+        "Ground Loop Hazard: Connecting cable shields to ground at both ends induces large circulating ground currents, generating artificial measurement fluctuations",
+        "2-Wire Transmitter Topology: 24VDC (+) -> Transmitter (+) -> Transmitter (-) -> PLC AI (+) -> PLC AI (-) -> Power Supply 0VDC (M)",
+        "4-Wire Transmitter Topology: External Power connects to Line/Neutral or L+/M; isolated analog output terminals connect to PLC AI (+) and AI (-)",
+        "Analog Output Wiring: PLC AQ channels (0–10V or 4–20mA) connect to field actuators; observe maximum load resistance limits (typically <= 500 ohms for current outputs)",
+        "Cable Conduit Segregation: Maintain >= 200 mm physical spacing between analog signal conduits and 3-phase AC motor or inverter power cables"
+      ],
+      "explain": "Proper physical wiring and shielding are critical to prevent ground loops and electromagnetic interference from corrupting sensitive analog readings. Analog wiring must utilize individually shielded twisted-pair (STP) cables routed in grounded metallic conduits segregated from 400VAC motor power conductors by at least 200 mm. Grounding the cable shield requires strict discipline: the overall shield must be grounded at ONE end only—typically at the PLC control panel's dedicated analog grounding busbar using a 360-degree shield clamp. Grounding both ends of a cable shield creates circulating ground loop currents caused by earth potential differences between distant plant locations, introducing devastating 50Hz/60Hz AC ripple into the analog measurement. For 2-wire loop-powered transmitters, the +24VDC power supply connects to the transmitter positive terminal, the transmitter negative terminal connects to the PLC analog input channel (+), and the PLC analog common (-) connects back to 0VDC (M). For analog outputs driving proportional valves or VFD speed references, two-wire shielded cables connect the PLC AQ channel directly to the actuator input impedance load.",
+      "figure": {
+        "src": "/images/slides/05-analog-signals/05-ana_carved_017.png",
+        "caption": "Figure 5.2: 2-Wire (Loop-Powered) vs 4-Wire Transmitter Wiring and Shield Grounding Standards"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

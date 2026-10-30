@@ -47,5 +47,30 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Analog Signals (4–20 mA, 0–10 V)",
+      "points": [
+        "Voltage Signals (0–10V, ±10V): Inexpensive; straightforward testing; high susceptibility to capacitive noise coupling and IR lead resistance drop over runs >15m",
+        "Current Signals (4–20mA): High noise immunity; loop current is unaffected by cable resistance up to the transmitter voltage compliance limit",
+        "Live Zero Principle (4mA): 4mA represents 0% measurement; 0mA indicates a broken cable, open circuit, or transmitter power loss",
+        "Current Loop Shunt Resistor: S7-1200 voltage inputs can measure 4–20mA by wiring an external precision 500-ohm (0.1%) shunt resistor across input terminals (producing 2–10V)",
+        "2-Wire Loop-Powered Transmitters: The sensor derives its operating power directly from the 4–20mA loop conductors, requiring only two wires",
+        "4-Wire Self-Powered Transmitters: The sensor receives external AC/DC mains power via two dedicated wires and outputs an active 4–20mA loop on two signal wires",
+        "Digital Communication on 4–20mA: HART (Highway Addressable Remote Transducer) protocol superimposes digital FSK frequency data onto the 4–20mA analog carrier"
+      ],
+      "explain": "Unlike discrete binary signals which exist strictly as ON or OFF, analog signals represent continuous physical phenomena such as temperature, pressure, flow rate, and mechanical displacement. In industrial instrumentation, two standardized electrical signal formats dominate: 0–10V (or ±10V) voltage signals and 4–20mA (or 0–20mA) current loops complying with ANSI/ISA-50.00.01. Voltage loops are inexpensive and simple to troubleshoot with a standard voltmeter; however, they suffer from significant signal degradation over long wire runs because lead wire resistance causes voltage drops (V = I * R), and high-impedance voltage inputs are highly susceptible to electromagnetic interference (EMI) from adjacent motor cables. Conversely, 4–20mA current loops provide superior industrial noise immunity: the transmitter dynamically modulates the current in the loop, meaning the signal remains constant regardless of wire length and resistance. Furthermore, 4–20mA incorporates a 'Live Zero': 4mA represents 0% of the process range, whereas a complete wire break or power failure drops loop current to 0mA, allowing the PLC to instantly distinguish between a true zero measurement and a broken field cable.",
+      "figure": {
+        "src": "/images/slides/05-analog-signals/05-ana_carved_037.png",
+        "caption": "Figure 5.1: 0–10V vs 4–20mA Current Loops: Live Zero (4mA) and Industrial Noise Immunity"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

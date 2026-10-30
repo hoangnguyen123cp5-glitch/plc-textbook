@@ -46,5 +46,30 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "PID_Compact on the S7-1200",
+      "points": [
+        "Technology Object Architecture: Instantiated as an integrated block backed by an internal system Data Block (e.g. 'PID_Compact_1')",
+        "Execution in Cyclic Interrupt (OB30): Guarantees strict deterministic execution at fixed sampling intervals (Ts); never call PID_Compact in OB1",
+        "Input vs Input_PER: 'Input' accepts floating-point engineering units (e.g. 50.0 bar); 'Input_PER' accepts raw analog integer counts (%IW64) with integrated scaling",
+        "Output vs Output_PER vs Output_PWM: Output (0.0–100.0% REAL), Output_PER (0–27648 integer for AQ), Output_PWM (digital pulse train for heaters)",
+        "Integral Anti-Windup Protection: Automatically clamps the integral accumulator when actuator limits (0% or 100%) are reached, eliminating saturation recovery delays",
+        "Deadband Support: Configurable error deadband suppresses minor actuator adjustments when the error is within acceptable plant tolerances (e.g. ±0.5°C)",
+        "Direct/Reverse Acting Direction: Direct-acting (cooling loop: output increases as PV rises above SP); Reverse-acting (heating loop: output increases as PV falls below SP)"
+      ],
+      "explain": "The Siemens S7-1200 provides the PID_Compact Technology Object: an industrial-grade, fully encapsulated closed-loop controller block implemented in firmware. PID_Compact executes inside a dedicated Cyclic Interrupt Organization Block (OB30), guaranteeing that algorithm iterations execute at exact, jitter-free temporal intervals (e.g. Ts = 100 ms). The block provides flexible signal interfacing: Setpoint can be supplied as a floating-point REAL value (e.g. 65.0°C from an HMI); Process Variable can be connected either as an already-scaled engineering REAL value via the 'Input' pin, or directly as a raw 16-bit analog integer via the 'Input_PER' pin (e.g. %IW64 directly from an RTD or 4–20mA transmitter). When using Input_PER, the Technology Object automatically handles analog quantization and scaling using parameters defined in its graphical configuration wizard. For manipulated outputs, PID_Compact supports three simultaneous formats: 'Output' (continuous 0.0% to 100.0% REAL for internal logic), 'Output_PER' (raw integer 0 to 27648 for analog output modules %QW64 driving control valves), and 'Output_PWM' (time-proportioned duty cycle for solid-state relays controlling industrial heaters).",
+      "figure": {
+        "src": "/images/slides/10-closed-loop-pid/PLC___Slide__036.png",
+        "caption": "Figure 10.2: Siemens PID_Compact Technology Object Architecture, Input_PER & Anti-Windup Clamping"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

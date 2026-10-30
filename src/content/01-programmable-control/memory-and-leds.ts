@@ -69,5 +69,35 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Memory Organization and Diagnostic LEDs on the S7-1200",
+      "points": [
+        "Load Memory: Non-volatile Flash storing compiled code, hardware configurations, and symbolic tags; expandable via SIMATIC SD card",
+        "Work Memory: Ultra-fast volatile RAM (~100 KB); the CPU loads executable runtime blocks from Load Memory during startup",
+        "Retentive Memory: Non-volatile storage (~10 KB) maintaining production setpoints, batch recipe tags, and part counters across power interruptions",
+        "RUN/STOP LED: Solid Green = CPU executing cyclic scan; Solid Amber = CPU stopped with outputs held in safe de-energized state",
+        "ERROR LED: Flashing Red = Hardware diagnostic alarm, broken field sensor loop, or runtime math exception (e.g. division by zero)",
+        "MAINT LED: Solid Amber = Maintenance demanded (e.g. RTC battery exhausted or memory card service needed)",
+        "I/O Status LEDs (Ix.x, Qx.x): Indicate physical presence of 24VDC potential at the terminal screw (independent of software logic state)"
+      ],
+      "explain": "The memory of the Siemens S7-1200 CPU is structured functionally rather than as flat physical address space: Program Area stores compiled code blocks (OB, FC, FB); Parameter Area stores hardware configuration tables, IP addresses, and protection passwords; Data Area stores temporary calculations, I/O process image tables (PII/PIQ), bit memory markers (M), and Data Blocks (DB). Physically, memory consists of: Load Memory (non-volatile Flash retaining the complete project including symbolic tags and comments, expandable via SIMATIC Memory Card), Work Memory (high-speed internal volatile RAM where the CPU executes active code), and Retentive Memory (non-volatile NVRAM backed by supercapacitors that preserves critical tags across power cycles). Front-panel diagnostic LEDs provide immediate visual telemetry into the CPU operating state.",
+      "figure": {
+        "src": "/images/slides/01-programmable-control/PLC_Slide_1__031.jpeg",
+        "caption": "Figure 1.7: S7-1200 Memory Organization (Load/Work/Retentive) & Front Status Diagnostic LEDs"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 1
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

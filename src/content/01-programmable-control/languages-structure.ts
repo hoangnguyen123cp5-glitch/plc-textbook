@@ -57,5 +57,29 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "IEC 61131-3 Programming Languages and Block Architecture",
+      "points": [
+        "LAD (Ladder Diagram): Graphical relay-ladder representation; ideal for discrete digital interlocks and straightforward online troubleshooting",
+        "FBD (Function Block Diagram): Graphical signal-flow block representation; ideal for analog signal conditioning and burner management systems",
+        "SCL (Structured Control Language): Textual structured syntax; optimal for complex mathematical algorithms, data table manipulation, and loop operations",
+        "IL (Instruction List) & SFC (Sequential Function Chart): The remaining IEC languages; SFC is particularly dominant for state-machine sequential processes",
+        "Main Organization Block (OB1): The top-level entry routine called cyclically by the operating system in every scan",
+        "FC vs FB Modular Architecture: Functions (FC) execute stateless logic; Function Blocks (FB) maintain static state memory within dedicated Instance DBs"
+      ],
+      "explain": "The international standard IEC 61131-3 defines five standardized programming languages for industrial control systems. The three most prevalent in industry originate from distinct engineering backgrounds: Ladder Diagram (LAD) emulates relay contact ladder schematics, offering immediate familiarity to industrial electricians and technicians; Function Block Diagram (FBD) portrays program logic as interconnected functional blocks, favored in safety interlock and process control loops; Structured Control Language (SCL / ST) is a high-level Pascal/C-like text language, exceptionally powerful for complex mathematical formulas, data array sorting, recipe indexing, and nested iterative loops. All three languages coexist seamlessly within the same TIA Portal project. Above the language syntax is the program block hierarchy: Organization Blocks (OB, handling cyclic and interrupt-driven execution), Functions (FC, stateless modular subroutines), and Function Blocks (FB, stateful subroutines backed by dedicated Instance Data Blocks).",
+      "figure": {
+        "src": "/images/slides/01-programmable-control/PLC_Slide_1__003.jpeg",
+        "caption": "Figure 1.9: IEC 61131-3 Standardized Languages (LAD, FBD, SCL, STL, SFC) & Block Hierarchy"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

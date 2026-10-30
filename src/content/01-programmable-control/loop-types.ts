@@ -67,5 +67,33 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Open-Loop, Closed-Loop, and Computerised Control",
+      "points": [
+        "Open-Loop: Simple topology, low upfront capital cost, unconditionally stable without feedback oscillation, but vulnerable to process disturbances",
+        "Closed-Loop: Automatically compensates for dynamic disturbances via continuous negative feedback loops",
+        "Control Error Formulation: e(t) = Setpoint (SP) − Process Variable (PV)",
+        "Computerised Control: Utilizes digital microprocessors running discrete-time cyclic scan algorithms",
+        "Engineering Design Rule: Closed-loop is not universally superior; for non-critical loads with predictable dynamics, open-loop remains the most cost-effective choice"
+      ],
+      "explain": "In an open-loop control system, the output process variable has zero influence on the controller action. A classic example is a time-clock street lighting system: lamps turn on at 18:00 and off at 06:00 regardless of whether the sky is overcast by a severe thunderstorm or illuminated by a full moon. When the timer is replaced by a photo-conductive sensor (LDR photocell) measuring ambient light lux, the system becomes closed-loop: the measured light intensity is fed back to the comparator, dynamically switching the luminaires when lux drops below a calibrated threshold. Closed-loop systems exhibit high precision and automatic disturbance rejection, though they introduce loop complexity and potential closed-loop instability (hunting/oscillation). Computerised control refers to closed-loop architectures where digital microprocessors (such as PLCs or industrial PCs) sample process variables at discrete time intervals.",
+      "figure": {
+        "src": "/images/diagrams/pid-block-diagram.jpg",
+        "caption": "Figure 1.2: Feedback Loop Dynamics — Closed-Loop Negative Feedback & Disturbance Compensation"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 1
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

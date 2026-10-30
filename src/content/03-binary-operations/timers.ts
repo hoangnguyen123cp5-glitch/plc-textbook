@@ -47,5 +47,30 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Timers (TON, TOF, TP)",
+      "points": [
+        "IEC_Timer Instance Data Block: Every timer instantiation consumes a dedicated data block storing internal state, elapsed time, and status bits",
+        "Preset Time (PT) Syntax: Expressed in IEC Time format: T#500ms, T#2s, T#1m30s, or T#1d (stored internally as a signed 32-bit millisecond integer)",
+        "TON (On-Delay Timer): Delays output turn-on; timing begins on IN rising edge; Q goes TRUE when ET >= PT; resets immediately if IN goes FALSE",
+        "TOF (Off-Delay Timer): Delays output turn-off; Q activates immediately with IN; timing begins on IN falling edge; Q turns FALSE when ET >= PT",
+        "TP (Pulse Timer): Generates fixed-width pulse of duration PT upon IN rising edge; immune to input contact bounce or premature input release",
+        "Elapsed Time (ET): Continuous output port exposing instantaneous running time in millisecond resolution, readable for HMI progress bars",
+        "Flasher Generator Circuit: Two TON timers cascaded in a closed loop (Timer 1 reset by Timer 2) create deterministic symmetric or asymmetric square waves"
+      ],
+      "explain": "IEC 61131-3 defines three standardized timer function blocks in the S7-1200, each backed by an internal Instance Data Block (IEC_Timer DB): TON (On-Delay Timer), TOF (Off-Delay Timer), and TP (Pulse Timer). The TON block delays the energization of an output: when the enable input (IN) transitions from FALSE to TRUE, the timer begins accumulating elapsed time (ET). When ET reaches the preset time (PT), the output (Q) turns TRUE and remains active until IN goes FALSE, which immediately resets ET to zero and drops Q to FALSE. The TOF block delays the de-energization of an output: when IN is TRUE, output Q is instantly TRUE; when IN transitions from TRUE to FALSE, timing begins, maintaining Q at TRUE until ET reaches PT, whereupon Q turns FALSE. The TP block generates an output pulse of exact duration PT: upon a rising edge at IN, output Q turns TRUE and timing commences; Q remains TRUE for the entire preset duration PT regardless of whether IN is released early or held on, after which Q drops FALSE.",
+      "figure": {
+        "src": "/images/diagrams/timer-timing-diagram.jpg",
+        "caption": "Figure 3.3: IEC Timing Diagram: TON (On-Delay), TOF (Off-Delay), and TP (Pulse Timer) Waveforms"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

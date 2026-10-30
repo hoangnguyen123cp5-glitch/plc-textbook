@@ -55,5 +55,28 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Why Industry Switched to the PLC: Technical & Economic Case Study",
+      "points": [
+        "Footprint Reduction: A compact 110x100mm PLC CPU replaces an entire 800x1200mm industrial relay enclosure",
+        "Near-Zero Modification Overhead: Operational logic alterations are handled in software without wiring re-work or hardware scrap",
+        "Integrated Online Diagnostics: Real-time \"Go Online\" and \"Watch Table\" features expose live bit states directly on ladder rungs",
+        "Network Scalability: Standardized industrial Ethernet (PROFINET) enables seamless PLC-to-PLC coordination and HMI/SCADA data acquisition",
+        "Industrial Reliability: Solid-state microelectronics feature zero moving parts, delivering uninterrupted 24/7 service over 10 to 15 years"
+      ],
+      "explain": "Consider a standard industrial manufacturing cell: sequential starting of two conveyor motors, M1 and M2. Under a traditional relay panel, the circuit requires two magnetic motor starters, an on-delay pneumatic timer relay, auxiliary contact blocks, and dozens of jumper wires. When manufacturing operations require a reverse-sequence shutdown (\"Motor 2 must stop first, followed 5 seconds later by Motor 1\"), the relay cabinet must be powered down, an additional off-delay timer purchased, existing control circuits dismantled, and the entire panel re-verified point-to-point. With a PLC, field cables remain untouched; the automation engineer simply opens TIA Portal, inserts an off-delay timer block (TOF) into OB1, and downloads the revision in seconds. The capability to make operational revisions virtually cost-free and instantaneous is the primary economic driver that eradicated relay panels worldwide.",
+      "figure": {
+        "src": "/images/slides/01-programmable-control/PLC_Slide_1__026.jpeg",
+        "caption": "Figure 1.4: Industrial Economics: Relay Re-wiring Downtime vs 10-Second PLC Software Download"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

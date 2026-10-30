@@ -46,5 +46,30 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Converting an Existing Project",
+      "points": [
+        "Step 1 (Cleanup): Check block consistency in STEP 7 V5.5, eliminate duplicate symbols, and verify all hardware modules exist in the catalog",
+        "Step 2 (Export): Generate intermediate migration archive (.am19) using the standalone Migration Tool",
+        "Step 3 (Import & Map): Import archive into TIA Portal; select target S7-1500 CPU and ET 200SP hardware equivalents",
+        "Step 4 (Compile & Debug): Compile software; inspect the compiler message log; resolve all red error markers systematically",
+        "Step 5 (STL to SCL Conversion): Replace cryptic accumulator-based STL indirect pointer code with structured, symbolic SCL statements (e.g. arrays and loops)",
+        "Step 6 (DB Optimization): Convert legacy standard DBs (byte-offset addressing) to Optimized Block Access for 5x execution speed improvements",
+        "Step 7 (Virtual Emulation): Simulate full machine operation in S7-PLCSIM Advanced with virtual HMI screens to verify sequence logic"
+      ],
+      "explain": "Converting a legacy project using the TIA Migration Tool requires a systematic 6-step engineering methodology: Step 1: Project Cleanup in STEP 7 V5.5. Open the legacy project in SIMATIC Manager, execute 'Check Block Consistency' (Ctrl+Alt+K) to recompile all dependent blocks, remove obsolete temporary blocks, and verify that symbolic tables contain no duplicate identifiers. Step 2: Intermediate File Generation. Run the TIA Migration Tool to generate an intermediate migration file (.am19 / .sea). Step 3: Import into TIA Portal. In TIA Portal, select 'Migrate project', choose the source file, and map the hardware target (e.g. mapping CPU 315-2 PN/DP to CPU 1515-2 PN). Step 4: Compiling and Resolving Red Errors. Execute full compilation (Ctrl+Shift+B). The compiler will generate error and warning messages flagging unconverted instructions. Step 5: Recoding Complex Logic. Legacy Statement List (STL) code utilizing accumulator tricks and indirect memory addressing (such as Address Registers AR1/AR2 and pointer constants P#DBX) cannot run efficiently on S7-1500; rewrite these sections in modern Structured Control Language (SCL). Step 6: Virtual Verification. Download the migrated project into PLCSIM Advanced to validate 100% of logic prior to physical panel installation.",
+      "figure": {
+        "src": "/images/slides/14-system-upgrade/PLC___Slide__014.png",
+        "caption": "Figure 14.3: TIA Portal Migration Tool Workflow: Converting Legacy STEP 7 Projects (*.s7p)"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

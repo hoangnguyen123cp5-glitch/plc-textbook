@@ -47,5 +47,30 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "S7-300 Instruction Set",
+      "points": [
+        "Accumulator Architecture: ACCU1 (primary working register) and ACCU2 (secondary operand register) execute 16-bit and 32-bit arithmetic",
+        "Load and Transfer Syntax: 'L [address]' loads value into ACCU1 (shifts old ACCU1 into ACCU2); 'T [address]' transfers ACCU1 to destination memory",
+        "Status Word Bits: RLO (Result of Logic Operation), STA (Status of evaluated bit), OR (Or logic memory), OS (Overflow Stored), OV (Overflow)",
+        "Boolean Mnemonics: A (AND), AN (AND-NOT), O (OR), ON (OR-NOT), X (XOR), = (Assign), S (Set), R (Reset)",
+        "Arithmetic Mnemonics: +I (Add Int), -I (Subtract Int), *I (Multiply Int), /I (Divide Int); for floating point: +R, -R, *R, /R",
+        "Conditional Flow Control: JC (Jump if RLO=1), JCN (Jump if RLO=0), JU (Jump Unconditional); jumps skip intermediate STL instructions",
+        "Pointer Indirect Addressing: Address Registers (AR1, AR2) and pointer constants (e.g. P#DBX10.0) allow dynamic runtime memory indexing"
+      ],
+      "explain": "While the S7-300 supports Ladder Diagram (LAD) and Function Block Diagram (FBD), a vast proportion of legacy European machinery was programmed in Statement List (STL / AWL in German). STL is a low-level, machine-oriented language that operates on two 32-bit hardware data registers known as Accumulator 1 (ACCU1) and Accumulator 2 (ACCU2), coordinated by a 9-bit Status Word register. The fundamental data transfer sequence is Load and Transfer: 'L MW10' pushes the old content of ACCU1 into ACCU2 and loads the value of MW10 into ACCU1; 'T MW12' copies the content of ACCU1 into memory word MW12 without disturbing ACCU1. Binary logic operations evaluate into the Result of Logic Operation (RLO) bit of the Status Word: 'A I0.0' evaluates Boolean AND; 'AN I0.1' evaluates AND-NOT; 'O I0.2' evaluates Boolean OR; and '= Q0.0' assigns the evaluated RLO to the output. Mathematical instructions operate directly between accumulators: '+I' adds the 16-bit integer in ACCU2 to ACCU1 and stores the result in ACCU1. Program flow is controlled via unconditional jumps ('JU Target') or conditional jumps ('JC Target', executed only if RLO=1).",
+      "figure": {
+        "src": "/images/slides/13-s7-300/PLC___Slide__016.png",
+        "caption": "Figure 13.2: Statement List (STL / AWL) Register Operations: Accumulators ACCU1/ACCU2 & Status Word"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

@@ -55,5 +55,28 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-10"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Hardwired Relay Logic versus Programmable Control",
+      "points": [
+        "Electromechanical Relay Systems: Utilize moving mechanical contacts subject to contact pitting, mechanical wear, and arc erosion after hundreds of thousands of duty cycles",
+        "Solid-State Discrete Systems: Utilize discrete transistor and IC logic gates; offers faster switching speeds but remains topologically rigid to wiring layout",
+        "Programmable Logic Controllers: Physical copper wiring terminates once at screw terminals (DI/DO); all interlocking rules reside in software code",
+        "Hardwired Engineering Workflow: Requirement → Schematic Drafting → Component Procurement → Panel Wiring → Commissioning",
+        "PLC Engineering Workflow: Requirement → Algorithm Modeling → Software Coding → CPU Download → Online Debugging"
+      ],
+      "explain": "Historically, industrial automation evolved across two distinct paradigms. Hardwired control comprises electromechanical contact logic (interposing relays, contactors, pneumatic timers) and static solid-state logic (discrete logic gates, transistor arrays, SCR/TRIAC trigger modules). In both implementations, the control sequence is physically locked into copper wiring topologies. By contrast, programmable control encapsulates the decision logic entirely within microprocessor memory addresses. This distinction fundamentally transforms engineering workflows: re-sequencing a hardwired panel requires scheduled line shutdowns, mechanical panel re-drilling, contactor additions, and labor-intensive rewiring; a PLC system retains 100% of existing field terminal wiring, requiring only software logic modification and a 10-second program download.",
+      "figure": {
+        "src": "/images/slides/01-programmable-control/PLC_Slide_1__007.jpg",
+        "caption": "Figure 1.3: Hardwired Relay Panel vs Programmable Logic Controller Hardware Architecture"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

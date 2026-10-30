@@ -66,5 +66,33 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-10"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Fundamentals of Control Systems",
+      "points": [
+        "Setpoint (SP): The target or desired value the process variable must attain (e.g. 60°C, 4.0 bar, 2.5 m level)",
+        "Process Variable (PV): The actual measured physical state dynamically sampled at the plant output",
+        "Disturbance: Uncontrolled internal or external factors that perturb process equilibrium (e.g. ambient draft, voltage sag, mechanical friction)",
+        "Actuator: The physical device converting low-power electrical commands into mechanical, thermal, or fluid energy (e.g. electric motors, control valves, heating elements)",
+        "These 5 elements recur systematically across all industrial automation tiers, from discrete relay interlocks to distributed SCADA / DCS architectures"
+      ],
+      "explain": "A control system manages, commands, directs, or regulates the behavior of other devices or technological processes. Scope spans from a simple household bimetallic thermostat to a sprawling chemical refinery encompassing thousands of I/O loops; however, the anatomical architecture invariably comprises 5 foundational elements: Reference Input / Setpoint (SP), Measurement Element / Sensor, Error Detector / Comparator, Controller, and Actuator (Final Control Element). Understanding these 5 building blocks allows automation engineers to clearly delineate the software domain of the PLC: the PLC functions as the controller block, receiving digitized feedback from sensors and executing logic to command physical actuators.",
+      "figure": {
+        "src": "/images/slides/01-programmable-control/PLC_Slide_1__018.png",
+        "caption": "Figure 1.1: Automated Control System Building Blocks — Reference Input, Sensors, Controller & Actuators"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 1
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

@@ -47,5 +47,30 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Rotate and Shift Functions",
+      "points": [
+        "Shift Left (SHL): Shifts bit pattern left by n positions; vacated low-order bits filled with 0; equivalent to multiplying unsigned values by 2^n",
+        "Shift Right (SHR): Shifts bit pattern right by n positions; vacated high-order bits filled with 0; equivalent to integer division by 2^n",
+        "Rotate Left (ROL): Circular shift left; bit shifted out of MSB re-enters at LSB position; no bits are destroyed",
+        "Rotate Right (ROR): Circular shift right; bit shifted out of LSB re-enters at MSB position",
+        "Parts Tracking Shift Register: Each bit represents a mechanical station along a transfer line; clock pulses advance the register synchronously with conveyor motion",
+        "Bit Masking Operations: Combining bit shifts with logical AND/OR operations allows engineers to pack and unpack multiple binary flags into single communication words",
+        "Byte Swapping (SWAP): Reverses the byte order within a WORD or DWORD to convert between Big-Endian and Little-Endian network telegrams"
+      ],
+      "explain": "Shift and rotate instructions manipulate the individual bit positions within BYTE, WORD, or DWORD registers. Shift Left (SHL) shifts bits toward the most significant bit (MSB) by n positions, filling evacuated low-order bit positions with binary zeros; each 1-bit left shift effectively multiplies an unsigned integer by 2. Shift Right (SHR) shifts bits toward the least significant bit (LSB) by n positions, filling evacuated high-order bits with zeros; each 1-bit right shift divides an unsigned integer by 2. Rotate Left (ROL) and Rotate Right (ROR) operate as closed circular registers: bits pushed out of one end are looped back into the opposite end without bit loss. In manufacturing, shift registers are widely used for parts tracking along indexed conveyor lines: a binary shift register represents consecutive conveyor pockets. When an inspection camera detects a defective part at Station 1, it shifts a logic '1' into bit 0. As the conveyor advances, an encoder proximity pulse triggers an SHL instruction, moving the defect bit down the register until it reaches the reject pusher station, which fires automatically.",
+      "figure": {
+        "src": "/images/slides/04-numeric-operations/04-num_carved_026.png",
+        "caption": "Figure 4.3: Bit-Shift (SHL/SHR) and Rotate (ROL/ROR) Registers for Conveyor Item Tracking"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

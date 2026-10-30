@@ -46,5 +46,30 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Diagnostic Tools Overview",
+      "points": [
+        "Color-Coded Status Icons: Green (Healthy/OK), Blue/Orange (Online/Offline mismatch), Red Wrench (Hardware diagnostic fault), Red Cross (Device offline)",
+        "Go Online Mode (Ctrl+M): Establishes live telemetry session between TIA Portal and CPU; enables ladder rung power flow visualization in real time",
+        "Channel-Level Hardware Diagnostics: Clicking a module in Device View exposes individual channel faults (e.g. Channel 2 wire break on SM 1231)",
+        "Cross-Reference List (Shift+F11): Comprehensive matrix showing every block, network, and contact where a specific tag or memory address is referenced",
+        "Assignment List View: Visual bit-map showing which memory bytes (%I, %Q, %M, timers, counters) are allocated or free in the project",
+        "Call Structure Hierarchy: Graphical tree diagram showing the sequential execution call order of all OBs, FCs, and FBs in the program",
+        "Web Server Diagnostics: S7-1200 integrated HTTP/HTTPS web server allows plant maintenance staff to view diagnostics via standard web browsers without TIA Portal"
+      ],
+      "explain": "Siemens TIA Portal integrates an exhaustive suite of diagnostic utilities that provide real-time visibility into the health of the automation system. Navigating 'Go Online' (Ctrl+M) connects the engineering workstation to all networked controllers, immediately populating the Project Tree and Network View with intuitive color-coded diagnostic icons: a green checkmark denotes healthy execution; a blue/orange circle indicates a difference between online CPU code and offline project files; a red wrench icon flags a severe hardware fault; and a flashing red icon highlights a communication loss. In Device View, clicking on any specific module reveals channel-level diagnostic telemetry: identifying blown fuses, disconnected sensor loops, or supply voltage dropouts. Furthermore, TIA Portal provides the Cross-Reference List (Shift+F11) to instantly trace all occurrences of a variable across the entire logic program, and the Call Structure view to visualize block nesting and execution hierarchy. These integrated software tools eliminate guesswork, enabling maintenance engineers to isolate faulty field components within seconds.",
+      "figure": {
+        "src": "/images/slides/12-fault-diagnostics/PLC___Slide__015.png",
+        "caption": "Figure 12.1: TIA Portal Online Diagnostics Suite, Network Status Icons, and Cross-Reference Tool"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

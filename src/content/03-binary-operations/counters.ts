@@ -47,5 +47,30 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Counters (CTU, CTD, CTUD)",
+      "points": [
+        "Edge-Triggered Clocking: Counters increment/decrement strictly on the rising edge of input pulses; steady-state TRUE inputs do not cause repeated counts",
+        "Instance Data Block Architecture: Dedicated DB retains current count value (CV) across power interruptions if configured with retentive memory",
+        "Data Type Flexibility: Supported integer types include SInt (8-bit, max 127), Int (16-bit, max 32,767), and DInt (32-bit, max 2.14 billion counts)",
+        "CTU (Count Up): Increments CV on CU rising edge; Q activates when CV >= PV; Reset input (R) takes priority and forces CV = 0",
+        "CTD (Count Down): Decrements CV on CD rising edge; Q activates when CV <= 0; Load input (LD) loads preset PV into CV",
+        "CTUD (Bidirectional): Independent CU (up) and CD (down) inputs; QU flags over-target while QD flags empty buffer condition",
+        "Counting Speed Limitation: Software IEC counters in OB1 are limited by the PLC scan cycle time (max reliable input frequency ~50 Hz); higher frequencies require hardware High-Speed Counters (HSC)"
+      ],
+      "explain": "Counting discrete occurrences—such as parts traversing a conveyor, machine cycles, or batch quantities—is implemented via standardized IEC 61131-3 counter function blocks: CTU (Count Up), CTD (Count Down), and CTUD (Bidirectional Count Up/Down). Each counter requires an Instance Data Block to store current count value (CV) and status flags. The CTU block monitors its count input (CU): on every rising edge (FALSE to TRUE transition), the current count value (CV) increments by 1. When CV becomes greater than or equal to the preset value (PV), the output flag (Q) evaluates TRUE. Asserting the Reset (R) input instantly forces CV to 0 and clears Q. The CTD block decrements CV on each rising edge of CD, initializing CV to PV when the Load (LD) input is pulsed; output Q turns TRUE when CV decrements to <= 0. The CTUD block combines both mechanisms with independent CU and CD clock inputs, separate QU and QD outputs, and simultaneous Reset and Load controls, making it ideal for tracking bidirectional storage buffers or parking garage capacity.",
+      "figure": {
+        "src": "/images/slides/03-binary-operations/03-bin_carved_022.png",
+        "caption": "Figure 3.4: IEC Counter Function Blocks: CTU (Count Up), CTD (Count Down), and CTUD Execution"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

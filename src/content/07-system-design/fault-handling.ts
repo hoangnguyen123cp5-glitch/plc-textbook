@@ -47,5 +47,30 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Troubleshooting a PLC Control System",
+      "points": [
+        "Systematic 5-Step Diagnostic Protocol: Power Rails -> Front-Panel LEDs -> CPU Diagnostic Buffer -> Watch Tables -> Multimeter Signal Tracing",
+        "Multimeter Voltage Verification: Measure 24VDC power supply under load (allowable range 20.4V to 28.8V); measure voltage directly across input terminal and 1M",
+        "Diagnostic Buffer Log: The primary diagnostic authority; non-volatile event stack recording exact failure descriptions, timestamps, and OB call references",
+        "Hardware vs Software Fault Isolation: If an input LED illuminates on the CPU faceplate but the tag in TIA Portal remains FALSE, the issue is software configuration or operating mode",
+        "Watch Table Signal Tracing: Real-time monitoring of machine state registers, interlock conditions, and timer elapsed values to pinpoint stalled transitions",
+        "Multimeter Resistance Testing: Always de-energize and isolate circuits before measuring loop resistance or testing for contact closure",
+        "Preventive Maintenance Protocols: Periodically check terminal screw torque (0.5 Nm), clean enclosure air filters, inspect DC voltage ripple, and maintain backups"
+      ],
+      "explain": "When an automated machine fails to operate during commissioning or live plant production, the automation engineer must execute a disciplined, systematic troubleshooting protocol rather than guessing. The troubleshooting methodology follows a 5-step hierarchy: Step 1: Physical Power and Safety Inspection. Verify line voltage and 24VDC power supply output with a calibrated multimeter; verify that all hardwired emergency stops and safety gates are closed. Step 2: CPU Front-Panel Status LED Analysis. Inspect RUN/STOP (green=running, amber=stopped), ERROR (flashing red indicates hardware/software fault), and MAINT LEDs. Step 3: Diagnostic Buffer Interrogation. Go online with TIA Portal (Ctrl+M) and open the CPU Diagnostic Buffer; read the timestamped event log to pinpoint the exact failure (e.g. missing expansion card, wire break on channel %IW68, or cycle time exceeded). Step 4: Watch Table and Signal Tracing. Open Watch Tables to monitor live states of inputs and internal state registers; compare physical LED status on the module with software bit values to isolate field wiring breaks from software logic blocks. Step 5: Peripheral Point Testing. Use Force Tables with caution or temporary test rungs to verify physical actuator actuation.",
+      "figure": {
+        "src": "/images/slides/07-system-design/PLC__Slide_7_022.png",
+        "caption": "Figure 7.5: 5-Step Systematic Control Panel Troubleshooting & Multimeter Signal Tracing Protocol"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;

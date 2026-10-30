@@ -47,5 +47,30 @@ export default {
     "by": "ai",
     "updatedAt": "2026-10-19"
   },
+  "slides": [
+    {
+      "kind": "concept",
+      "title": "Arithmetic Functions",
+      "points": [
+        "Elementary Math Blocks: ADD (IN1 + IN2), SUB (IN1 - IN2), MUL (IN1 * IN2), DIV (IN1 / IN2), MOD (remainder of integer division)",
+        "CALCULATE Block: Evaluates multi-term mathematical formulas directly in LAD without chaining dozens of individual math boxes",
+        "Data Type Promotion: When multiplying two 16-bit INTs, the product can exceed 32,767; convert operands to 32-bit DINT prior to multiplication to prevent overflow",
+        "Division by Zero Protection: Always precede a DIV instruction with a comparison contact verifying that the divisor is not equal to zero (Divisor <> 0)",
+        "ENO Enable Output Behavior: ENO evaluates FALSE if a mathematical fault occurs (overflow, underflow, NaN, division by zero), allowing safe fault handling",
+        "Rounding Functions: ROUND (rounds floating point to nearest integer), TRUNC (truncates fractional digits toward zero), CEIL (rounds up), FLOOR (rounds down)",
+        "Advanced Math Blocks: SQR (square), SQRT (square root), LN (natural logarithm), EXP (exponential), and trigonometric functions (SIN, COS, TAN)"
+      ],
+      "explain": "The S7-1200 instruction set includes full mathematical capabilities for integer and floating-point computations: ADD (Addition), SUB (Subtraction), MUL (Multiplication), DIV (Division), and MOD (Modulo / Integer Division Remainder). Arithmetic blocks execute when enabled (EN = TRUE) and pass power to the output (ENO = TRUE) if the calculation completes successfully without numeric exceptions. In addition to basic two-operand blocks, TIA Portal provides the compound CALCULATE instruction, which allows engineers to write complete algebraic expressions (e.g. ((IN1 * 1.8) + 32.0) for Celsius-to-Fahrenheit conversion) within a single ladder box. Arithmetic operations are susceptible to two major industrial runtime errors: Numeric Overflow (when a calculation exceeds the maximum representable limit of the target data type) and Division by Zero (attempting to divide by a variable that equals zero). If an integer divides by zero, the CPU asserts the overflow status flag and, depending on configuration, can fault the controller into STOP mode unless protected by upstream logic.",
+      "figure": {
+        "src": "/images/slides/04-numeric-operations/04-num_carved_022.png",
+        "caption": "Figure 4.4: Mathematical Execution Blocks (ADD, SUB, MUL, DIV, MOD) and CALCULATE Formula Evaluator"
+      }
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 0
+    }
+  ],
   "status": "review"
 } satisfies TopicContent;
