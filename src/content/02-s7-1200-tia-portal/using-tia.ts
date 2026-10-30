@@ -27,6 +27,18 @@ export default {
       "caption": "Figure 2.6: TIA Portal Project View: Device Configuration, Hardware Catalog, and Network Topology"
     }
   ],
+  "caseStudy": {
+    "title": "Download Fails: Configured Firmware Does Not Match the CPU",
+    "context": "A student creates a project, inserts a CPU 1214C DC/DC/DC with firmware V4.6 from the hardware catalog, writes the program and tries to download. TIA Portal refuses because the CPU on the bench has older firmware (V4.4). The order number (MLFB) printed on the CPU front matches the configuration, but the firmware version does not. The fix is to open Device configuration, select the CPU and use Change device to set the firmware to V4.4 (or to update the CPU firmware). Alternatively, the student could have inserted an unspecified CPU 1214C and used the detect function to read the exact module and firmware from the connected PLC.",
+    "hardware": [
+      "Order number (MLFB) on the CPU front, e.g. 6ES7 214-1AG40-0XB0 for CPU 1214C DC/DC/DC",
+      "Firmware version shown in Online & diagnostics and on the CPU label",
+      "Configured firmware must be equal to or lower than the firmware of the real CPU",
+      "Device view → Change device: switches CPU model or firmware without losing the program",
+      "Unspecified CPU + detect: reads the real hardware configuration over PROFINET"
+    ],
+    "pitfall": "Selecting the newest firmware in the catalog by habit. A configuration with newer firmware than the physical CPU cannot be downloaded. Read the firmware from the CPU first, or use detect, before writing any code."
+  },
   "quiz": [
     {
       "q": "What is the purpose of \"Accessible Devices\" scan in TIA Portal?",
@@ -38,6 +50,28 @@ export default {
       ],
       "answer": 0,
       "explain": "Accessible Devices sends Layer-2 DCP discovery broadcasts to find connected CPUs and HMIs regardless of current IP configuration."
+    },
+    {
+      "q": "The project is configured with CPU firmware V4.6 but the real CPU has V4.4. What is the correct fix in TIA Portal?",
+      "options": [
+        "Use Change device to set the configured firmware to V4.4 (or update the CPU firmware)",
+        "Delete the CPU and write the program again",
+        "Force all outputs and retry the download",
+        "Change the IP address of the PC"
+      ],
+      "answer": 0,
+      "explain": "The configured firmware must not be newer than the real CPU. Change device keeps the program and only changes the configured model or firmware."
+    },
+    {
+      "q": "Which TIA Portal view gives the full engineering workbench with the Project tree, Work area and Inspector window?",
+      "options": [
+        "Portal view",
+        "Project view",
+        "Online & diagnostics view",
+        "Topology view"
+      ],
+      "answer": 1,
+      "explain": "Portal view is task-oriented for quick actions; Project view contains the Project tree, the central Work area and the Inspector window used for detailed engineering."
     }
   ],
   "narration": {
@@ -68,6 +102,16 @@ export default {
       "kind": "quiz",
       "title": "Kiểm tra nhanh",
       "questionIndex": 0
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 1
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 2
     }
   ],
   "status": "review"
