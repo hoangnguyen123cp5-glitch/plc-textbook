@@ -180,10 +180,14 @@ export default function TopicSlideDeck({
   const totalChapterSlides = chapterTopics.length + 1; // Slide 0: Overview + N topic slides
   const currentTotalSlides = deckMode === 'topic' ? topicSlides.length : totalChapterSlides;
 
-  // Giữ currentSlide trong giới hạn khi đổi topic
-  useEffect(() => {
+  // Giữ currentSlide trong giới hạn khi đổi topic: reset ngay trong render
+  // (mẫu "điều chỉnh state khi prop đổi") thay vì setState trong useEffect.
+  const slideResetKey = `${currentTopicSlug}|${deckMode}`;
+  const [prevSlideResetKey, setPrevSlideResetKey] = useState(slideResetKey);
+  if (prevSlideResetKey !== slideResetKey) {
+    setPrevSlideResetKey(slideResetKey);
     setCurrentSlide(0);
-  }, [currentTopicSlug, deckMode]);
+  }
 
   // ── XỬ LÝ PHÍM TẮT & TOÀN MÀN HÌNH ──
   const toggleFullscreen = useCallback(() => {
@@ -194,11 +198,13 @@ export default function TopicSlideDeck({
       document.exitFullscreen().catch(() => {});
       setIsFullscreen(false);
     }
+    setControlsVisible(true);
   }, []);
 
   useEffect(() => {
     const handleFsChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
+      setControlsVisible(true);
     };
     document.addEventListener('fullscreenchange', handleFsChange);
     return () => document.removeEventListener('fullscreenchange', handleFsChange);
@@ -267,14 +273,18 @@ export default function TopicSlideDeck({
     }
   }, [isFullscreen]);
 
+  // Khi vào fullscreen: hẹn giờ ẩn thanh điều khiển. Ngoài fullscreen thanh luôn hiện
+  // (xem `showControls` bên dưới), nên không cần setState đồng bộ trong effect.
   useEffect(() => {
-    if (!isFullscreen) {
-      setControlsVisible(true);
+    if (!isFullscreen) return;
+    hideTimerRef.current = setTimeout(() => {
+      setControlsVisible(false);
+    }, 3500);
+    return () => {
       if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-    } else {
-      showControlsTemporarily();
-    }
-  }, [isFullscreen, showControlsTemporarily]);
+    };
+  }, [isFullscreen]);
+  const showControls = !isFullscreen || controlsVisible;
 
   // Quiz state cho các slide quiz
   const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});
@@ -965,7 +975,7 @@ export default function TopicSlideDeck({
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '0 20px',
-        opacity: controlsVisible ? 1 : 0,
+        opacity: showControls ? 1 : 0,
         transition: 'opacity 0.25s ease',
         zIndex: 30,
       }}>

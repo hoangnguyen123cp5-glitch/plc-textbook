@@ -4,6 +4,13 @@ import React, { useState } from 'react';
 import type { TopicQuizQuestion } from '@/types/content';
 import { getTopic } from '@/content';
 
+// Dữ liệu cũ có thể còn dùng tên trường correct/question/explanation.
+type QuizQuestionWithLegacy = TopicQuizQuestion & {
+  correct?: number;
+  question?: string;
+  explanation?: string;
+};
+
 interface Props {
   topicSlug: string;
   lessonSlug?: string;
@@ -20,7 +27,7 @@ export default function TopicQuiz({
   isFullscreen = false,
 }: Props) {
   // Ưu tiên quiz truyền qua props; nếu không có, tra cứu từ src/content
-  const questions: TopicQuizQuestion[] =
+  const questions: QuizQuestionWithLegacy[] =
     propQuiz && propQuiz.length > 0
       ? propQuiz
       : (lessonSlug ? getTopic(lessonSlug, topicSlug)?.quiz : undefined) || [];
@@ -51,7 +58,7 @@ export default function TopicQuiz({
   const score = Object.keys(selectedAnswers).reduce((acc, qIdxStr) => {
     const qIdx = parseInt(qIdxStr, 10);
     const q = questions[qIdx];
-    const correctAns = q.answer !== undefined ? q.answer : (q as any).correct;
+    const correctAns = q.answer !== undefined ? q.answer : q.correct;
     return selectedAnswers[qIdx] === correctAns ? acc + 1 : acc;
   }, 0);
 
@@ -81,10 +88,10 @@ export default function TopicQuiz({
       <div style={{ display: 'grid', gridTemplateColumns: questions.length > 1 ? 'repeat(auto-fit, minmax(320px, 1fr))' : '1fr', gap: '14px' }}>
         {questions.map((q, qIdx) => {
           const userChoice = selectedAnswers[qIdx];
-          const correctAns = q.answer !== undefined ? q.answer : (q as any).correct;
+          const correctAns = q.answer !== undefined ? q.answer : q.correct;
           const isCorrect = userChoice === correctAns;
-          const questionText = q.q || (q as any).question;
-          const explanationText = q.explain || (q as any).explanation;
+          const questionText = q.q || q.question;
+          const explanationText = q.explain || q.explanation;
 
           return (
             <div
