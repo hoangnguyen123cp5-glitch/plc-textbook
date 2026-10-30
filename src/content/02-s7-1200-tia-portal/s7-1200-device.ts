@@ -27,6 +27,18 @@ export default {
       "caption": "Figure 2.1: SIMATIC S7-1200 Modular Hardware Family: CPUs, Signal Boards, and Signal Modules"
     }
   ],
+  "caseStudy": {
+    "title": "Sizing a Lab Station: CPU 1214C Expansion and Power Budget",
+    "context": "A training workstation must handle 20 digital inputs, 14 digital outputs, 4 analog inputs (4–20 mA) and 2 analog outputs, plus an RS485 link to a barcode reader. A CPU 1214C DC/DC/DC provides 14 DI / 10 DO / 2 AI on board, so the design adds one SM 1223 (8 DI / 8 DO) to the right, one SM 1231 AI 4 for the transmitters, an SB 1232 AQ 1 on the front face, and a CM 1241 RS422/485 on the left. Before ordering, the engineer checks the power budget in the system manual: every SM and CM draws from the CPU's internal 5 VDC backplane supply (1600 mA on the 1214C), and every powered sensor draws from the 400 mA 24 VDC sensor supply.",
+    "hardware": [
+      "CPU 1214C DC/DC/DC: 14 DI, 10 DO (transistor), 2 AI 0–10 V on board",
+      "Right side: SM 1223 DI 8 / DQ 8 and SM 1231 AI 4 (max. 8 SMs on a 1214C)",
+      "Front: SB 1232 AQ 1 — adds an analog output without widening the panel",
+      "Left side: CM 1241 RS422/485 for the barcode reader (max. 3 CMs)",
+      "Power budget: sum of SM/CM 5 VDC currents ≤ 1600 mA; sensor 24 VDC loads ≤ 400 mA, otherwise add an external 24 VDC supply"
+    ],
+    "pitfall": "Choosing a CPU 1211C to save cost: it accepts no Signal Modules at all, so the 20-DI requirement cannot be met by expansion and the whole CPU must be replaced. Always check the maximum number of SMs and the power budget table before fixing the CPU model."
+  },
   "quiz": [
     {
       "q": "What is the main physical difference between a Signal Board (SB) and a Signal Module (SM) on the S7-1200?",
@@ -38,6 +50,28 @@ export default {
       ],
       "answer": 0,
       "explain": "An SB plugs directly into the CPU front pocket (preserving physical DIN-rail width), while SM modules snap on the right side of the rack."
+    },
+    {
+      "q": "On which side of an S7-1200 CPU are Communication Modules (CM) mounted?",
+      "options": [
+        "On the right, after the Signal Modules",
+        "On the front face, in the Signal Board slot",
+        "On the left side of the CPU",
+        "On a separate DIN rail connected by PROFINET"
+      ],
+      "answer": 2,
+      "explain": "Communication Modules (e.g. CM 1241 RS485) attach to the left of the CPU, while Signal Modules expand to the right and Signal/Communication Boards plug into the front."
+    },
+    {
+      "q": "A design needs 20 digital inputs. Why is a CPU 1211C an unsuitable choice?",
+      "options": [
+        "It does not support PROFINET",
+        "It cannot accept any Signal Modules, so its 6 on-board inputs cannot be expanded beyond one Signal Board",
+        "It only runs on 230 VAC",
+        "It has no work memory for user programs"
+      ],
+      "answer": 1,
+      "explain": "The CPU 1211C supports a Signal Board but no right-side Signal Modules; the 1212C accepts up to 2 SMs and the 1214C/1215C/1217C up to 8."
     }
   ],
   "narration": {
@@ -68,6 +102,16 @@ export default {
       "kind": "quiz",
       "title": "Kiểm tra nhanh",
       "questionIndex": 0
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 1
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 2
     }
   ],
   "status": "review"

@@ -28,6 +28,18 @@ export default {
       "caption": "Figure 2.7: PROFINET IP Subnetting, PG/PC Interface, and Accessible Devices Discovery Scan"
     }
   ],
+  "caseStudy": {
+    "title": "Twenty CPUs, One Switch, One IP Address",
+    "context": "In a lab, every bench connects its CPU 1214C to one shared Ethernet switch so the instructor can reach all stations. Each student's project uses the TIA Portal default address 192.168.0.1, so after downloads every CPU on the network has the same IP. Students start downloading to a neighbour's PLC and online connections drop randomly. The fix is an address plan: each bench gets its own CPU and PC address in the same 255.255.255.0 subnet, written on a label at the bench. Students use Accessible devices and the Flash LED function to confirm the physical CPU before every download.",
+    "hardware": [
+      "Address plan: Bench n → CPU 192.168.0.(10+n), PC 192.168.0.(100+n), mask 255.255.255.0",
+      "PG/PC interface: select the wired Ethernet adapter, not Wi-Fi or a virtual adapter",
+      "Accessible devices: lists CPUs found on the selected adapter, including MAC and IP address",
+      "Flash LED: makes the chosen CPU's LEDs flash to confirm it is the one on your bench",
+      "Online & diagnostics → Assign IP address: sets the IP of a CPU that has none yet"
+    ],
+    "pitfall": "Assuming every new S7-1200 already has 192.168.0.1. A CPU from the factory or after a reset to factory settings may have no IP address; 192.168.0.1 is only TIA Portal's default in the project. Use Accessible devices (by MAC address) and assign the IP explicitly."
+  },
   "quiz": [
     {
       "q": "What industrial Ethernet protocol is the default standard for Siemens S7-1200/1500 inter-device networking?",
@@ -39,6 +51,28 @@ export default {
       ],
       "answer": 1,
       "explain": "PROFINET is Siemens flagship open industrial Ethernet standard for real-time cyclic I/O data and engineering access."
+    },
+    {
+      "q": "Several lab CPUs on one switch all have IP 192.168.0.1. What is the expected symptom?",
+      "options": [
+        "The switch automatically gives each CPU a new address",
+        "All CPUs work normally because MAC addresses are different",
+        "IP address conflicts: connections drop and downloads may reach the wrong CPU",
+        "The CPUs merge into one virtual PLC"
+      ],
+      "answer": 2,
+      "explain": "IP addresses must be unique on a subnet. With duplicates, the PC cannot reliably reach the intended CPU, so each station needs its own address from a plan."
+    },
+    {
+      "q": "Before downloading in a shared lab, which function confirms you are connected to the CPU on your own bench?",
+      "options": [
+        "Compile",
+        "Go offline",
+        "Force table",
+        "Flash LED in Accessible devices"
+      ],
+      "answer": 3,
+      "explain": "Flash LED makes the selected CPU's status LEDs flash, giving physical confirmation that the online connection targets the right controller."
     }
   ],
   "narration": {
@@ -70,6 +104,16 @@ export default {
       "kind": "quiz",
       "title": "Kiểm tra nhanh",
       "questionIndex": 0
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 1
+    },
+    {
+      "kind": "quiz",
+      "title": "Kiểm tra nhanh",
+      "questionIndex": 2
     }
   ],
   "status": "review"
