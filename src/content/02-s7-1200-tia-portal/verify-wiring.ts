@@ -83,19 +83,62 @@ export default {
   "slides": [
     {
       "kind": "concept",
-      "title": "Verifying Wiring in Software",
+      "title": "Hardware Status LEDs & Going Online",
       "points": [
-        "Hardware LED Telemetry: The green LED indicates electrical potential at the screw terminal, confirming field loop continuity before software execution",
-        "Watch Tables: Allow non-invasive live monitoring and one-shot modifying of bit markers (%M), process inputs (%I), process outputs (%Q), and DB tags",
-        "Force Table Safety: Forcing overrides both user program logic and process images by writing directly to peripheral hardware; indicated by flashing yellow FORCE LED",
-        "Point-to-Point Loop Check: Rigorous commissioning protocol where two technicians (one in field, one in TIA Portal) verify 100% of physical sensor channels",
-        "Cross-Reference List: TIA Portal tool (Shift+F11) revealing every occurrence where a specific tag is read or written, detecting destructive dual-coil conflicts",
-        "Peripheral Addressing (:P): Using %I0.0:P or %Q0.0:P reads or writes directly to physical hardware, bypassing image tables for immediate signal validation"
+        "Channel LEDs show live terminal voltage before any user program runs",
+        "CPU faults turn off the green RUN indicator and light the red ERROR LED",
+        "Yellow MAINT LED warns that an I/O Force or maintenance state is active",
+        "Connect PC to PLC, click Go Online, and open Online & Diagnostics"
       ],
-      "explain": "Once physical wiring is terminated, the automation engineer must systematically verify every field channel before commissioning software logic. The S7-1200 front panel provides discrete green status LEDs for every physical input (%I0.0–%I1.5) and output (%Q0.0–%Q1.1) terminal. A green input LED indicates that the electrical threshold (typically >15VDC for logic '1') is present across the terminal and its 1M common. In TIA Portal, the engineer navigates online and utilizes Watch Tables (monitoring live bit values in real time) and Force Tables (manually asserting physical states) to validate loop integrity. By actuating field pushbuttons, limit switches, and photoelectric sensors, the live boolean state can be witnessed simultaneously on the physical LED and in the TIA Portal Watch Table. Similarly, digital outputs can be individually toggled via Watch Table modify commands to verify that the corresponding interposing relay clicks, the solenoid valve fires, and the motor contactor pulls in cleanly.",
+      "explain": "Before testing logic, verify wiring using both the S7-1200 front-panel LEDs and TIA Portal's online tools. Every digital channel has a green LED that lights as soon as signal voltage reaches the screw terminal, while the status LEDs (RUN/STOP, ERROR, MAINT) immediately reveal hardware faults or active forces. When the red ERROR LED flashes, go online and open the Diagnostics buffer to read the exact timestamped cause.",
       "figure": {
-        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__031.png",
-        "caption": "Figure 2.4: Online Wiring Verification: Hardware Status LEDs, Watch Tables, and Signal Diagnostics"
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__020.png",
+        "caption": "S7-1200 front-panel status LEDs indicating a hardware fault condition"
+      }
+    },
+    {
+      "kind": "concept",
+      "title": "Reading the Diagnostics Buffer: Module Mismatches",
+      "points": [
+        "Open Online & Diagnostics -> Diagnostics buffer to inspect red fault events",
+        "Extra module fault: a module is declared in TIA Portal but missing on the rail",
+        "Wrong module code fault: installed module article number differs from project",
+        "Verify the exact MLFB part number printed on the module housing"
+      ],
+      "explain": "Once inside the Diagnostics buffer, clicking any red fault entry shows the affected rack slot and corrective action in the lower pane. Two of the most common lab errors are declaring an expansion module in the project that is not physically plugged into the DIN rail, or picking the wrong catalog variant (for example, relay instead of transistor) for an installed Signal Module.",
+      "figure": {
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__021.png",
+        "caption": "Going online and opening the Diagnostics buffer in the Project Tree"
+      }
+    },
+    {
+      "kind": "concept",
+      "title": "Diagnosing Analog Range, Missing Power & Short Circuits",
+      "points": [
+        "High limit exceeded: analog input exceeds 10 V / 20 mA or raw count ±27648",
+        "Supply voltage missing: an expansion module lacks its 24 VDC L+/M power",
+        "Short-circuit fault: field signal wires are shorted together or to ground",
+        "Watch Tables monitor live %I/%Q bits safely; never leave Force mode active"
+      ],
+      "explain": "The Diagnostics buffer also pinpoints field wiring mistakes on expansion cards. 'High limit exceeded' means an analog signal has gone above 10 V or 20 mA (outside -27648 to +27648). 'Supply voltage missing' tells you an expansion module was snapped onto the bus without wiring 24 VDC to its L+ and M terminals. If a short circuit is reported, power down immediately and clear the faulted field loop before using a Watch Table to verify each channel.",
+      "figure": {
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__025.png",
+        "caption": "Diagnostics buffer showing 'High limit exceeded' on an analog input channel"
+      }
+    },
+    {
+      "kind": "concept",
+      "title": "Resolving CPU Model & Firmware Mismatches",
+      "points": [
+        "Download fails if the configured CPU model or firmware differs from hardware",
+        "Close the download error dialog and check the physical CPU's MLFB label",
+        "Right-click the CPU in Device View and select Change device",
+        "Pick the exact CPU article number and firmware version installed on the bench"
+      ],
+      "explain": "If TIA Portal aborts a download because the target PLC does not match the offline project, you do not need to rewrite your program. Simply right-click the CPU in Device configuration, choose 'Change device', and select the exact article number and firmware version printed on the physical S7-1200.",
+      "figure": {
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__030.png",
+        "caption": "Using 'Change device' in TIA Portal to match the physical CPU model and firmware"
       }
     },
     {

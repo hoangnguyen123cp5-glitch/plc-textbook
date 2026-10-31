@@ -83,20 +83,72 @@ export default {
   "slides": [
     {
       "kind": "concept",
-      "title": "The S7-1200 Programmable Controller",
+      "title": "S7-1200 System Architecture",
       "points": [
-        "CPU Form Factor Variants: Available in DC/DC/DC (24VDC supply, 24VDC inputs, 24VDC transistor outputs), AC/DC/Relay (120/230VAC supply, 24VDC inputs, relay outputs), and DC/DC/Relay",
-        "Performance Hierarchy: CPU 1211C (50 KB RAM, no SM expansion) to CPU 1214C/1215C/1217C (up to 8 SM expansion modules and 3 CM modules)",
-        "Signal Board (SB) Slot: Dedicated front-bezel receptacle supporting 1 SB (e.g. 2 DI/2 DO, 1 AI 12-bit, or 1 AQ 12-bit) without consuming DIN-rail horizontal length",
-        "High-Speed Backplane Bus: Proprietary multi-pin slide bus interconnects modules on the right; transfers cyclic process images with hardware synchronization",
-        "Communication Modules (CM): Mount to the left of the CPU, supporting up to 3 modules for Point-to-Point (PtP) RS485 Modbus RTU, PROFIBUS-DP, or TeleControl",
-        "Mechanical Mounting: Mounts horizontally or vertically on standard 35mm DIN rail (EN 50022) with pull-down locking spring tabs"
+        "Compact controller programmed in TIA Portal for discrete and analog control",
+        "Reads field input sensors and drives output actuators cyclically",
+        "Supports operator panel integration and simulation for testing",
+        "Expands via front Signal Boards, right Signal Modules, and left Comms Modules"
       ],
-      "explain": "The Siemens SIMATIC S7-1200 is a modular micro-PLC designed for open-loop and closed-loop process control across discrete manufacturing and process industries. The central processing unit (CPU) integrates a 32-bit RISC microprocessor, non-volatile Flash load memory, volatile execution work memory, high-speed digital and analog I/O channels, and an on-board PROFINET Industrial Ethernet port. The hardware family spans five performance tiers: CPU 1211C, 1212C, 1214C, 1215C, and 1217C, differing in work memory capacity (50 KB up to 250 KB), I/O count, and expansion capability. The CPU can be expanded using three modular form factors: Signal Boards (SB) or Communication Boards (CB) that snap directly into the front housing without altering the panel footprint; Signal Modules (SM) providing dense digital/analog expansion attached via high-speed backplane sliding bus connectors to the right; and Communication Modules (CM) providing serial RS232/RS485 or PROFIBUS interfaces attached to the left.",
+      "explain": "In the lecture sequence, we begin by looking at where the S7-1200 sits in an automation loop. Programmed from TIA Portal, the CPU continuously reads field sensors, evaluates control logic, and drives actuators. Its modular housing lets you snap a Signal Board onto the front face, attach up to eight Signal Modules on the right for extra I/O, and add up to three Communication Modules on the left without redesigning the control cabinet.",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__001.png",
-        "caption": "Figure 2.1: SIMATIC S7-1200 Modular Hardware Family: CPUs, Signal Boards, and Signal Modules"
+        "caption": "SIMATIC S7-1200 modular family: CPUs, communication modules, and signal modules"
       }
+    },
+    {
+      "kind": "concept",
+      "title": "CPU Family Comparison (1211C to 1215C)",
+      "points": [
+        "CPU 1211C: 6 DI / 4 DO and 2 AI on board; no Signal Module expansion",
+        "CPU 1212C: 8 DI / 6 DO and 2 AI on board; expands up to 2 Signal Modules",
+        "CPU 1214C: 14 DI / 10 DO and 2 AI on board; expands up to 8 Signal Modules",
+        "CPU 1215C: 14 DI / 10 DO, 2 AI / 2 AQ, and dual PROFINET RJ45 ports"
+      ],
+      "explain": "Selecting the right CPU model upfront prevents costly hardware replacements later. While every S7-1200 CPU includes two built-in 0–10 V analog inputs and a PROFINET interface, the 1211C cannot accept right-side Signal Modules at all. For stations needing future I/O growth or analog outputs on the CPU itself, engineers step up to the 1212C, 1214C, or the dual-port 1215C.",
+      "figure": {
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__062.png",
+        "caption": "SIMATIC S7-1200 CPU 1214C DC/DC/DC front panel and integrated I/O LEDs"
+      }
+    },
+    {
+      "kind": "concept",
+      "title": "Panel Commissioning & Thermal Clearance",
+      "points": [
+        "Inspect hardware for transit damage before mounting on the panel",
+        "Mount according to electrical schematics and verify wiring continuity",
+        "Keep at least 25 mm clearance above and below modules for cooling",
+        "Run functional simulation, load testing, and operator handover"
+      ],
+      "explain": "Industrial PLC installation follows a strict commissioning workflow: mechanical inspection, panel mounting, point-to-point wiring checks, and functional testing before handover. Because S7-1200 modules rely on natural convection rather than cooling fans, always leave at least 25 mm of free space above and below the rack so heat can dissipate.",
+      "figure": {
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__070.png",
+        "caption": "Minimum 25 mm thermal clearance for horizontal and vertical mounting"
+      }
+    },
+    {
+      "kind": "concept",
+      "title": "DIN-Rail Mounting & Module Removal",
+      "points": [
+        "Secure the 35 mm DIN rail to the backplate every 75 mm",
+        "Isolate all 24 VDC and AC power before installing or removing modules",
+        "Hook the CPU onto the top rail edge, pull the bottom clip, and snap it flat",
+        "Retract the Signal Module bus connector with a screwdriver before unclipping"
+      ],
+      "explain": "To mount an S7-1200 CPU, de-energize the cabinet, hook the rear slot over the top of a 35 mm DIN rail, pull down the lower locking clip, swing the unit flush against the rail, and push the clip back in until it clicks. Before removing a CPU that has a Signal Module attached on its right, always press down and slide the inter-module bus connector to the right with a flat-blade screwdriver so you do not bend the backplane pins.",
+      "figure": {
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__075.png",
+        "caption": "Hooking the S7-1200 CPU onto the 35 mm DIN rail and engaging the lower clip"
+      }
+    },
+    {
+      "kind": "diagram",
+      "title": "Disengaging the Backplane Bus Connector",
+      "figure": {
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__080.png",
+        "caption": "Using a screwdriver to retract the top bus connector before removing a module"
+      },
+      "explain": "Never pry a CPU or Signal Module off the DIN rail while the side bus latch is still engaged. Retracting the top slide tab disconnects the high-speed backplane pins cleanly so a single unit can be swapped without disturbing adjacent wiring."
     },
     {
       "kind": "quiz",

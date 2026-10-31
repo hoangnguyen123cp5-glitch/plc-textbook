@@ -83,19 +83,62 @@ export default {
   "slides": [
     {
       "kind": "concept",
-      "title": "Working with TIA Portal",
+      "title": "Portal View vs Project View",
       "points": [
-        "Portal View vs Project View: Switch seamlessly between task-oriented portal navigation and deep hierarchical project editing via the bottom-left toggle",
-        "Project Tree Organization: Structured root hierarchy containing Devices, Program Blocks (OB/FC/FB/DB), PLC Tag Tables, Watch Tables, and Common Data",
-        "MLFB Part Number Precision: Verify the complete Siemens article number (e.g. 6ES7 214-1AG40-0XB0); mismatched catalog models will reject program downloads",
-        "Firmware Matching: Ensure the project hardware firmware revision matches or is backward-compatible with the physical CPU firmware (e.g. V4.2 vs V4.6)",
-        "Hardware Catalog Navigation: Search and insert CPUs, Signal Boards, Signal Modules, ET 200 distributed stations, and drive nodes into the graphical rack",
-        "Compilation and Download: Full compilation validates memory allocations, addressing conflicts, and syntax errors prior to transferring runtime blocks to Flash"
+        "Portal View (1–4) provides task-oriented startup actions and project creation",
+        "Switch between Portal View and Project View at the bottom-left corner",
+        "Project View displays the left Project Tree for Devices, Blocks, and Tags",
+        "Central Work Area, bottom Inspector Window, and right Task Cards complete the IDE"
       ],
-      "explain": "TIA Portal presents two complementary graphical environments: Portal View and Project View. Portal View is a task-oriented interface tailored for quick operational tasks (creating projects, hardware discovery, diagnostic inspections, and firmware updates). Project View is the comprehensive hierarchical engineering workbench, organized into three primary functional areas: the Project Tree on the left (containing PLC folders, Program Blocks, PLC Tags, and Device Configuration), the central Work Area (where ladder rungs, hardware racks, and network topologies are visually designed), and the Inspector / Task Card Area on the bottom and right (providing contextual hardware properties, diagnostics, instruction catalogs, and cross-references). To configure hardware, the engineer drags the specific CPU model from the hardware catalog into the Device View, verifying that the order code (MLFB) and firmware revision (e.g. V4.6) exactly match the physical device. The project is compiled (Ctrl+B for hardware, Ctrl+Shift+B for software) and downloaded to the CPU via PROFINET.",
+      "explain": "When you launch TIA Portal (Section 1.8), you start in Portal View, which groups high-level tasks: creating or opening a project, configuring devices, or going online. Clicking 'Project view' in the bottom-left corner opens the full engineering workbench—giving you the hierarchical Project Tree on the left, the main editor in the center, the Properties/Diagnostics Inspector at the bottom, and the Instructions/Libraries Task Cards on the right.",
       "figure": {
-        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__062.png",
-        "caption": "Figure 2.6: TIA Portal Project View: Device Configuration, Hardware Catalog, and Network Topology"
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__050.png",
+        "caption": "TIA Portal startup screen (Portal View) showing task categories and project creation"
+      }
+    },
+    {
+      "kind": "concept",
+      "title": "Inserting Instructions & Expanding LAD/FBD Inputs",
+      "points": [
+        "Drag instructions from the Basic Instructions task card directly onto a rung",
+        "LAD models current flow through input conditions; FBD uses logic gate boxes",
+        "Add extra inputs via the 'Insert input' icon, right-click menu, or Ctrl+Shift+3",
+        "Click the small expand/collapse arrow on complex blocks to reveal all parameters"
+      ],
+      "explain": "To build logic in OB1, open the 'Basic instructions' task card on the right and drag contacts, coils, timers, or math boxes into the network editor. On multi-input instructions in LAD or FBD, you can add another input pin by clicking the star icon, right-clicking and choosing 'Insert input' (Ctrl+Shift+3), or clicking the bottom arrow to expand hidden block parameters.",
+      "figure": {
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__002.jpeg",
+        "caption": "Project View workbench with Project Tree, FBD network editor, and Basic Instructions"
+      }
+    },
+    {
+      "kind": "concept",
+      "title": "Online CPU Operator Panel & Project Libraries",
+      "points": [
+        "S7-1200 CPUs have no physical RUN/STOP toggle switch on the housing",
+        "Control CPU mode from the toolbar or the Online Tools CPU operator panel",
+        "Use RUN, STOP, and MRES (Memory Reset) buttons when connected online",
+        "Save reusable blocks and hardware setups in Project and Global Libraries"
+      ],
+      "explain": "Because S7-1200 controllers do not have a physical RUN/STOP switch on the front bezel, operating mode changes are commanded from TIA Portal. Once online, open the 'Online tools' task card to access the virtual CPU operator panel—where you can switch between RUN and STOP or trigger an MRES (Memory Reset). To speed up future projects, store tested Function Blocks and standard configurations in Project or Global Libraries.",
+      "figure": {
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__067.png",
+        "caption": "Online CPU operator panel in TIA Portal with RUN, STOP, and MRES controls"
+      }
+    },
+    {
+      "kind": "concept",
+      "title": "Editor Productivity: Split Editor, Unplugged Modules & Versions",
+      "points": [
+        "Press Shift+F3 (Window -> Split Editor) to view two blocks or tag tables side by side",
+        "Drag an expansion module to 'Module not plugged in' to park it without losing data",
+        "Select instruction firmware versions (e.g. V4.0) from the version dropdown column",
+        "Compile hardware (Ctrl+B) and software (Ctrl+Shift+B) before downloading"
+      ],
+      "explain": "Three built-in TIA Portal features save hours during commissioning: First, splitting the editor (Shift+F3) lets you drag tags directly from the PLC Tag Table into your ladder rung. Second, if a physical Signal Module is temporarily removed, dragging it to the 'Module not plugged in' area preserves all its configured addresses. Third, you can switch an instruction's version directly in the Instructions pane to maintain compatibility with older CPU firmware.",
+      "figure": {
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__076.jpeg",
+        "caption": "Selecting the instruction version directly in the TIA Portal Instructions task card"
       }
     },
     {

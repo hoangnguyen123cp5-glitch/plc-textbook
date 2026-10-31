@@ -84,21 +84,57 @@ export default {
   "slides": [
     {
       "kind": "concept",
-      "title": "Wiring the PLC to Field Devices",
+      "title": "PC-to-PLC Interface & CPU Power Supply",
       "points": [
-        "System Power Supply: 24VDC nominal (allowable range 20.4VDC to 28.8VDC) at L+ and M; provide upstream miniature circuit breaker (MCB) or fuse protection",
-        "Digital Input Sinking Circuit (PNP): Connect common terminal 1M to 0VDC (M); input activates when switched high (+24VDC relative to 1M)",
-        "Digital Input Sourcing Circuit (NPN): Connect common terminal 1M to +24VDC (L+); input activates when pulled low (0VDC relative to 1M)",
-        "Transistor DO Specifications: Sourcing MOSFET outputs (switches +24VDC from 1L+ to output pin); 0.5A max continuous load; 100 kHz maximum switching speed",
-        "Relay DO Specifications: Form-A dry contact; 2.0A resistive / inductive load; maximum 1 Hz switching rate; galvanic isolation between relay groups (1L, 2L)",
-        "Inductive Suppression: Reverse-biased 1N4007 diodes across DC coils, or RC snubber circuits across AC coils, prevent contact arcing and optical isolator damage",
-        "Wiring Practices: Always terminate stranded conductors with insulated ferrule crimp pins (bootlace pins) sized 0.5 mm² to 1.5 mm² (AWG 20 to 16)"
+        "Correct peripheral wiring is essential for reliable PLC communication and I/O",
+        "Legacy S7-200 CPUs require RS-232/PPI or USB/PPI Multi-Master converter cables",
+        "S7-1200 DC CPUs operate on 20.4 to 28.8 VDC (24 VDC nominal at L+ and M)",
+        "S7-1200 AC CPUs accept 85 to 264 VAC (47 to 63 Hz) line power directly"
       ],
-      "explain": "Wiring field devices to the S7-1200 requires rigorous adherence to industrial electrical standards (IEC 60204-1 and NFPA 79). Control power is supplied via terminals L+ (+24VDC) and M (0VDC return), with protective earth grounded at the PE screw. The discrete digital inputs of the S7-1200 feature optical isolation and can be configured as Sinking or Sourcing circuits by wiring the common terminal '1M'. In a Sinking DI configuration (standard European PNP sensor compatibility), 1M is connected to 0VDC (M), and external sensors switch +24VDC into the input terminals (%I0.0 to %I1.5). For digital outputs, DC/DC/DC CPUs provide high-speed power MOSFET transistor outputs (24VDC sourcing, rated 0.5A per channel) capable of switching up to 100 kHz for pulse train motion control. AC/DC/Relay CPUs feature dry electromechanical relay contacts rated for 2.0A switching of either 24VDC or 120/230VAC external loads. Freewheeling flyback diodes must be wired across all DC inductive loads (solenoids, contactor coils) to suppress destructive high-voltage inductive kickback.",
+      "explain": "Following the lecture sequence for Section 1.5, wiring begins with the programming link and CPU power supply. Whereas legacy S7-200 controllers needed an RS-232/PPI or USB/PPI Multi-Master adapter cable to talk to a PC, S7-1200 CPUs connect directly over Ethernet. Before energizing the CPU, always verify whether the model is a 24 VDC variant (20.4–28.8 VDC) or a wide-range AC variant (85–264 VAC).",
+      "figure": {
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__019.jpeg",
+        "caption": "Complete power, digital input, analog input, and relay output wiring on an S7-1200"
+      }
+    },
+    {
+      "kind": "concept",
+      "title": "Digital Inputs: DC vs AC & Sinking vs Sourcing",
+      "points": [
+        "DC inputs switch rapidly and operate at safe low voltage (24 VDC)",
+        "AC inputs resist electromagnetic noise over long runs but respond slower",
+        "Sinking input (1M tied to 0 V): pairs with mechanical contacts and PNP sensors",
+        "Sourcing input (1M tied to +24 V): pairs with 3-wire NPN current-sinking sensors"
+      ],
+      "explain": "Digital inputs on the S7-1200 are grouped around a shared common terminal labeled 1M. Tying 1M to 0 VDC (M) configures the group as sinking inputs, which expect +24 VDC from dry relay contacts, pushbuttons, or PNP proximity sensors. If a machine uses NPN sensors—which pull their signal wire to 0 V when active—you must wire 1M to +24 VDC (L+) so current flows out of the PLC input.",
       "figure": {
         "src": "/images/diagrams/plc-wiring-di.jpg",
-        "caption": "Figure 2.3: Industrial Field Wiring Schematic for 24VDC Digital Inputs (Sinking / Sourcing Circuits)"
+        "caption": "24 VDC digital input wiring for sinking (PNP) and sourcing (NPN) sensor circuits"
       }
+    },
+    {
+      "kind": "concept",
+      "title": "Digital Output Stages: Relay, Transistor, and Triac",
+      "points": [
+        "Relay outputs switch both AC (20–264 VAC) and DC (5–30 VDC) loads up to 2 A",
+        "Relay contacts provide galvanic isolation but wear out after millions of cycles",
+        "Transistor (MOSFET) outputs switch 20.4–28.8 VDC rapidly with no contact wear",
+        "Triac outputs switch AC loads rapidly; clamp inductive coils with diodes or RC snubbers"
+      ],
+      "explain": "When wiring actuators to PLC outputs, match the output hardware type to the load. Relay outputs are dry contacts that can switch either 24 VDC or 220 VAC contactor coils, but their mechanical life and switching speed are limited. Transistor outputs on DC/DC/DC CPUs switch 24 VDC silently up to 100 kHz for pulse outputs, while triac stages handle fast AC switching.",
+      "figure": {
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__017.jpeg",
+        "caption": "Internal optocoupler isolation and output stages: transistor, relay, and triac"
+      }
+    },
+    {
+      "kind": "diagram",
+      "title": "Actuator Output & CPU Terminal Wiring Schematics",
+      "figure": {
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__018.jpeg",
+        "caption": "Wiring actuators to 24 VDC, relay, and AC output groups alongside full CPU I/O terminals"
+      },
+      "explain": "Compare the three output terminal blocks at the top: transistor outputs require a 24 VDC supply on L+ and M, whereas relay common terminals (L) can be fed from either a DC battery or a 220 VAC line to drive lamps and interposing contactors."
     },
     {
       "kind": "quiz",

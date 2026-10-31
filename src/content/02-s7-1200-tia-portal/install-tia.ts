@@ -83,19 +83,62 @@ export default {
   "slides": [
     {
       "kind": "concept",
-      "title": "Installing TIA Portal",
+      "title": "What Is Totally Integrated Automation Portal?",
       "points": [
-        "Software Components: STEP 7 Professional (S7-1200, S7-1500, S7-300, S7-400), WinCC Advanced/Unified, Safety Advanced, and S7-PLCSIM",
-        "Operating System Support: Windows 10 Pro/Enterprise 64-bit, Windows 11 Pro, Windows Server 2019/2022; Home editions are unsupported",
-        "Hardware Prerequisites: 16 GB to 32 GB RAM, high-speed NVMe SSD, minimum 1920x1080 display resolution with 100% DPI scaling",
-        "Automation License Manager (ALM): Dedicated system service that installs, transfers, validates, and recovers Siemens engineering license keys",
-        "21-Day Trial License: Authorizes all professional software features without functional restriction for 21 days from initial activation",
-        "Installation Best Practices: Temporarily disable aggressive third-party antivirus suites, execute installer with administrative privileges, and reboot upon completion"
+        "Unified Siemens engineering environment for all automation tasks",
+        "Drag-and-drop hardware configuration and multi-language PLC coding",
+        "Centralized user administration, access control, and project management",
+        "Integrated online diagnostics across all networked devices plus simulation"
       ],
-      "explain": "Siemens Totally Integrated Automation Portal (TIA Portal) is an industrial engineering software package integrating STEP 7 (PLC programming), WinCC (HMI and SCADA design), Startdrive (frequency converter parameterization), and S7-PLCSIM (virtual PLC emulation). A robust workstation configuration is critical for efficient engineering workflows: 64-bit Windows 10/11 Professional or Enterprise, multi-core Intel Core i7/i9 or AMD Ryzen processor (>=3.4 GHz), minimum 16 GB of high-speed DDR4/DDR5 RAM (32 GB recommended for large multi-device topologies), and solid-state storage (NVMe SSD) with at least 50 GB of unallocated disk space. The installation media is distributed as self-extracting ISO archives available via Siemens Industry Online Support (SIOS). Licensing is governed centrally by the Automation License Manager (ALM), which manages node-locked, USB dongle, or network floating licenses. Siemens provides a fully functional 21-day trial license enabling complete evaluation and academic laboratory instruction.",
+      "explain": "Section 1.7 introduces TIA Portal (Totally Integrated Automation Portal) as Siemens' single-platform engineering framework. Rather than switching between separate tools for PLCs, HMIs, and drives, engineers use one shared database for hardware configuration, network linking, user permissions, live diagnostics, and simulation.",
       "figure": {
-        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__050.png",
-        "caption": "Figure 2.5: TIA Portal Engineering Suite: STEP 7 Professional, WinCC, and ALM Licensing"
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__049.png",
+        "caption": "TIA Portal unifying controller hardware and software engineering"
+      }
+    },
+    {
+      "kind": "concept",
+      "title": "Core Software Packages Inside TIA Portal",
+      "points": [
+        "SIMATIC STEP 7: programs S7-1200, S7-1500, S7-300/400, and networks",
+        "SIMATIC WinCC: designs operator HMI panels and SCADA runtime screens",
+        "SINAMICS Startdrive & SCOUT TIA: configures drives and multi-axis motion",
+        "SIRIUS / SIMOCODE & power distribution: parameterizes motor protection"
+      ],
+      "explain": "Within TIA Portal, six core software pillars cover the entire plant floor: STEP 7 for controller logic, WinCC for HMI/SCADA visualization, Startdrive and SCOUT TIA for variable-frequency drives and motion control, plus SIRIUS/SIMOCODE and power distribution tools for low-voltage switchgear diagnostics.",
+      "figure": {
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__033.jpeg",
+        "caption": "The six core engineering software domains integrated in TIA Portal"
+      }
+    },
+    {
+      "kind": "concept",
+      "title": "Factory & Process Automation Hardware Ecosystem",
+      "points": [
+        "Spans Field, Control, Operations, Management, and Cloud layers",
+        "Factory Automation: controllers, HMIs, industrial PCs, drives, and CNC",
+        "Process Automation: process instrumentation, weighing, and remote I/O",
+        "Use TIA Selection Tool to specify exact module options and accessories"
+      ],
+      "explain": "TIA Portal sits at the center of the automation pyramid, linking field sensors, power supplies, and distributed I/O up through controllers and SCADA systems to cloud analytics. Because each Siemens device has many sub-options and accessory part numbers, engineers use the TIA Selection Tool first to validate the bill of materials and export the hardware list directly into ECAD and TIA Portal.",
+      "figure": {
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__034.jpeg",
+        "caption": "Siemens Factory Automation architecture across Field, Control, Operations, and Cloud"
+      }
+    },
+    {
+      "kind": "concept",
+      "title": "Installing TIA Portal, ALM Licensing & S7-PLCSIM",
+      "points": [
+        "Install TIA Portal (e.g. V15.1 / V16+) on 64-bit Windows 10/11 Pro with ≥16 GB RAM",
+        "Standard lab bundle includes STEP 7 Professional and WinCC Advanced/Professional",
+        "Automation License Manager (ALM) activates floating, dongle, or 21-day trial keys",
+        "Install S7-PLCSIM to emulate an S7 CPU and test code without physical hardware"
+      ],
+      "explain": "For laboratory and industrial workstations, install matching versions of STEP 7 Professional, WinCC, and S7-PLCSIM as a Windows Administrator, with license keys managed by the Automation License Manager (ALM). Once S7-PLCSIM is installed, students can download and debug their S7-1200 programs on a virtual PLC before connecting to a physical bench.",
+      "figure": {
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__057.jpeg",
+        "caption": "Verifying installed STEP 7 Professional and WinCC versions in TIA Portal"
       }
     },
     {
