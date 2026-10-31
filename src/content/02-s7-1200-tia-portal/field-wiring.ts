@@ -25,7 +25,7 @@ export default {
   "figures": [
     {
       "src": "/images/diagrams/plc-wiring-di.jpg",
-      "caption": "Figure 2.3: Industrial Field Wiring Schematic for 24VDC Digital Inputs (Sinking / Sourcing Circuits)"
+      "caption": "Figure 2.3: 24 VDC Digital Input Wiring Schematic: Normally Open Pushbutton S1 Connected to I0.0 with Common 1M Tied to 0 VDC (M)"
     }
   ],
   "caseStudy": {
@@ -91,7 +91,7 @@ export default {
         "S7-1200 DC CPUs operate on 20.4 to 28.8 VDC (24 VDC nominal at L+ and M)",
         "S7-1200 AC CPUs accept 85 to 264 VAC (47 to 63 Hz) line power directly"
       ],
-      "explain": "Following the lecture sequence for Section 1.5, wiring begins with the programming link and CPU power supply. Whereas legacy S7-200 controllers needed an RS-232/PPI or USB/PPI Multi-Master adapter cable to talk to a PC, S7-1200 CPUs connect directly over Ethernet. Before energizing the CPU, always verify whether the model is a 24 VDC variant (20.4–28.8 VDC) or a wide-range AC variant (85–264 VAC).",
+      "explain": "Hardware wiring begins with the programming link and CPU power supply. Whereas legacy S7-200 controllers needed an RS-232/PPI or USB/PPI Multi-Master adapter cable to talk to a PC, S7-1200 CPUs connect directly over Ethernet. Before energizing the CPU, always verify whether the model is a 24 VDC variant (20.4–28.8 VDC) or a wide-range AC variant (85–264 VAC).",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__019.jpeg",
         "caption": "Complete power, digital input, analog input, and relay output wiring on an S7-1200"
@@ -108,8 +108,8 @@ export default {
       ],
       "explain": "Digital inputs on the S7-1200 are grouped around a shared common terminal labeled 1M. Tying 1M to 0 VDC (M) configures the group as sinking inputs, which expect +24 VDC from dry relay contacts, pushbuttons, or PNP proximity sensors. If a machine uses NPN sensors—which pull their signal wire to 0 V when active—you must wire 1M to +24 VDC (L+) so current flows out of the PLC input.",
       "figure": {
-        "src": "/images/diagrams/plc-wiring-di.jpg",
-        "caption": "24 VDC digital input wiring for sinking (PNP) and sourcing (NPN) sensor circuits"
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__016.png",
+        "caption": "Connecting 24 VDC digital inputs to external devices: (a) relay-output sensor with common M at 0 V, (b) PNP sensor with common M at 0 V, and (c) NPN sensor with common L at +24 V"
       }
     },
     {

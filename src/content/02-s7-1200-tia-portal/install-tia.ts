@@ -90,7 +90,7 @@ export default {
         "Centralized user administration, access control, and project management",
         "Integrated online diagnostics across all networked devices plus simulation"
       ],
-      "explain": "Section 1.7 introduces TIA Portal (Totally Integrated Automation Portal) as Siemens' single-platform engineering framework. Rather than switching between separate tools for PLCs, HMIs, and drives, engineers use one shared database for hardware configuration, network linking, user permissions, live diagnostics, and simulation.",
+      "explain": "TIA Portal (Totally Integrated Automation Portal) is Siemens' single-platform engineering framework. Rather than switching between separate tools for PLCs, HMIs, and drives, engineers use one shared database for hardware configuration, network linking, user permissions, live diagnostics, and simulation.",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__049.png",
         "caption": "SIMATIC S7-1200 hardware rack paired with the TIA Portal engineering interface"

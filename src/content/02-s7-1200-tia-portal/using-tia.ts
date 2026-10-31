@@ -90,7 +90,7 @@ export default {
         "Project View displays the left Project Tree for Devices, Blocks, and Tags",
         "Central Work Area, bottom Inspector Window, and right Task Cards complete the IDE"
       ],
-      "explain": "When you launch TIA Portal (Section 1.8), you start in Portal View, which groups high-level tasks: creating or opening a project, configuring devices, or going online. Clicking 'Project view' in the bottom-left corner opens the full engineering workbench—giving you the hierarchical Project Tree on the left, the main editor in the center, the Properties/Diagnostics Inspector at the bottom, and the Instructions/Libraries Task Cards on the right.",
+      "explain": "When you launch TIA Portal, you start in Portal View, which groups high-level tasks: creating or opening a project, configuring devices, or going online. Clicking 'Project view' in the bottom-left corner opens the full engineering workbench—giving you the hierarchical Project Tree on the left, the main editor in the center, the Properties/Diagnostics Inspector at the bottom, and the Instructions/Libraries Task Cards on the right.",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__057.jpeg",
         "caption": "TIA Portal Portal View showing numbered regions: (1) Start tasks, (2) Create/Open actions, (3) New project details, and (4) Project view toggle"

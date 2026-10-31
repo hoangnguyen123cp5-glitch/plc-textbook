@@ -90,7 +90,7 @@ export default {
         "Supports operator panel integration and simulation for testing",
         "Expands via front Signal Boards, right Signal Modules, and left Comms Modules"
       ],
-      "explain": "In the lecture sequence, we begin by looking at where the S7-1200 sits in an automation loop. Programmed from TIA Portal, the CPU continuously reads field sensors, evaluates control logic, and drives actuators. Its modular housing lets you snap a Signal Board onto the front face, attach up to eight Signal Modules on the right for extra I/O, and add up to three Communication Modules on the left without redesigning the control cabinet.",
+      "explain": "In an industrial control loop, the S7-1200 sits between field instrumentation and plant actuators. Programmed from TIA Portal, the CPU continuously reads field sensors, evaluates control logic, and drives output loads. Its modular housing lets you snap a Signal Board onto the front face, attach up to eight Signal Modules on the right for extra I/O, and add up to three Communication Modules on the left without redesigning the control cabinet.",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__062.png",
         "caption": "SIMATIC S7-1200 modular rack: CP 1242-7, CM 1241, CM 1243-5 (left), CPU 1214C (center), and two SM 1223 modules (right)"

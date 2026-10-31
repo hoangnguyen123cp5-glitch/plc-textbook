@@ -90,7 +90,7 @@ export default {
         "Program cyclic logic in OB1 with modular FCs, FBs, and Data Blocks",
         "Commission with WinCC HMI simulation, Startdrive, and online diagnostics"
       ],
-      "explain": "In the lecture flow for Section 1.4, processing a PLC program starts with how TIA Portal organizes an automation project. From a single project file, you configure the hardware rack, set I/O address ranges in the Device View, and structure your runtime program into Organization Block 1 (OB1), stateless Functions (FC), and stateful Function Blocks (FB) backed by Data Blocks.",
+      "explain": "Processing a PLC application begins with how TIA Portal organizes an automation project. From a single project file, you configure the hardware rack, set I/O address ranges in the Device View, and structure your runtime program into Organization Block 1 (OB1), stateless Functions (FC), and stateful Function Blocks (FB) backed by Data Blocks.",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__004.png",
         "caption": "TIA Portal Device View showing CPU 1214C DC/DC/DC hardware configuration, project tree, and PROFINET IP settings"

@@ -91,7 +91,7 @@ export default {
         "Industrial wireless/remote modules: GPRS, LTE, and TeleControl CP",
         "Point-to-Point (PtP) serial modules and RF120C for SIMATIC Ident systems"
       ],
-      "explain": "In Section 1.9, we examine the full communication portfolio of the SIMATIC S7-1200. Every CPU includes a built-in PROFINET Ethernet port, and up to three Communication Modules (CM) or Communication Processors (CP) can be added on the left side of the CPU for PROFIBUS DP, GPRS/LTE cellular telemetry, RF120C RFID identification, IO-Link sensor masters, or serial Point-to-Point links.",
+      "explain": "Every SIMATIC S7-1200 CPU includes a built-in PROFINET Ethernet port, and up to three Communication Modules (CM) or Communication Processors (CP) can be added on the left side of the CPU for PROFIBUS DP, GPRS/LTE cellular telemetry, RF120C RFID identification, IO-Link sensor masters, or serial Point-to-Point links.",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__064.jpeg",
         "caption": "Expansion layout comparison: S7-1200 mounts up to 3 Communication Modules (CM) on the left of the CPU and up to 8 Signal Modules (SM) on the right"
@@ -145,7 +145,7 @@ export default {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__044.png",
         "caption": "Global Data Block CPU1_Data [DB10] containing PLC1_Transmit_Data and PLC1_Receive_Data structures"
       },
-      "explain": "In Step 3 of the PUT/GET setup, create a dedicated Global Data Block (such as CPU1_Data [DB10]) containing two Structs—one for transmit data and one for receive data—and disable 'Optimized block access' in the DB properties so PUT and GET can reference exact absolute byte offsets."
+      "explain": "When configuring the data exchange buffer for PUT/GET communication, create a dedicated Global Data Block (such as CPU1_Data [DB10]) containing two Structs—one for transmit data and one for receive data—and disable 'Optimized block access' in the DB properties so PUT and GET can reference exact absolute byte offsets."
     },
     {
       "kind": "quiz",
