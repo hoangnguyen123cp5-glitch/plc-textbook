@@ -29,15 +29,37 @@ export default {
   ],
   "quiz": [
     {
-      "q": "In a conveyor latch seal-in circuit, why is the STOP contact wired in series before the START parallel branch?",
+      "q": "In a conveyor Start/Stop seal-in network, why is the Stop condition placed in series with the entire parallel Start and self-hold branch?",
       "options": [
-        "To provide immediate power cut-off that breaks the seal-in loop unconditionally",
-        "To increase motor speed",
-        "To prevent contact bounce",
-        "To save one memory byte"
+        "So that opening the Stop contact breaks continuity for both the Start path and the self-hold feedback branch",
+        "So that pressing Stop latches the motor coil ON until the Start button is pressed again",
+        "Because TIA Portal does not allow Normally Closed contacts to be placed inside a parallel branch",
+        "To allow the motor to keep running via the self-hold contact even while Stop is held open"
       ],
       "answer": 0,
-      "explain": "Placing the STOP contact in series ensures that opening the stop circuit immediately breaks both the start and the auxiliary hold-in contact paths."
+      "explain": "Placing the Stop contact in series ensures that opening the stop circuit immediately interrupts both the momentary Start path and the auxiliary hold-in path."
+    },
+    {
+      "q": "In the example cut-to-length conveyor solution, why does counter output Q (when CV >= PV) unlatch the feed drive before triggering the cutting shear?",
+      "options": [
+        "Because an IEC CTU counter cannot increment CV while a motor output coil is energized",
+        "To force the roller encoder to count backward to zero during the cutting stroke",
+        "To stop the metal strip from advancing while the shear blade is engaged, preventing buckled material",
+        "Because TIA Portal prohibits energizing two output coils (%Q0.0 and %Q0.1) in the same program block"
+      ],
+      "answer": 2,
+      "explain": "Stopping the feed drive as soon as CV reaches PV holds the strip stationary during the shear stroke; once the cut completes, input R resets CV = 0 for the next sheet."
+    },
+    {
+      "q": "In an industrial drive application such as the steel rolling mill example, how should an Emergency Stop (E-Stop) be handled between hardware wiring and the PLC program?",
+      "options": [
+        "Wire the E-Stop only to a PLC digital input and rely on a software TON timer to ramp down VFD power",
+        "Use a Set-dominant RS block so the operator can override an active E-Stop by holding the Start button",
+        "Bypass the PLC completely and omit E-Stop status monitoring from the ladder program",
+        "Hardwire the E-Stop circuit to remove drive power directly, while the PLC latches the fault status (SR) to block automatic restart"
+      ],
+      "answer": 3,
+      "explain": "Safety standards require E-Stop circuits to remove actuator power via hardwired safety components; the PLC monitors an auxiliary contact and uses a Reset-dominant (SR) latch to prevent unexpected restart when the E-Stop is released."
     }
   ],
   "narration": {
@@ -101,6 +123,16 @@ export default {
       "kind": "quiz",
       "title": "Quick Check",
       "questionIndex": 0
+    },
+    {
+      "kind": "quiz",
+      "title": "Quick Check",
+      "questionIndex": 1
+    },
+    {
+      "kind": "quiz",
+      "title": "Quick Check",
+      "questionIndex": 2
     }
   ],
   "status": "review"

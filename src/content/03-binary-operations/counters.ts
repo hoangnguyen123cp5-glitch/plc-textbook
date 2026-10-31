@@ -30,15 +30,37 @@ export default {
   ],
   "quiz": [
     {
-      "q": "What triggers an IEC CTU (Count Up) counter block to increment its Current Value (CV)?",
+      "q": "What triggers an IEC CTU (Count Up) counter block to increment its Current Value (CV) by 1?",
       "options": [
-        "A continuous HIGH level on CU",
-        "A rising edge (0 to 1 transition) on input CU",
-        "A falling edge (1 to 0 transition) on CU",
-        "A CPU scan cycle tick"
+        "Every OB1 scan cycle while input CU remains steady at TRUE (1)",
+        "Each rising edge (0 to 1 transition) detected at input CU",
+        "Each falling edge (1 to 0 transition) detected at input CU",
+        "A rising edge (0 to 1 transition) at the Reset (R) input"
       ],
       "answer": 1,
-      "explain": "IEC counters are edge-triggered: they increment only when a positive 0-to-1 rising edge occurs on the count input."
+      "explain": "IEC counters are edge-triggered: they increment only when a positive 0-to-1 rising edge occurs on the count input CU."
+    },
+    {
+      "q": "In an IEC CTD (Count Down) counter block, how is the starting count initialized and when does output Q evaluate to TRUE (1)?",
+      "options": [
+        "Input R loads PV into CV, and output Q turns 1 when CV >= PV",
+        "Input CD loads PV into CV on its first pulse, and output Q turns 1 while CV > 0",
+        "Input LOAD sets CV := PV on a 0-to-1 edge, and output Q turns 1 whenever CV <= 0",
+        "CV starts at PV automatically on power-up, and output Q turns 1 only when CV == PV"
+      ],
+      "answer": 2,
+      "explain": "A CTD block loads the preset value PV into CV when LOAD transitions from 0 to 1, decrements CV on each CD rising edge, and asserts Q = 1 whenever CV <= 0."
+    },
+    {
+      "q": "On an IEC CTUD (Bidirectional Counter) block with preset PV = 4, what are the states of outputs QU and QD when current value CV equals 0?",
+      "options": [
+        "QU = 1 and QD = 1",
+        "QU = 1 and QD = 0",
+        "QU = 0 and QD = 0",
+        "QU = 0 and QD = 1"
+      ],
+      "answer": 3,
+      "explain": "On a CTUD block, QU is TRUE when CV >= PV (so QU = 0 when CV = 0 and PV = 4), while QD is TRUE whenever CV <= 0 (so QD = 1 when CV = 0)."
     }
   ],
   "narration": {
@@ -106,6 +128,16 @@ export default {
       "kind": "quiz",
       "title": "Quick Check",
       "questionIndex": 0
+    },
+    {
+      "kind": "quiz",
+      "title": "Quick Check",
+      "questionIndex": 1
+    },
+    {
+      "kind": "quiz",
+      "title": "Quick Check",
+      "questionIndex": 2
     }
   ],
   "status": "review"

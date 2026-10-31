@@ -30,15 +30,37 @@ export default {
   ],
   "quiz": [
     {
-      "q": "What is the key characteristic of a Reset-Dominant Latch (RS flip-flop) instruction?",
+      "q": "In TIA Portal (S7-1200), how does the Reset-dominant SR flip-flop block behave when both its Set (S) and dominant Reset (R1) inputs are TRUE (1) on the same scan?",
       "options": [
-        "If both Set (S) and Reset (R1) are TRUE simultaneously, the output Q resolves to FALSE (0)",
-        "The output remains permanently ON",
-        "It only works with analog tags",
-        "It resets the CPU hardware clock"
+        "Input R1 dominates over S, forcing the latched bit OUT and output Q to FALSE (0)",
+        "Input S dominates over R1, latching the bit OUT and output Q to TRUE (1) like an RS block",
+        "Output Q retains its previous scan state until either S or R1 returns to FALSE (0)",
+        "The outcome depends on which network was edited most recently ('last network wins')"
       ],
       "answer": 0,
-      "explain": "In safety-critical design, Reset Dominance ensures that an active STOP/RESET command always overrides a START command if both trigger together."
+      "explain": "In Siemens TIA Portal, the '1' suffix identifies the dominant input: SR has inputs S and R1 (Reset-dominant, forcing Q = 0 when both are 1), whereas RS has inputs R and S1 (Set-dominant, forcing Q = 1 when both are 1)."
+    },
+    {
+      "q": "What happens to the target bit OUT of a single-bit Set coil ---(S)--- when its rung condition (RLO) transitions from TRUE (1) back to FALSE (0)?",
+      "options": [
+        "OUT immediately drops to 0 at the end of the current OB1 scan cycle",
+        "OUT toggles between 0 and 1 on every subsequent scan until a Reset coil executes",
+        "OUT remains latched at 1 (unchanged) until a Reset instruction clears it",
+        "OUT is cleared to 0 automatically after one scan pulse like an edge instruction"
+      ],
+      "answer": 2,
+      "explain": "A Set coil ---(S)--- only modifies OUT when its rung RLO is 1; when RLO is 0, the instruction does nothing and OUT retains its latched 1 state."
+    },
+    {
+      "q": "When a RESET_BF instruction with parameter n = 8 and target OUT = #MyArray[3] executes with RLO = 1, which bits are cleared to 0?",
+      "options": [
+        "Only the single bit at index #MyArray[8]",
+        "Only #MyArray[3], repeated across 8 consecutive OB1 scan cycles",
+        "The first 3 bits #MyArray[0] through #MyArray[2]",
+        "Eight consecutive Boolean bits starting at #MyArray[3] (#MyArray[3] through #MyArray[10])"
+      ],
+      "answer": 3,
+      "explain": "RESET_BF writes logic 0 to a contiguous field of n bits beginning at the specified OUT bit address in a single scan."
     }
   ],
   "narration": {
@@ -102,6 +124,16 @@ export default {
       "kind": "quiz",
       "title": "Quick Check",
       "questionIndex": 0
+    },
+    {
+      "kind": "quiz",
+      "title": "Quick Check",
+      "questionIndex": 1
+    },
+    {
+      "kind": "quiz",
+      "title": "Quick Check",
+      "questionIndex": 2
     }
   ],
   "status": "review"

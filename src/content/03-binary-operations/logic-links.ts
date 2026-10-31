@@ -41,15 +41,26 @@ export default {
       "explain": "Parallel branches create alternative conduction paths: virtual power flow passes if either Branch A OR Branch B evaluates to TRUE."
     },
     {
-      "q": "If a physical emergency stop button is Normally Closed (NC), what contact symbol must be used in your ladder rung?",
+      "q": "If a physical emergency stop button is hardwired as Normally Closed (NC) so its healthy unpressed state sends +24 VDC (logic 1) to %I0.0, which LAD contact symbol must examine %I0.0 so the rung conducts while healthy?",
       "options": [
-        "Normally Closed contact (---[/]---)",
         "Normally Open contact (---[ ]---)",
+        "Normally Closed contact (---[/]---)",
         "Negated output coil (---(/)---)",
-        "Set coil (---(S)---)"
+        "Inline NOT contact (---|NOT|---)"
       ],
-      "answer": 1,
-      "explain": "In its normal healthy state, the NC E-Stop delivers +24V (logic 1) to the input. An NO ladder contact (---[ ]---) examines for logic 1 and conducts power flow safely."
+      "answer": 0,
+      "explain": "In its normal healthy state, the hardwired NC E-Stop delivers +24 VDC (logic 1) to %I0.0. An NO ladder contact (---[ ]---) closes when its bit is 1, conducting power flow while the E-Stop is unpressed."
+    },
+    {
+      "q": "In a 2-input FBD Exclusive-OR (XOR, x) block with Boolean inputs IN1 and IN2, under which input condition does the output evaluate to FALSE (0)?",
+      "options": [
+        "When IN1 = 1 and IN2 = 0",
+        "When IN1 = 0 and IN2 = 1",
+        "Whenever an odd number of inputs are TRUE (1)",
+        "When both IN1 = 1 and IN2 = 1 simultaneously"
+      ],
+      "answer": 3,
+      "explain": "An XOR (x) block outputs TRUE (1) only when an odd number of inputs are 1. When both IN1 and IN2 are 1 (or both are 0), the output evaluates to FALSE (0)."
     }
   ],
   "narration": {
@@ -125,6 +136,11 @@ export default {
       "kind": "quiz",
       "title": "Quick Check",
       "questionIndex": 1
+    },
+    {
+      "kind": "quiz",
+      "title": "Quick Check",
+      "questionIndex": 2
     }
   ],
   "status": "review"

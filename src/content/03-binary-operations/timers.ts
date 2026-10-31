@@ -32,13 +32,35 @@ export default {
     {
       "q": "What happens to the elapsed time (ET) of a standard IEC TON (On-Delay) timer if input IN goes FALSE before PT expires?",
       "options": [
-        "ET pauses and retains its current value",
-        "ET immediately resets to 0 ms and output Q remains FALSE",
-        "Output Q turns ON immediately",
-        "The CPU generates a hardware interrupt"
+        "ET pauses and retains its accumulated value until a Reset (R) input is pulsed",
+        "ET immediately resets to 0 ms and output Q remains FALSE (0)",
+        "ET continues counting up to PT and holds output Q TRUE for duration PT",
+        "Output Q turns TRUE immediately and begins an off-delay countdown"
       ],
       "answer": 1,
       "explain": "A standard TON timer requires an uninterrupted TRUE signal on IN for the entire Preset Time (PT); if IN drops to FALSE early, ET resets to zero immediately."
+    },
+    {
+      "q": "When does an IEC TOF (Off-Delay) timer start incrementing its elapsed time (ET) toward the preset time (PT)?",
+      "options": [
+        "Immediately on the rising edge (0 to 1 transition) of input IN",
+        "Continuously while input IN remains steady at TRUE (1)",
+        "On the falling edge (1 to 0 transition) of input IN, keeping Q = 1 until ET reaches PT",
+        "Only after a separate RT (Reset Timer) instruction is energized"
+      ],
+      "answer": 2,
+      "explain": "A TOF timer sets Q = 1 and holds ET = 0 ms while IN = 1; timing begins when IN drops from 1 to 0, keeping Q = 1 until ET reaches PT."
+    },
+    {
+      "q": "Which IEC timer block accumulates elapsed time (ET) across multiple separate IN = 1 intervals and requires an explicit R = 1 input (or RT coil) to clear ET back to 0 ms?",
+      "options": [
+        "TONR (Retentive On-Delay timer / Time accumulator)",
+        "TON (Standard On-Delay timer)",
+        "TP (Pulse timer)",
+        "TOF (Off-Delay timer)"
+      ],
+      "answer": 0,
+      "explain": "TONR retains its elapsed time ET when IN drops to 0 and continues accumulating on subsequent IN = 1 pulses until reset via input R or an RT instruction."
     }
   ],
   "narration": {
@@ -105,6 +127,16 @@ export default {
       "kind": "quiz",
       "title": "Quick Check",
       "questionIndex": 0
+    },
+    {
+      "kind": "quiz",
+      "title": "Quick Check",
+      "questionIndex": 1
+    },
+    {
+      "kind": "quiz",
+      "title": "Quick Check",
+      "questionIndex": 2
     }
   ],
   "status": "review"
