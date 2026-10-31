@@ -51,12 +51,12 @@ export default {
       "kind": "concept",
       "title": "Conveyor Bottle Counting and Cap Sealer Control",
       "points": [
-        "Entry photoelectric sensor (%I0.2) detects each bottle and pulses CTU input CU",
+        "Example solution: entry sensor (%I0.2) detects each bottle and pulses CTU input CU",
         "When bottle position reaches the cap sealer, an SR latch stops conveyor motor %Q0.0",
         "A TON/TP timer holds the cap sealer cylinder (%Q0.1) down for Sealing Time (T#2s)",
         "Exit sensor (%I0.3) confirms discharge and resets the batch counter at PV target"
       ],
-      "explain": "Analyzing a conveyor station begins with decomposing its process sequence into sensor reads, counter updates, and latched outputs. Simulating the bottle counter and 2-second sealing timer in TIA Portal lets you verify that the conveyor motor restarts cleanly only after the cap sealer cylinder retracts.",
+      "explain": "The source slide asks students to propose a control sequence for a bottle conveyor and cap sealer; the %I/%Q addresses above illustrate one example solution. Simulating the bottle counter and 2-second sealing timer in TIA Portal lets you verify that the conveyor motor restarts only after the sealer retracts.",
       "figure": {
         "src": "/images/slides/03-binary-operations/03-bin_carved_036.png",
         "caption": "Bottle conveyor with entry/exit sensors, cap sealer actuator, and Siemens HMI counter display"
@@ -66,12 +66,12 @@ export default {
       "kind": "concept",
       "title": "Conveyor Length Measuring and Cutting System",
       "points": [
-        "A measuring roller encoder feeds pulses into a counter to track strip length",
-        "While CV < PV, the feed drive coil remains latched ON to advance the metal strip",
-        "When CV >= PV, counter output Q unlatches the feed drive and triggers the shear",
+        "Example solution: a roller encoder (%I0.0) pulses a counter to track strip length",
+        "While CV < PV, the feed drive coil (%Q0.0) stays latched ON to advance the strip",
+        "When CV >= PV, counter output Q unlatches %Q0.0 and triggers shear coil %Q0.1",
         "Once the cutting blade completes its stroke, input R clears CV = 0 for the next cut"
       ],
-      "explain": "In a cut-to-length line, binary latching and counting work together to convert discrete roller pulses into a repeatable sheet length. Before downloading to the PLC, always simulate the counter reset timing in TIA Portal so the feed roller never advances while the shear blade is still engaged.",
+      "explain": "In this cut-to-length exercise, binary latching and counting work together in an example solution that converts discrete roller pulses into a target sheet length. Before testing on hardware, simulate the counter reset timing in TIA Portal so the feed roller never advances while the shear blade is engaged.",
       "figure": {
         "src": "/images/slides/03-binary-operations/03-bin_carved_045.png",
         "caption": "Sheet-metal conveyor using a roller encoder and cutting mechanism connected to a Siemens PLC"
@@ -81,12 +81,12 @@ export default {
       "kind": "concept",
       "title": "Steel Rolling Mill Timing and Interlock Logic",
       "points": [
-        "Furnace temperature (TT) and pressure (PT) permissives form an AND safety chain",
+        "Example solution: furnace TT (%I0.2) and PT (%I0.3) permissives form an AND chain",
         "A TON timer verifies slab soak time in the furnace before starting exit rollers",
-        "Cascaded TON/TOF timers sequence VFD stands 1 to 4 as the hot strip advances",
-        "Fault or E-Stop inputs drive Reset-dominant (SR) latches to halt all VFD drives"
+        "Cascaded TON/TOF timers sequence VFD stands (%Q0.0–%Q0.3) as the strip advances",
+        "E-Stop is hardwired to remove drive power; the PLC only latches the fault status (SR) to block restart"
       ],
-      "explain": "Heavy process lines like a steel rolling mill rely on deterministic timer sequencing and fail-safe latching to coordinate furnace discharge, rolling stands, and the coiler. Grouping safety interlocks, drive Set/Reset latches, and delay timers into separate LAD networks keeps the control program auditable."
+      "explain": "For the steel rolling mill exercise, this example solution combines timer sequencing and Reset-dominant (SR) fault latching to coordinate furnace discharge, rolling stands, and the coiler. Grouping safety interlocks, drive latches, and delay timers into separate LAD networks keeps the program easy to debug."
     },
     {
       "kind": "diagram",
