@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import type { TopicQuizQuestion } from '@/types/content';
 import { getTopic } from '@/content';
 
-// Dữ liệu cũ có thể còn dùng tên trường correct/question/explanation.
 type QuizQuestionWithLegacy = TopicQuizQuestion & {
   correct?: number;
   question?: string;
@@ -26,7 +25,6 @@ export default function TopicQuiz({
   color = '#0072BD',
   isFullscreen = false,
 }: Props) {
-  // Ưu tiên quiz truyền qua props; nếu không có, tra cứu từ src/content
   const questions: QuizQuestionWithLegacy[] =
     propQuiz && propQuiz.length > 0
       ? propQuiz
@@ -45,7 +43,7 @@ export default function TopicQuiz({
         color: '#64748b',
         fontSize: '13px',
       }}>
-        Chuyên đề này hiện chưa có câu hỏi kiểm tra nhanh.
+        No quiz questions available for this topic yet.
       </div>
     );
   }
@@ -77,11 +75,11 @@ export default function TopicQuiz({
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ width: 4, height: 16, background: color, borderRadius: 2 }} />
           <h4 style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#0f172a' }}>
-            Kiểm Tra Nhanh Kiến Thức Chuyên Đề
+            Topic Knowledge Check
           </h4>
         </div>
         <span style={{ fontSize: '11px', fontWeight: 700, color: color, background: `${color}12`, padding: '3px 8px', borderRadius: '3px', border: `1px solid ${color}30` }}>
-          {questions.length} câu hỏi
+          {questions.length} {questions.length === 1 ? 'Question' : 'Questions'}
         </span>
       </div>
 
@@ -208,7 +206,7 @@ export default function TopicQuiz({
                   color: isCorrect ? '#166534' : '#9a3412',
                   lineHeight: 1.45,
                 }}>
-                  <strong>{isCorrect ? '✓ Chính xác:' : 'ℹ Giải thích:'}</strong> {explanationText}
+                  <strong>{isCorrect ? '✓ Correct:' : 'ℹ Explanation:'}</strong> {explanationText}
                 </div>
               )}
             </div>
@@ -232,12 +230,12 @@ export default function TopicQuiz({
               cursor: Object.keys(selectedAnswers).length < questions.length ? 'not-allowed' : 'pointer',
             }}
           >
-            Nộp bài kiểm tra ({Object.keys(selectedAnswers).length}/{questions.length})
+            Submit Quiz ({Object.keys(selectedAnswers).length}/{questions.length})
           </button>
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px', width: '100%', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '13px', fontWeight: 700, color: score === questions.length ? '#16a34a' : '#0f172a' }}>
-              Kết quả: {score}/{questions.length} câu đúng ({Math.round((score / questions.length) * 100)}%)
+              Score: {score}/{questions.length} correct ({Math.round((score / questions.length) * 100)}%)
             </span>
             <button
               onClick={() => { setSubmitted(false); setSelectedAnswers({}); }}
@@ -252,7 +250,7 @@ export default function TopicQuiz({
                 cursor: 'pointer',
               }}
             >
-              Làm lại ↺
+              Retry ↺
             </button>
           </div>
         )}

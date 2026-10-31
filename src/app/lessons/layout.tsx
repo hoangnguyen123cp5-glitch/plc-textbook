@@ -170,16 +170,7 @@ export default function LessonsLayout({ children }: { children: React.ReactNode 
         <main
           className="lesson-main"
           style={
-            (pathname === '/lessons/10-closed-loop-pid' || pathname === '/lessons/10-closed-loop-pid/')
-              ? {
-                  padding: '12px 18px',
-                  height: 'calc(100vh - var(--nav-h, 60px))',
-                  overflow: 'hidden',
-                  boxSizing: 'border-box',
-                  display: 'flex',
-                  flexDirection: 'column',
-                }
-              : pathname.split('/').filter(Boolean).length >= 3
+            pathname.split('/').filter(Boolean).length >= 3
               ? { padding: '16px 20px', overflowX: 'hidden' }
               : pathname.split('/').filter(Boolean).length === 2
               ? { padding: '32px 36px', overflowX: 'hidden' }
@@ -193,16 +184,7 @@ export default function LessonsLayout({ children }: { children: React.ReactNode 
                 : 'lesson-col'
             }
             style={
-              (pathname === '/lessons/10-closed-loop-pid' || pathname === '/lessons/10-closed-loop-pid/')
-                ? {
-                    maxWidth: '1360px',
-                    width: '100%',
-                    height: '100%',
-                    margin: '0 auto',
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }
-                : pathname.split('/').filter(Boolean).length >= 3
+              pathname.split('/').filter(Boolean).length >= 3
                 ? { maxWidth: '1440px', width: '100%', margin: '0 auto' }
                 : pathname.split('/').filter(Boolean).length === 2
                 ? { maxWidth: '1080px', width: '100%', margin: '0 auto' }

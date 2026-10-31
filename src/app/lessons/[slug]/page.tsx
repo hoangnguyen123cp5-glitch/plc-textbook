@@ -1,12 +1,11 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getLessonBySlug, lessons } from '@/lib/lessons';
-import { lessonContent } from '@/data/lesson-content';
+import { getLesson, getTopic, topicNumber } from '@/content';
 import LessonMathBlock from '@/components/ui/LessonMathBlock';
 import LessonDownloads from '@/components/content/LessonDownloads';
 import LessonVideo from '@/components/content/LessonVideo';
 import LessonAnimationWrapper from '@/components/animations/LessonAnimationWrapper';
-import LessonPaginatedPresentation from '@/components/content/LessonPaginatedPresentation';
 
 function getCategoryColor(id: number) {
   if (id <= 3)  return '#1a3a6b';
@@ -28,29 +27,18 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
   const color = getCategoryColor(lesson.id);
   const prevLesson = lessons.find(l => l.id === lesson.id - 1);
   const nextLesson = lessons.find(l => l.id === lesson.id + 1);
-  const c = lessonContent[lesson.slug];
+  const c = getLesson(lesson.slug);
   const firstTopicSlug = lesson.topics[0]?.slug;
-
-  if (slug === '10-closed-loop-pid') {
-    return (
-      <LessonPaginatedPresentation
-        lesson={lesson}
-        content={c}
-        prevLesson={prevLesson ? { slug: prevLesson.slug, title: prevLesson.title } : undefined}
-        nextLesson={nextLesson ? { slug: nextLesson.slug, title: nextLesson.title } : undefined}
-      />
-    );
-  }
 
   return (
     <div style={{ maxWidth: '1100px', margin: '0 auto', paddingBottom: '60px' }}>
       {/* Breadcrumb */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', fontSize: '13px', color: '#64748b' }}>
         <Link href="/lessons" style={{ color: '#64748b', textDecoration: 'none', fontWeight: 500 }} className="nav-link">
-          Chương trình bài học
+          Curriculum
         </Link>
         <span>/</span>
-        <span style={{ color: '#0f172a', fontWeight: 600 }}>Bài {lesson.id}</span>
+        <span style={{ color: '#0f172a', fontWeight: 600 }}>Lesson {lesson.id}</span>
       </div>
 
       {/* Hero Presentation Header */}
@@ -65,7 +53,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
           <span style={{ width: 4, height: 28, borderRadius: 99, background: color, display: 'block' }} />
           <span style={{ fontSize: '12px', fontWeight: 800, letterSpacing: '0.08em', color: color, textTransform: 'uppercase' }}>
-            Bài giảng {String(lesson.id).padStart(2, '0')} · {lesson.lab}
+            Lesson {String(lesson.id).padStart(2, '0')} · {lesson.lab}
           </span>
         </div>
 
@@ -97,10 +85,10 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
               justifyContent: 'center',
             }}>
               <div style={{ fontSize: '11px', fontWeight: 800, color: color, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>
-                Trình chiếu Slide bài giảng
+                Interactive Lecture Slides
               </div>
               <div style={{ fontSize: '13px', color: '#334155', marginBottom: '14px', lineHeight: 1.5 }}>
-                Định dạng <strong>Slide cố định</strong> gồm sơ đồ, tóm tắt kỹ thuật, mô phỏng & micro-quiz.
+                Structured <strong>Slide Deck</strong> with technical diagrams, key points, field cases & quick checks.
               </div>
               <Link
                 href={`/lessons/${lesson.slug}/${firstTopicSlug}`}
@@ -120,7 +108,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
                   transition: 'all 0.2s',
                 }}
               >
-                <span>▶ Bắt đầu học Slide 1</span>
+                <span>▶ Start Topic 1</span>
                 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                 </svg>
@@ -132,10 +120,10 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
         {/* Badges / Meta row */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', paddingTop: '16px', borderTop: '1px solid #f1f5f9' }}>
           {[
-            { label: `${lesson.totalTopics} Chuyên đề (Topics)` },
-            { label: `Thời lượng ~${lesson.durationMinutes} phút` },
-            { label: `Hình thức: ${lesson.lab}` },
-            { label: lesson.session === 2 ? '2 Buổi học' : '1 Buổi học' },
+            { label: `${lesson.totalTopics} Topics` },
+            { label: `Duration ~${lesson.durationMinutes} min` },
+            { label: `Format: ${lesson.lab}` },
+            { label: lesson.session === 2 ? '2 Sessions' : '1 Session' },
           ].map(m => (
             <span key={m.label} style={{
               fontSize: '12px',
@@ -169,7 +157,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
             <span style={{ fontSize: '18px' }}>🎯</span>
             <span style={{ fontSize: '12px', fontWeight: 800, letterSpacing: '0.08em', color: color, textTransform: 'uppercase' }}>
-              Chuẩn đầu ra (Course Learning Outcome - CLO)
+              Course Learning Outcome (CLO)
             </span>
           </div>
           <p style={{ fontSize: '13.5px', color: '#334155', lineHeight: 1.65, margin: 0 }}>
@@ -178,7 +166,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
           {c?.overview && (
             <div style={{ marginTop: '14px', paddingTop: '14px', borderTop: '1px solid #f1f5f9' }}>
               <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
-                Tổng quan chương
+                Chapter Overview
               </span>
               <p style={{ fontSize: '13px', color: '#475569', lineHeight: 1.6, margin: 0 }}>
                 {c.overview.split('. ').slice(0, 2).join('. ') + '.'}
@@ -188,7 +176,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
         </div>
 
         {/* Objectives */}
-        {c?.objectives && (
+        {c?.objectives && c.objectives.length > 0 && (
           <div style={{
             background: '#ffffff',
             border: '1px solid #e2e8f0',
@@ -198,7 +186,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
               <span style={{ fontSize: '18px' }}>📋</span>
               <span style={{ fontSize: '12px', fontWeight: 800, letterSpacing: '0.08em', color: '#0f172a', textTransform: 'uppercase' }}>
-                Mục tiêu trọng tâm cần đạt
+                Learning Objectives
               </span>
             </div>
             <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -233,10 +221,10 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
           <div>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: '0 0 4px 0' }}>
-              Danh mục các chuyên đề Slide (Topic Slides)
+              Lesson Topics & Slide Decks
             </h2>
             <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>
-              Mỗi chuyên đề được thiết kế theo cấu trúc chuẩn 5 Slide cố định (Sơ đồ · Trọng tâm · Ghi chú Lab · Mô phỏng · Micro-Quiz).
+              Select any topic below to launch its interactive engineering slide deck, diagrams, and quick check questions.
             </p>
           </div>
           {firstTopicSlug && (
@@ -252,14 +240,17 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
                 gap: '4px',
               }}
             >
-              <span>Xem toàn bộ Slide</span>
+              <span>Launch Slide Deck</span>
               <span>➔</span>
             </Link>
           )}
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '14px' }}>
-          {lesson.topics.map((topic, i) => (
+          {lesson.topics.map((topic, i) => {
+            const topicData = getTopic(lesson.slug, topic.slug);
+            const num = topicNumber(lesson.slug, topic.slug) || `${lesson.id}.${i + 1}`;
+            return (
             <Link
               key={topic.slug}
               href={`/lessons/${lesson.slug}/${topic.slug}`}
@@ -287,28 +278,34 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
                     padding: '3px 8px',
                     borderRadius: '6px',
                   }}>
-                    CHUYÊN ĐỀ {String(i + 1).padStart(2, '0')}
+                    TOPIC {num}
                   </span>
                   <span style={{ fontSize: '11.5px', color: '#64748b', fontWeight: 600 }}>
-                    ⏱️ ~{topic.durationMinutes} phút
+                    ⏱️ ~{topic.durationMinutes} min
                   </span>
                 </div>
                 <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: '0 0 10px 0', lineHeight: 1.4 }}>
                   {topic.title}
                 </h3>
+                {topicData?.summary && (
+                  <p style={{ fontSize: '12.5px', color: '#64748b', margin: '0 0 10px 0', lineHeight: 1.5 }}>
+                    {topicData.summary}
+                  </p>
+                )}
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '12px', borderTop: '1px solid #f1f5f9' }}>
                 <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span>✓</span> 5 Slide tương tác & Quiz
+                  <span>✓</span> Interactive Slides & Quiz
                 </span>
                 <span style={{ fontSize: '12px', fontWeight: 700, color: color, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span>Vào học</span>
+                  <span>Open Topic</span>
                   <span>➔</span>
                 </span>
               </div>
             </Link>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -321,17 +318,11 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
 
       {/* Featured Interactive Simulator Preview */}
       <div style={{ marginBottom: '32px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-          <span style={{ fontSize: '18px' }}>⚡</span>
-          <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-            Mô phỏng tương tác thực hành tiêu biểu của chương
-          </h3>
-        </div>
         <LessonAnimationWrapper slug={slug} />
       </div>
 
       {/* Review Questions */}
-      {c?.review && (
+      {c?.review && c.review.length > 0 && (
         <div style={{
           background: '#ffffff',
           border: '1px solid #e2e8f0',
@@ -343,7 +334,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
             <span style={{ fontSize: '18px' }}>❓</span>
             <h3 style={{ fontSize: '14px', fontWeight: 800, letterSpacing: '0.04em', color: '#1a3a6b', textTransform: 'uppercase', margin: 0 }}>
-              Câu hỏi củng cố & Ôn tập cuối chương
+              End-of-Chapter Review Questions
             </h3>
           </div>
           <ol style={{ margin: 0, paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -379,7 +370,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
             </svg>
             <div>
               <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748b', marginBottom: '2px', fontWeight: 700 }}>
-                Bài trước
+                Previous Lesson
               </div>
               <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '13.5px' }}>
                 {prevLesson.title}
@@ -408,7 +399,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
           >
             <div>
               <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748b', marginBottom: '2px', fontWeight: 700 }}>
-                Bài tiếp theo
+                Next Lesson
               </div>
               <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '13.5px' }}>
                 {nextLesson.title}

@@ -78,12 +78,12 @@ export default {
     },
     {
       "kind": "quiz",
-      "title": "Kiểm tra nhanh",
+      "title": "Quick Check",
       "questionIndex": 0
     },
     {
       "kind": "quiz",
-      "title": "Kiểm tra nhanh",
+      "title": "Quick Check",
       "questionIndex": 1
     }
   ],

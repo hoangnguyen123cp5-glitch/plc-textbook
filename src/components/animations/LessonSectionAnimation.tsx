@@ -142,7 +142,7 @@ function Section1_1FiveElementsAnimation() {
               cursor: 'pointer',
             }}
           >
-            Reset sơ đồ
+            Reset Diagram
           </button>
           <button
             onClick={handleNextStep}
@@ -157,7 +157,7 @@ function Section1_1FiveElementsAnimation() {
               cursor: 'pointer',
             }}
           >
-            Bước tiếp theo ({current.code}/05)
+            Next Step ({current.code}/05)
           </button>
         </div>
       </div>
@@ -255,9 +255,9 @@ function Section1_1FiveElementsAnimation() {
           textTransform: 'uppercase',
           letterSpacing: '0.04em',
         }}>
-          <span>Thông Số / Khối Chức Năng</span>
-          <span>Đặc Tính Tín Hiệu I/O</span>
-          <span>Thiết Bị Công Nghiệp Triển Khai</span>
+          <span>Parameter / Functional Block</span>
+          <span>I/O Signal Characteristics</span>
+          <span>Industrial Hardware Implementation</span>
         </div>
 
         <div style={{
@@ -292,7 +292,7 @@ function Section1_1FiveElementsAnimation() {
           color: '#475569',
           lineHeight: 1.5,
         }}>
-          <strong>Nguyên lý điều khiển:</strong> {current.desc}
+          <strong>Control Principle:</strong> {current.desc}
         </div>
       </div>
     </div>

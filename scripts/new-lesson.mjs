@@ -18,8 +18,8 @@ const ROOT = path.resolve(__dirname, '..');
 const args = process.argv.slice(2);
 if (args.length < 3) {
   console.error('Lỗi: Thiếu tham số.');
-  console.error('Cách dùng: npm run new:lesson -- <số> <slug> "<tiêu đề>"');
-  console.error('Ví dụ:     npm run new:lesson -- 16 16-industrial-safety "An toàn máy công nghiệp"');
+  console.error('Cách dùng: npm run new:lesson -- <số> <slug> "<Lesson Title>"');
+  console.error('Ví dụ:     npm run new:lesson -- 16 16-industrial-safety "Functional Safety and Fail-Safe PLC Systems"');
   process.exit(1);
 }
 
@@ -59,16 +59,16 @@ const lessonObj = {
   slug,
   id,
   title,
-  description: `Nội dung bài ${id}: ${title}`,
+  description: `Lesson ${id}: ${title}`,
   course: id <= 7 ? 'AUT206' : 'AUT207',
   session: 1,
   lab: '—',
   clo: 'G1',
   module: getModule(id),
   topicOrder: [],
-  overview: `Tổng quan nội dung bài ${id}: ${title}.`,
+  overview: `Engineering overview and core concepts for Lesson ${id}: ${title}.`,
   objectives: [
-    `Nắm vững nguyên lý và ứng dụng thực tế của ${title}`,
+    `Understand the operating principles and industrial implementation of ${title}`,
   ],
 };
 

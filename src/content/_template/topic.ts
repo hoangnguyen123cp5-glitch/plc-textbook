@@ -1,147 +1,146 @@
-/**
- * FILE MẪU CHUYÊN ĐỀ (TOPIC TEMPLATE)
- *
- * Cách dùng nhanh:
- *   npm run new:topic -- <lesson-slug> <topic-slug> "<Tiêu đề chuyên đề>"
- *
- * Hoặc sao chép file này sang: src/content/<lesson-slug>/<topic-slug>.ts
- * rồi thêm '<topic-slug>' vào mảng topicOrder trong src/content/<lesson-slug>/_lesson.ts
- * và chạy: npm run build:content-index && npm run check:content
- */
-
-import { TopicContent } from '@/types/content';
+// File mẫu cho 1 chuyên đề (topic) — mỗi chuyên đề là 1 file độc lập trong src/content/<lesson-slug>/<topic-slug>.ts
+// Dùng lệnh: npm run new:topic -- <lesson-slug> <topic-slug> "<Topic Title>" để tạo nhanh từ mẫu này.
+import type { TopicContent } from '@/types/content';
 
 export default {
-  // [BẮT BUỘC] Định danh URL của topic — PHẢI trùng chính xác với tên file (không có .ts)
-  slug: 'topic-template',
+  // 1. Định danh bắt buộc: slug phải TRÙNG KHỚP với tên file (không tính đuôi .ts)
+  slug: 'topic',
 
-  // [TUỲ CHỌN] Số mục trên tập slide gốc nếu khác số thứ tự hiển thị trên web (vd: '1.3')
-  sourceRef: '1.1',
+  // 2. Số mục gốc trên slide bài giảng (tuỳ chọn, ví dụ '1.3' nếu khác số thứ tự tự động)
+  // sourceRef: '1.1',
 
-  // [BẮT BUỘC] Tiêu đề chuyên đề (KHÔNG ghi số thứ tự đầu dòng vì web tự đánh số x.y)
-  title: 'Tiêu đề chuyên đề mẫu',
+  // 3. Tiêu đề chuyên đề hiển thị trên web (bằng tiếng Anh, KHÔNG ghi số thứ tự "1.1" ở đầu)
+  title: 'Sample Topic Title',
 
-  // [BẮT BUỘC] Thời lượng học dự kiến (tính bằng phút)
+  // 4. Thời lượng học dự kiến (phút)
   durationMinutes: 10,
 
-  // [BẮT BUỘC khi published] Tóm tắt ngắn 1–2 câu (≤ 200 ký tự), hiển thị ở mục lục bài học
-  summary: 'Tóm tắt ngắn gọn 1–2 câu nêu trọng tâm kỹ thuật của chuyên đề này.',
+  // 5. Tóm tắt ngắn (1–2 câu, ≤ 200 ký tự) hiển thị ở mục lục chương
+  summary: 'Concise 1–2 sentence technical summary highlighting the core engineering concept of this topic.',
 
-  // [TUỲ CHỌN] Chuẩn đầu ra riêng của chuyên đề (nếu không có thì slide mục tiêu tự ẩn)
+  // 6. Chuẩn đầu ra / mục tiêu riêng của chuyên đề (tuỳ chọn)
   objectives: [
-    'Phân tích được nguyên lý hoạt động và sơ đồ đấu nối thực tế trên PLC S7-1200',
-    'Viết và kiểm thử được đoạn chương trình điều khiển với địa chỉ vùng nhớ thật (%I0.0, %Q0.0)',
+    'Analyze the operating principle and hardware wiring topology on a Siemens S7-1200 PLC',
+    'Implement and verify the control program using real S7-1200 memory addresses (%I0.0, %Q0.0, DB1)',
   ],
 
-  // [BẮT BUỘC khi published] Nội dung lý thuyết chính, chia thành 3–5 đoạn ngắn giọng giảng viên
+  // 7. Nội dung chính (body): chia thành các đoạn ngắn giọng giảng viên, có địa chỉ thật S7-1200
   body: [
     {
       // Tiêu đề phụ của đoạn (tuỳ chọn)
-      heading: 'Nguyên lý hoạt động cơ bản',
-      // Nội dung giải thích chi tiết, câu ngắn gọn, có ví dụ địa chỉ thật (%I0.0, %Q0.0, DB1...)
-      text: 'Nội dung giải thích trực diện nguyên lý kỹ thuật. Tránh dùng từ ngữ phô trương. Luôn gắn với địa chỉ phần cứng cụ thể trên S7-1200 như ngõ vào số %I0.0 hoặc ngõ ra %Q0.0.',
+      heading: 'Core Operating Principle',
+      // Nội dung đoạn văn (3–5 câu ngắn, giọng giảng viên, có ví dụ địa chỉ thật %I0.0, %Q0.0, DB1...)
+      text: 'Explain the engineering principle directly and concisely. Always anchor explanations to real S7-1200 hardware addresses such as digital input %I0.0, digital output %Q0.0, memory bit %M0.0, or data block DB1.',
       // Các ý chính tóm tắt dạng gạch đầu dòng (tuỳ chọn)
       keyPoints: [
-        'Ngõ vào số (%I0.0): Nhận tín hiệu 24VDC từ nút nhấn hoặc cảm biến hiện trường',
-        'Chu kỳ quét (scan cycle): Đọc PII → Thực thi OB1 → Cập nhật PIQ',
-        'Ngõ ra số (%Q0.0): Cấp nguồn điều khiển cuộn hút khởi động từ hoặc van điện từ',
+        'Digital Input (%I0.0): Receives 24VDC signal from field pushbuttons or proximity sensors',
+        'Scan Cycle: Read PII -> Execute OB1 user program -> Update PIQ outputs',
+        'Digital Output (%Q0.0): Drives 24VDC interposing relay or indicator lamp',
       ],
-      // Lưu ý thực tế tại xưởng / cảnh báo an toàn điện (tuỳ chọn)
-      note: 'Khi đấu nối tải cảm (cuộn hút rơ-le, van solenoid) vào ngõ ra transistor của CPU DC/DC/DC, bắt buộc lắp diode dập xung ngược để bảo vệ mạch bán dẫn.',
+      // Ghi chú kỹ thuật hoặc lưu ý an toàn đóng khung (tuỳ chọn)
+      note: 'Always verify the 24VDC power supply and common terminal (1M) wiring before switching the CPU to RUN.',
     },
   ],
 
-  // [TUỲ CHỌN] Hình ảnh / sơ đồ kỹ thuật (đường dẫn tính từ thư mục public/, KHÔNG gồm basePath)
-  // Chỉ khai báo những file ảnh ĐÃ TỒN TẠI thật trong public/images/...
-  figures: [
-    {
-      src: '/images/diagrams/plc-scan-cycle.jpg',
-      caption: 'Hình minh hoạ: Chu kỳ quét 4 bước của PLC và vùng nhớ ảnh quá trình (PII / PIQ)',
-      alt: 'Sơ đồ chu kỳ quét PLC',
-    },
-  ],
+  // 8. Hình ảnh minh hoạ / sơ đồ từ slide (tuỳ chọn)
+  // Lưu ý: src là đường dẫn tính từ thư mục public/, KHÔNG bao gồm '/plc-textbook'
+  // figures: [
+  //   {
+  //     src: '/images/slides/01-programmable-control/PLC_Slide_1__018.png',
+  //     caption: 'Figure 1.1: Block diagram of an S7-1200 PLC control loop.',
+  //     alt: 'S7-1200 PLC control loop block diagram',
+  //   },
+  // ],
 
-  // [TUỲ CHỌN] Công thức tính toán kỹ thuật (hiển thị bằng KaTeX)
-  formula: [
-    {
-      latex: 'e(t) = SP(t) - PV(t)',
-      explain: 'Sai lệch điều khiển e(t) bằng hiệu số giữa giá trị đặt SP(t) và giá trị đo thực tế PV(t).',
-    },
-  ],
+  // 9. Công thức toán học / kỹ thuật hiển thị bằng KaTeX (tuỳ chọn)
+  // formula: [
+  //   {
+  //     latex: 'I_{out} = \\frac{I_{max} - I_{min}}{27648} \\times N_{raw} + I_{min}',
+  //     explain: 'Linear scaling formula converting raw ADC integer (0..27648) to a 4–20 mA analog signal.',
+  //   },
+  // ],
 
-  // [TUỲ CHỌN] Tình huống thực tế tại nhà máy (Case Study)
-  caseStudy: {
-    title: 'Bài toán điều khiển thực tế tại dây chuyền sản xuất',
-    context: 'Mô tả ngắn gọn bài toán công nghiệp, thông số vận hành và vai trò của PLC S7-1200 trong hệ thống.',
-    hardware: [
-      'Bộ điều khiển: Siemens SIMATIC S7-1200 CPU 1214C DC/DC/DC',
-      'Cảm biến hiện trường: Cảm biến quang PNP 24VDC đấu vào %I0.0',
-      'Cơ cấu chấp hành: Van điện từ 24VDC điều khiển qua %Q0.0',
-    ],
-    pitfall: 'Lỗi thường gặp khi lắp đặt, đấu dây hoặc lập trình ngoài thực tế và cách phòng tránh.',
-  },
+  // 10. Tình huống thực tế tại nhà máy / trạm thực hành (tuỳ chọn)
+  // caseStudy: {
+  //   title: 'Conveyor Interlock Control using S7-1200',
+  //   context: 'A packaging line requires starting conveyor motor %Q0.0 when start button %I0.0 is pressed and stopping immediately when overload relay %I0.1 (NC) trips.',
+  //   hardware: ['CPU 1214C DC/DC/DC', '24VDC Contactor with Flyback Diode', 'Omron E3Z Photoelectric Sensor'],
+  //   pitfall: 'Wiring the E-Stop or overload contact as NO instead of NC fails to stop the motor if a control wire breaks.',
+  // },
 
-  // [TUỲ CHỌN — khuyến nghị ≥ 3 câu, đáp án đúng rải đều A/B/C/D] Câu hỏi trắc nghiệm kiểm tra nhanh
+  // 11. Câu hỏi trắc nghiệm kiểm tra nhanh (khuyến nghị ≥ 3–4 câu, rải đều đáp án A–D)
   quiz: [
     {
-      q: 'Trong chu kỳ quét của PLC S7-1200, CPU đọc trạng thái ngõ vào vật lý vào vùng nhớ nào trước khi thực thi khối OB1?',
-      options: [
-        'Vùng nhớ ảnh ngõ vào PII (Process Image Input)',
-        'Vùng nhớ ảnh ngõ ra PIQ (Process Image Output)',
-        'Vùng nhớ Load Memory trên thẻ nhớ Flash',
-        'Thanh ghi trạng thái đèn LED mặt trước CPU',
-      ],
-      answer: 0, // 0 = A, 1 = B, 2 = C, 3 = D
-      explain: 'Đầu mỗi chu kỳ quét, CPU chụp trạng thái tức thời của các chân ngõ vào vật lý và lưu vào bảng PII để đảm bảo tính nhất quán dữ liệu trong suốt vòng quét.',
-    },
-    {
-      q: 'Địa chỉ nào sau đây biểu diễn ngõ ra số thứ nhất trên mô-đun tích hợp của CPU S7-1200?',
+      q: 'On a Siemens S7-1200 PLC, which address represents the first onboard digital input bit?',
       options: [
         '%I0.0',
         '%Q0.0',
         '%M0.0',
         '%IW64',
       ],
-      answer: 1,
-      explain: 'Ký hiệu %Q biểu diễn vùng nhớ ngõ ra (Output), byte 0, bit 0 tương ứng với chân ngõ ra số đầu tiên %Q0.0.',
+      answer: 0, // Chỉ số đáp án đúng (0 = A, 1 = B, 2 = C, 3 = D)
+      explain: '%I0.0 is the first bit of byte 0 in the Process Image Input (PII) area.',
     },
     {
-      q: 'Vì sao không nên nối trực tiếp cuộn hút khởi động từ công suất lớn vào ngõ ra transistor 24VDC của PLC mà phải qua rơ-le trung gian?',
+      q: 'During which step of the S7-1200 scan cycle are physical output terminals updated from the Process Image Output (PIQ)?',
       options: [
-        'Vì ngõ ra transistor chỉ xuất được tín hiệu truyền thông PROFINET',
-        'Vì ngõ ra transistor không hoạt động được trong khối OB1',
-        'Vì dòng tải định mức của mỗi chân transistor chỉ khoảng 0.5A và cần cách ly bảo vệ',
-        'Vì rơ-le trung gian giúp tăng tốc độ xung PWM lên 100 kHz',
+        'Before reading physical inputs into PII',
+        'After OB1 program execution completes',
+        'Only when an hardware interrupt OB40 triggers',
+        'Only during CPU transition from STOP to RUN',
+      ],
+      answer: 1,
+      explain: 'At the end of each scan cycle, after OB1 finishes executing, the CPU writes the PIQ table to the physical output channels.',
+    },
+    {
+      q: 'Which organization block serves as the main cyclic user program in a Siemens S7-1200 project?',
+      options: [
+        'OB100 (Startup)',
+        'OB30 (Cyclic Interrupt)',
+        'OB1 (Main Program Sweep)',
+        'OB82 (Diagnostic Interrupt)',
       ],
       answer: 2,
-      explain: 'Ngõ ra transistor trên S7-1200 có dòng chịu tải tối đa 0.5A/kênh; dùng rơ-le trung gian giúp cách ly mạch điều khiển và đóng cắt tải công suất lớn an toàn.',
+      explain: 'OB1 is executed cyclically by the S7-1200 operating system as the main program loop.',
     },
   ],
 
-  // [TUỲ CHỌN] Lời giảng thuyết minh cho chuyên đề
-  narration: {
-    vi: 'Trong mục này, chúng ta tìm hiểu nguyên lý hoạt động cốt lõi và cách đấu nối, lập trình trên PLC S7-1200.',
-    durationSec: 25,
-    by: 'human',
-    updatedAt: '2026-10-30',
-  },
+  // 12. Lời giảng thuyết minh cho chế độ trình chiếu (tuỳ chọn)
+  // narration: {
+  //   vi: 'Trong mục này, chúng ta cùng phân tích nguyên lý hoạt động và cách đấu nối thực tế trên PLC S7-1200.',
+  //   durationSec: 25,
+  //   by: 'human',
+  //   updatedAt: '2026-10-31',
+  // },
 
-  // [TUỲ CHỌN] Mốc thời gian bắt đầu (giây) trong video bài giảng của cả bài học
+  // 13. Mốc thời gian bắt đầu trong video bài giảng của chương (tuỳ chọn, tính bằng giây)
   // video: { startSec: 120 },
 
-  // [TUỲ CHỌN] Mã component mô phỏng tương tác (nếu có)
-  // simulator: 'S7RackExplorer',
+  // 14. Khoá định danh component mô phỏng tương tác nếu có (tuỳ chọn)
+  // simulator: 'scan-cycle',
 
-  // [TUỲ CHỌN] Thứ tự các slide trình chiếu ('concept' | 'diagram' | 'practice' | 'quiz').
-  // Nếu không khai báo, trang web sẽ tự động dựng slide từ body + figures + quiz.
+  // 15. Danh sách slide trình chiếu (tuỳ chọn; nếu bỏ trống trang sẽ tự dựng từ body + quiz)
   // slides: [
-  //   { kind: 'concept', title: 'Nguyên lý hoạt động cơ bản', points: ['Ý 1', 'Ý 2'], explain: '...' },
-  //   { kind: 'quiz', title: 'Kiểm tra nhanh', questionIndex: 0 },
+  //   {
+  //     kind: 'concept',
+  //     title: 'Core Operating Principle',
+  //     points: [
+  //       'Read inputs into PII (%I0.0)',
+  //       'Execute user logic in OB1',
+  //       'Write PIQ to physical outputs (%Q0.0)',
+  //     ],
+  //     explain: 'The CPU repeats the scan cycle continuously in RUN mode.',
+  //   },
+  //   {
+  //     kind: 'quiz',
+  //     title: 'Quick Check',
+  //     questionIndex: 0,
+  //   },
   // ],
 
-  // [BẮT BUỘC] Trạng thái chuyên đề:
-  //   'draft'     — Đang soạn nháp (chỉ hiện khi chạy npm run dev, tự ẩn khi build production)
-  //   'review'    — Đã có nội dung, đang chờ rà soát / bổ sung đủ câu hỏi quiz
-  //   'published' — Đã nghiệm thu hoàn chỉnh (bắt buộc có summary, body và ≥ 3 câu quiz)
+  // 16. Trạng thái xuất bản:
+  // - 'draft': đang soạn, ẩn khi build production
+  // - 'review': hiện trên web để duyệt
+  // - 'published': đã nghiệm thu đầy đủ (bắt buộc có summary, body, quiz ≥ 3 câu, không còn TODO)
   status: 'draft',
 } satisfies TopicContent;

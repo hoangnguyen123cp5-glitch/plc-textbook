@@ -496,7 +496,7 @@ export function HMIScreenBuilder() {
         {/* Alarm banner */}
         {showAlarm && (
           <div style={{ background: '#fef2f2', border: '1px solid #f87171', borderRadius: '6px', padding: '8px 12px', marginBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ color: '#991b1b', fontSize: '12px', fontWeight: 700 }}>⚠️ CẢNH BÁO: Quá ngưỡng nhiệt độ an toàn — {temp}°C {'>'} 90°C</span>
+            <span style={{ color: '#991b1b', fontSize: '12px', fontWeight: 700 }}>⚠️ ALARM: High Temperature Limit Exceeded — {temp}°C {'>'} 90°C</span>
             <button onClick={() => setShowAlarm(false)} style={{ background: '#ffffff', border: '1px solid #ef4444', color: '#b91c1c', padding: '3px 10px', borderRadius: '4px', cursor: 'pointer', fontSize: '11px', fontWeight: 700 }}>ACK</button>
           </div>
         )}

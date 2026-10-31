@@ -19,8 +19,8 @@ const ROOT = path.resolve(__dirname, '..');
 const args = process.argv.slice(2);
 if (args.length < 3) {
   console.error('Lỗi: Thiếu tham số.');
-  console.error('Cách dùng: npm run new:topic -- <lesson-slug> <topic-slug> "<tiêu đề>"');
-  console.error('Ví dụ:     npm run new:topic -- 01-programmable-control io-addressing "Địa chỉ vùng nhớ I/O"');
+  console.error('Cách dùng: npm run new:topic -- <lesson-slug> <topic-slug> "<Topic Title>"');
+  console.error('Ví dụ:     npm run new:topic -- 01-programmable-control io-addressing "S7-1200 I/O Memory Addressing"');
   process.exit(1);
 }
 
@@ -56,8 +56,8 @@ if (!fs.existsSync(templatePath)) {
 const today = new Date().toISOString().slice(0, 10);
 let content = fs.readFileSync(templatePath, 'utf8');
 content = content
-  .replace(/slug:\s*'topic-template'/, `slug: ${JSON.stringify(topicSlug)}`)
-  .replace(/title:\s*'Tiêu đề chuyên đề mẫu'/, `title: ${JSON.stringify(title)}`)
+  .replace(/slug:\s*'topic'/, `slug: ${JSON.stringify(topicSlug)}`)
+  .replace(/title:\s*'Sample Topic Title'/, `title: ${JSON.stringify(title)}`)
   .replace(/updatedAt:\s*'[^']*'/, `updatedAt: '${today}'`)
   .replace(/status:\s*'(?:draft|review|published)'/, `status: 'draft'`);
 
