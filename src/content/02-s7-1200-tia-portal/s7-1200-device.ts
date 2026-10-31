@@ -23,8 +23,8 @@ export default {
   ],
   "figures": [
     {
-      "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__001.png",
-      "caption": "Figure 2.1: SIMATIC S7-1200 Modular Hardware Family: CPUs, Signal Boards, and Signal Modules"
+      "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__062.png",
+      "caption": "Figure 2.1: SIMATIC S7-1200 Modular Hardware Family: CPUs, Communication Modules, and Signal Modules"
     }
   ],
   "caseStudy": {
@@ -92,8 +92,8 @@ export default {
       ],
       "explain": "In the lecture sequence, we begin by looking at where the S7-1200 sits in an automation loop. Programmed from TIA Portal, the CPU continuously reads field sensors, evaluates control logic, and drives actuators. Its modular housing lets you snap a Signal Board onto the front face, attach up to eight Signal Modules on the right for extra I/O, and add up to three Communication Modules on the left without redesigning the control cabinet.",
       "figure": {
-        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__001.png",
-        "caption": "SIMATIC S7-1200 modular family: CPUs, communication modules, and signal modules"
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__062.png",
+        "caption": "SIMATIC S7-1200 modular rack: CP 1242-7, CM 1241, CM 1243-5 (left), CPU 1214C (center), and two SM 1223 modules (right)"
       }
     },
     {
@@ -107,8 +107,8 @@ export default {
       ],
       "explain": "Selecting the right CPU model upfront prevents costly hardware replacements later. While every S7-1200 CPU includes two built-in 0–10 V analog inputs and a PROFINET interface, the 1211C cannot accept right-side Signal Modules at all. For stations needing future I/O growth or analog outputs on the CPU itself, engineers step up to the 1212C, 1214C, or the dual-port 1215C.",
       "figure": {
-        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__062.png",
-        "caption": "SIMATIC S7-1200 CPU 1214C DC/DC/DC front panel and integrated I/O LEDs"
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__068.png",
+        "caption": "SIMATIC S7-1200 CPU family comparison from compact CPU 1211C/1212C/1214C to wider CPU 1215C"
       }
     },
     {
@@ -123,7 +123,7 @@ export default {
       "explain": "Industrial PLC installation follows a strict commissioning workflow: mechanical inspection, panel mounting, point-to-point wiring checks, and functional testing before handover. Because S7-1200 modules rely on natural convection rather than cooling fans, always leave at least 25 mm of free space above and below the rack so heat can dissipate.",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__070.png",
-        "caption": "Minimum 25 mm thermal clearance for horizontal and vertical mounting"
+        "caption": "Minimum 25 mm thermal clearance required above and below the S7-1200 rack for horizontal and vertical mounting"
       }
     },
     {
@@ -138,7 +138,7 @@ export default {
       "explain": "To mount an S7-1200 CPU, de-energize the cabinet, hook the rear slot over the top of a 35 mm DIN rail, pull down the lower locking clip, swing the unit flush against the rail, and push the clip back in until it clicks. Before removing a CPU that has a Signal Module attached on its right, always press down and slide the inter-module bus connector to the right with a flat-blade screwdriver so you do not bend the backplane pins.",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__075.png",
-        "caption": "Hooking the S7-1200 CPU onto the 35 mm DIN rail and engaging the lower clip"
+        "caption": "Hooking the S7-1200 CPU onto the 35 mm DIN rail and swinging it down to engage the lower locking clip"
       }
     },
     {
@@ -146,7 +146,7 @@ export default {
       "title": "Disengaging the Backplane Bus Connector",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__080.png",
-        "caption": "Using a screwdriver to retract the top bus connector before removing a module"
+        "caption": "Pressing down with a screwdriver and sliding the top bus tab right to disconnect an adjacent Signal Module"
       },
       "explain": "Never pry a CPU or Signal Module off the DIN rail while the side bus latch is still engaged. Retracting the top slide tab disconnects the high-speed backplane pins cleanly so a single unit can be swapped without disturbing adjacent wiring."
     },

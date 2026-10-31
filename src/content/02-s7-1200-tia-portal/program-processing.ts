@@ -23,8 +23,8 @@ export default {
   ],
   "figures": [
     {
-      "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__006.png",
-      "caption": "Figure 2.2: Program Processing in TIA Portal: OB1 Main Cycle, FCs, FBs, and Instance Data Blocks"
+      "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__004.png",
+      "caption": "Figure 2.2: TIA Portal Device Configuration: CPU 1214C DC/DC/DC Rack, Project Navigation, and PROFINET IP Settings"
     }
   ],
   "caseStudy": {
@@ -92,8 +92,8 @@ export default {
       ],
       "explain": "In the lecture flow for Section 1.4, processing a PLC program starts with how TIA Portal organizes an automation project. From a single project file, you configure the hardware rack, set I/O address ranges in the Device View, and structure your runtime program into Organization Block 1 (OB1), stateless Functions (FC), and stateful Function Blocks (FB) backed by Data Blocks.",
       "figure": {
-        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__006.png",
-        "caption": "Signal Module SM 1223 DC/DC expanding the CPU process image"
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__004.png",
+        "caption": "TIA Portal Device View showing CPU 1214C DC/DC/DC hardware configuration, project tree, and PROFINET IP settings"
       }
     },
     {
@@ -108,7 +108,7 @@ export default {
       "explain": "S7-1200 code blocks can be written in three IEC 61131-3 languages depending on the task. Ladder Diagram (LAD) and Function Block Diagram (FBD) are ideal for discrete interlocks and boolean sequences, whereas Structured Control Language (SCL) simplifies loops, arrays, and formulas. All three languages share the same instruction library of bit operations, timers, counters, data conversion, and motion/communication blocks.",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__002.jpeg",
-        "caption": "Function Block Diagram (FBD) and instruction tree inside TIA Portal"
+        "caption": "TIA Portal Program Blocks editor displaying Function Block Diagram (FBD) logic in FC1 and the Basic Instructions pane"
       }
     },
     {
@@ -144,8 +144,8 @@ export default {
       ],
       "explain": "Before TIA Portal can download your compiled program blocks to the S7-1200, the programming PC, CPU, and HMI must share the same IPv4 subnet—typically a private Class C range such as 192.168.1.1, 192.168.1.2, and 192.168.1.3. An industrial switch like the CSM 1277 operates at Layer 2 and requires no IP address of its own.",
       "figure": {
-        "src": "/images/diagrams/profinet-network-diagram.jpg",
-        "caption": "PROFINET subnet connecting the engineering PC, S7-1200 CPU, and HMI"
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__011.jpeg",
+        "caption": "SIMATIC NET CSM 1277 4-port unmanaged Industrial Ethernet switch for S7-1200 rack mounting"
       }
     },
     {

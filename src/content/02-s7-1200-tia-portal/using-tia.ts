@@ -23,8 +23,8 @@ export default {
   ],
   "figures": [
     {
-      "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__062.png",
-      "caption": "Figure 2.6: TIA Portal Project View: Device Configuration, Hardware Catalog, and Network Topology"
+      "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__053.jpeg",
+      "caption": "Figure 2.6: TIA Portal Project View Workbench: Numbered Layout of Toolbar, Project Tree, Work Area, Task Cards, and Inspector"
     }
   ],
   "caseStudy": {
@@ -92,8 +92,8 @@ export default {
       ],
       "explain": "When you launch TIA Portal (Section 1.8), you start in Portal View, which groups high-level tasks: creating or opening a project, configuring devices, or going online. Clicking 'Project view' in the bottom-left corner opens the full engineering workbench—giving you the hierarchical Project Tree on the left, the main editor in the center, the Properties/Diagnostics Inspector at the bottom, and the Instructions/Libraries Task Cards on the right.",
       "figure": {
-        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__050.png",
-        "caption": "TIA Portal startup screen (Portal View) showing task categories and project creation"
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__057.jpeg",
+        "caption": "TIA Portal Portal View showing numbered regions: (1) Start tasks, (2) Create/Open actions, (3) New project details, and (4) Project view toggle"
       }
     },
     {
@@ -107,8 +107,8 @@ export default {
       ],
       "explain": "To build logic in OB1, open the 'Basic instructions' task card on the right and drag contacts, coils, timers, or math boxes into the network editor. On multi-input instructions in LAD or FBD, you can add another input pin by clicking the star icon, right-clicking and choosing 'Insert input' (Ctrl+Shift+3), or clicking the bottom arrow to expand hidden block parameters.",
       "figure": {
-        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__002.jpeg",
-        "caption": "Project View workbench with Project Tree, FBD network editor, and Basic Instructions"
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__061.jpeg",
+        "caption": "Right-clicking a MAX instruction in the program editor to select 'Insert input' (Ctrl+Shift+3)"
       }
     },
     {
@@ -123,7 +123,7 @@ export default {
       "explain": "Because S7-1200 controllers do not have a physical RUN/STOP switch on the front bezel, operating mode changes are commanded from TIA Portal. Once online, open the 'Online tools' task card to access the virtual CPU operator panel—where you can switch between RUN and STOP or trigger an MRES (Memory Reset). To speed up future projects, store tested Function Blocks and standard configurations in Project or Global Libraries.",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__067.png",
-        "caption": "Online CPU operator panel in TIA Portal with RUN, STOP, and MRES controls"
+        "caption": "Online CPU operator panel in TIA Portal showing RUN/STOP/MAINT status indicators and RUN, STOP, and MRES buttons"
       }
     },
     {
@@ -138,7 +138,7 @@ export default {
       "explain": "Three built-in TIA Portal features save hours during commissioning: First, splitting the editor (Shift+F3) lets you drag tags directly from the PLC Tag Table into your ladder rung. Second, if a physical Signal Module is temporarily removed, dragging it to the 'Module not plugged in' area preserves all its configured addresses. Third, you can switch an instruction's version directly in the Instructions pane to maintain compatibility with older CPU firmware.",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__076.jpeg",
-        "caption": "Selecting the instruction version directly in the TIA Portal Instructions task card"
+        "caption": "Selecting the instruction version (V2.5, V3.1, V4.0) from the dropdown menu in the Instructions task card"
       }
     },
     {

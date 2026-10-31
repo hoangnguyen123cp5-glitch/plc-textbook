@@ -23,8 +23,8 @@ export default {
   ],
   "figures": [
     {
-      "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__031.png",
-      "caption": "Figure 2.4: Online Wiring Verification: Hardware Status LEDs, Watch Tables, and Signal Diagnostics"
+      "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__020.png",
+      "caption": "Figure 2.4: S7-1200 Front-Panel Status LEDs (RUN/STOP, ERROR, MAINT) During Online Hardware Verification"
     }
   ],
   "caseStudy": {
@@ -93,7 +93,7 @@ export default {
       "explain": "Before testing logic, verify wiring using both the S7-1200 front-panel LEDs and TIA Portal's online tools. Every digital channel has a green LED that lights as soon as signal voltage reaches the screw terminal, while the status LEDs (RUN/STOP, ERROR, MAINT) immediately reveal hardware faults or active forces. When the red ERROR LED flashes, go online and open the Diagnostics buffer to read the exact timestamped cause.",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__020.png",
-        "caption": "S7-1200 front-panel status LEDs indicating a hardware fault condition"
+        "caption": "Physical S7-1200 CPU showing lit RUN/STOP, ERROR, and MAINT status LEDs alongside the PROFINET RJ45 port"
       }
     },
     {
@@ -108,7 +108,7 @@ export default {
       "explain": "Once inside the Diagnostics buffer, clicking any red fault entry shows the affected rack slot and corrective action in the lower pane. Two of the most common lab errors are declaring an expansion module in the project that is not physically plugged into the DIN rail, or picking the wrong catalog variant (for example, relay instead of transistor) for an installed Signal Module.",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__021.png",
-        "caption": "Going online and opening the Diagnostics buffer in the Project Tree"
+        "caption": "Three-step sequence in TIA Portal: (1) click Go online, (2) open Online & diagnostics, and (3) select Diagnostics buffer"
       }
     },
     {
@@ -123,7 +123,7 @@ export default {
       "explain": "The Diagnostics buffer also pinpoints field wiring mistakes on expansion cards. 'High limit exceeded' means an analog signal has gone above 10 V or 20 mA (outside -27648 to +27648). 'Supply voltage missing' tells you an expansion module was snapped onto the bus without wiring 24 VDC to its L+ and M terminals. If a short circuit is reported, power down immediately and clear the faulted field loop before using a Watch Table to verify each channel.",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__025.png",
-        "caption": "Diagnostics buffer showing 'High limit exceeded' on an analog input channel"
+        "caption": "Diagnostics buffer event log reporting 'High limit exceeded on input channel 0' of analog module AI 2_1 in Slot 1.2"
       }
     },
     {
@@ -138,7 +138,7 @@ export default {
       "explain": "If TIA Portal aborts a download because the target PLC does not match the offline project, you do not need to rewrite your program. Simply right-click the CPU in Device configuration, choose 'Change device', and select the exact article number and firmware version printed on the physical S7-1200.",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__030.png",
-        "caption": "Using 'Change device' in TIA Portal to match the physical CPU model and firmware"
+        "caption": "'Change device' dialog in TIA Portal comparing the current CPU 1214C AC/DC/Rly (V4.2) with replacement S7-1200 catalog models"
       }
     },
     {

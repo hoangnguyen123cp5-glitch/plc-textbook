@@ -3,12 +3,12 @@ import { TopicContent } from '@/types/content';
 export default {
   "slug": "comms-setup",
   "sourceRef": "1.9",
-  "title": "Communication Setup (PC/PPI Cable)",
+  "title": "Communication Setup (PROFINET & PUT/GET)",
   "durationMinutes": 8,
   "summary": "Establishing communication between the engineering workstation and the PLC is the prerequisite for all online diagnostics, program downloads, and live monitoring.",
   "body": [
     {
-      "heading": "1.9 Communication Setup (PC/PPI Cable)",
+      "heading": "1.9 Communication Setup (PROFINET & PUT/GET)",
       "text": "Establishing communication between the engineering workstation and the PLC is the prerequisite for all online diagnostics, program downloads, and live monitoring. Modern SIMATIC S7-1200 CPUs utilize standard PROFINET Industrial Ethernet (10/100 Mbps RJ45) eliminating the requirement for proprietary programming adapters. The engineering workstation's Network Interface Card (NIC) must be assigned a static IP address residing in the identical subnet as the PLC (e.g. PC: 192.168.0.241 / 255.255.255.0; PLC factory default: 192.168.0.1 / 255.255.255.0). Standard Cat5e shielded twisted-pair (STP) Ethernet cables are utilized; integrated Auto-MDI/X automatically resolves straight-through or cross-over cable pinouts. In legacy installations (such as S7-200 micro-PLCs), communication required a specialized PC/PPI (Point-to-Point Interface) cable: an RS232-to-RS485 or USB-to-RS485 optoisolated converter operating at 9.6 or 187.5 kbps. In TIA Portal, the 'Accessible Devices' scan tool queries all active nodes on the physical Ethernet segment via MAC broadcast, allowing engineers to flash CPU LEDs to verify identity and assign new IP addresses.",
       "keyPoints": [
         "PROFINET Physical Layer: Standard Cat5e STP shielded industrial Ethernet with RJ45 connectors; supports up to 100 meters per cable segment",
@@ -91,10 +91,10 @@ export default {
         "Industrial wireless/remote modules: GPRS, LTE, and TeleControl CP",
         "Point-to-Point (PtP) serial modules and RF120C for SIMATIC Ident systems"
       ],
-      "explain": "In Section 1.9, we examine the full communication portfolio of the SIMATIC S7-1200. Every CPU includes a built-in PROFINET Ethernet port, and up to three Communication Modules can be added on the left for PROFIBUS DP, GPRS/LTE cellular telemetry, RF120C RFID identification, IO-Link sensor masters, or serial Point-to-Point links.",
+      "explain": "In Section 1.9, we examine the full communication portfolio of the SIMATIC S7-1200. Every CPU includes a built-in PROFINET Ethernet port, and up to three Communication Modules (CM) or Communication Processors (CP) can be added on the left side of the CPU for PROFIBUS DP, GPRS/LTE cellular telemetry, RF120C RFID identification, IO-Link sensor masters, or serial Point-to-Point links.",
       "figure": {
-        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__001.png",
-        "caption": "Communication Modules (left) alongside the S7-1200 CPU and Signal Modules"
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__064.jpeg",
+        "caption": "Expansion layout comparison: S7-1200 mounts up to 3 Communication Modules (CM) on the left of the CPU and up to 8 Signal Modules (SM) on the right"
       }
     },
     {
@@ -109,7 +109,7 @@ export default {
       "explain": "For single-station setups, a standard Cat5e cable connects the S7-1200 directly to a PC or a SIMATIC Basic Panel HMI. When networking multiple S7-1200 controllers and HMIs, a compact CSM 1277 switch links all RJ45 ports on the same subnet. For serial field devices such as barcode scanners, printers, modems, or variable-speed drives, CM 1241 RS232/RS485 modules run Freeport, ASCII, USS, or Modbus protocols.",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__041.png",
-        "caption": "Point-to-Point serial connections via CM 1241 to a printer, modem, and drive"
+        "caption": "Point-to-Point serial connections via CM 1241 modules on the left of the S7-1200 to a printer, modem, and drive"
       }
     },
     {
@@ -135,7 +135,7 @@ export default {
       "explain": "To exchange data between two S7-1200 CPUs over Ethernet using PUT and GET instructions, first assign each CPU a unique IP in the same subnet (such as 192.168.0.1 and 192.168.0.2). Next, open Device configuration -> Protection & Security -> Connection mechanisms and check 'Permit access with PUT/GET communication from remote partner', then link the subnet under Devices & Networks.",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__042.png",
-        "caption": "Enabling 'Permit access with PUT/GET communication' in CPU Protection & Security"
+        "caption": "Enabling 'Permit access with PUT/GET communication from remote partner' under Protection & Security in TIA Portal"
       }
     },
     {
@@ -143,7 +143,7 @@ export default {
       "title": "Structuring Transmit & Receive Data Blocks (DB10)",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__044.png",
-        "caption": "Global Data Block DB10 structured with PLC1_Transmit_Data and PLC1_Receive_Data"
+        "caption": "Global Data Block CPU1_Data [DB10] containing PLC1_Transmit_Data and PLC1_Receive_Data structures"
       },
       "explain": "In Step 3 of the PUT/GET setup, create a dedicated Global Data Block (such as CPU1_Data [DB10]) containing two Structs—one for transmit data and one for receive data—and disable 'Optimized block access' in the DB properties so PUT and GET can reference exact absolute byte offsets."
     },

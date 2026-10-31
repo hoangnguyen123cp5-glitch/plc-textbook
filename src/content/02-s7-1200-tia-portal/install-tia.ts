@@ -23,8 +23,8 @@ export default {
   ],
   "figures": [
     {
-      "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__050.png",
-      "caption": "Figure 2.5: TIA Portal Engineering Suite: STEP 7 Professional, WinCC, and ALM Licensing"
+      "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__065.png",
+      "caption": "Figure 2.5: TIA Portal Installed Software View Showing STEP 7 Professional and WinCC Professional"
     }
   ],
   "caseStudy": {
@@ -93,7 +93,7 @@ export default {
       "explain": "Section 1.7 introduces TIA Portal (Totally Integrated Automation Portal) as Siemens' single-platform engineering framework. Rather than switching between separate tools for PLCs, HMIs, and drives, engineers use one shared database for hardware configuration, network linking, user permissions, live diagnostics, and simulation.",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__049.png",
-        "caption": "TIA Portal unifying controller hardware and software engineering"
+        "caption": "SIMATIC S7-1200 hardware rack paired with the TIA Portal engineering interface"
       }
     },
     {
@@ -108,7 +108,7 @@ export default {
       "explain": "Within TIA Portal, six core software pillars cover the entire plant floor: STEP 7 for controller logic, WinCC for HMI/SCADA visualization, Startdrive and SCOUT TIA for variable-frequency drives and motion control, plus SIRIUS/SIMOCODE and power distribution tools for low-voltage switchgear diagnostics.",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__033.jpeg",
-        "caption": "The six core engineering software domains integrated in TIA Portal"
+        "caption": "Six software pillars in TIA Portal: STEP 7, WinCC, Startdrive, Motion Control, SIRIUS/SIMOCODE, and Power Distribution"
       }
     },
     {
@@ -123,7 +123,7 @@ export default {
       "explain": "TIA Portal sits at the center of the automation pyramid, linking field sensors, power supplies, and distributed I/O up through controllers and SCADA systems to cloud analytics. Because each Siemens device has many sub-options and accessory part numbers, engineers use the TIA Selection Tool first to validate the bill of materials and export the hardware list directly into ECAD and TIA Portal.",
       "figure": {
         "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__034.jpeg",
-        "caption": "Siemens Factory Automation architecture across Field, Control, Operations, and Cloud"
+        "caption": "Siemens Factory Automation hierarchy across Field, Control, Operations, Management, and Cloud layers"
       }
     },
     {
@@ -137,8 +137,8 @@ export default {
       ],
       "explain": "For laboratory and industrial workstations, install matching versions of STEP 7 Professional, WinCC, and S7-PLCSIM as a Windows Administrator, with license keys managed by the Automation License Manager (ALM). Once S7-PLCSIM is installed, students can download and debug their S7-1200 programs on a virtual PLC before connecting to a physical bench.",
       "figure": {
-        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__057.jpeg",
-        "caption": "Verifying installed STEP 7 Professional and WinCC versions in TIA Portal"
+        "src": "/images/slides/02-s7-1200-tia-portal/PLC___Slide__065.png",
+        "caption": "TIA Portal 'Installed software' screen listing Totally Integrated Automation Portal, STEP 7 Professional, and WinCC Professional V15.1"
       }
     },
     {
