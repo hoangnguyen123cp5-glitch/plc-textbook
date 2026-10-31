@@ -124,4 +124,4 @@ export function topicNumber(lessonSlugOrLesson: string | LessonContentFile, topi
 `;
 
 fs.writeFileSync(path.resolve(contentDir, 'index.ts'), indexContent, 'utf8');
-console.log('Successfully generated src/content/index.ts with exactly 15 lessons and 66 topics.');
+console.log(`Successfully generated src/content/index.ts with ${lessonEntries.length} lessons and ${topicMapEntries.length} topics.`);

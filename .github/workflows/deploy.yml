@@ -1,8 +1,8 @@
-name: Deploy to GitHub Pages
+name: CI & Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main, master]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -11,7 +11,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: "pages-${{ github.ref }}"
   cancel-in-progress: false
 
 jobs:
@@ -27,24 +27,33 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
+      - name: TypeScript typecheck
+        run: npx tsc --noEmit
+
+      - name: Content gatekeeper check
+        run: npm run check:content
+
+      - name: Build static site
         run: npm run build
         env:
           NODE_ENV: production
           NEXT_PUBLIC_BASE_PATH: /plc-textbook
 
+      - name: Setup Pages
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        uses: actions/configure-pages@v4
+
       - name: Upload artifact
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
 
   deploy:
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

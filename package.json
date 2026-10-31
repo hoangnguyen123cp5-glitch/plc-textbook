@@ -11,7 +11,10 @@
     "narration:missing": "node scripts/narration-check.mjs --missing",
     "narration:prompt": "node scripts/narration-check.mjs --prompt",
     "migrate:content": "node scripts/migrate-content.mjs",
-    "build:content-index": "node scripts/build-content-index.mjs"
+    "build:content-index": "node scripts/build-content-index.mjs",
+    "new:topic": "node scripts/new-topic.mjs",
+    "new:lesson": "node scripts/new-lesson.mjs",
+    "check:content": "node scripts/check-content.mjs"
   },
 
   "dependencies": {
