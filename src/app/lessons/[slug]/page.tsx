@@ -318,6 +318,12 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
 
       {/* Featured Interactive Simulator Preview */}
       <div style={{ marginBottom: '32px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+          <span style={{ fontSize: '18px' }}>⚡</span>
+          <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+            Featured Interactive Simulation
+          </h3>
+        </div>
         <LessonAnimationWrapper slug={slug} />
       </div>
 
